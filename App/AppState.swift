@@ -33,6 +33,21 @@ final class AppState {
     var activeTaskForBuddy: ServiceTask? = nil
     var taskHistory: [ServiceTask] = MockData.completedTasks
 
+    // Alle buddies in het systeem (voor matching)
+    var allBuddies: [BuddyUser] = MockData.allBuddies
+
+    // Matching
+    private let matchingService = MatchingService()
+    /// Laatste matches voor activeTaskForElderly — zodat UI kan tonen wie wordt benaderd
+    var lastMatches: [MatchingService.Match] = []
+    /// Welke buddies zijn lid van een organisatie (Cordaan) — die negeren voorkeuren-filter
+    var cordaanBuddyIDs: Set<UUID> = []
+
+    /// Level-up trigger: zodra dit niet-nil wordt verschijnt de voorkeuren-sheet automatisch.
+    var newlyUnlockedLevel: ServiceLevel? = nil
+    /// Houdt bij welke niveaus al gevierd zijn, voorkomt herhaalde prompts.
+    private var celebratedLevels: Set<ServiceLevel> = []
+
     // UI state
     var showSOS: Bool = false
     var toastMessage: ToastMessage? = nil
@@ -156,6 +171,35 @@ final class AppState {
                 )
             }
         }
+        checkForLevelUnlock(after: courseId)
+    }
+
+    /// Detecteert of voltooien van deze cursus een nieuw niveau ontgrendelt.
+    /// Triggert dan de voorkeuren-sheet via `newlyUnlockedLevel`.
+    /// Cordaan-buddies worden overgeslagen — zij hebben geen voorkeuren-flow.
+    private func checkForLevelUnlock(after courseId: UUID) {
+        guard !isCordaanBuddy else { return }
+        guard let course = MockData.courses.first(where: { $0.id == courseId }) else { return }
+        let allModuleIds = Set(course.modules.map { $0.id })
+        let done = completedModules[courseId] ?? []
+        guard !allModuleIds.isEmpty, allModuleIds.isSubset(of: done) else { return }
+
+        let unlockedLevel = course.level
+        guard !celebratedLevels.contains(unlockedLevel) else { return }
+        celebratedLevels.insert(unlockedLevel)
+        newlyUnlockedLevel = unlockedLevel
+    }
+
+    /// Update buddy-voorkeuren voor een niveau. Persists naar zowel buddyUser als allBuddies.
+    func setBuddyPreferences(level: ServiceLevel, services: Set<String>) {
+        buddyUser.servicePreferences[level] = services
+        if let idx = allBuddies.firstIndex(where: { $0.id == buddyUser.id }) {
+            allBuddies[idx].servicePreferences[level] = services
+        }
+    }
+
+    func dismissLevelUnlock() {
+        newlyUnlockedLevel = nil
     }
 
     // MARK: - Initialization (called on app start)
@@ -237,6 +281,11 @@ final class AppState {
         task.recurringSchedule = recurringSchedule
         openTasks.insert(task, at: 0)
         activeTaskForElderly = task
+
+        // Matching: vind buddies en stuur hen een notificatie
+        let matches = matchingService.rankBuddies(for: task, from: allBuddies, cordaanBuddyIDs: cordaanBuddyIDs)
+        lastMatches = matches
+        matchingService.notifyMatchedBuddies(matches: matches, task: task)
     }
 
     func requestHelpOnBehalf(
@@ -271,21 +320,25 @@ final class AppState {
     func simulateBuddyAccepts(taskID: UUID) {
         guard let idx = openTasks.firstIndex(where: { $0.id == taskID }) else { return }
         var task = openTasks[idx]
+
+        // Kies de beste match (eerst meest ervaren, dan dichtstbij). Fallback op Aiyla.
+        let chosenBuddy: BuddyUser = lastMatches.first?.buddy ?? MockData.buddyAiyla
+
         task.status = .accepted
-        task.assignedBuddyName = MockData.buddyAiyla.firstName
-        task.assignedBuddyRating = MockData.buddyAiyla.ratingAverage
+        task.assignedBuddyName = chosenBuddy.firstName
+        task.assignedBuddyRating = chosenBuddy.ratingAverage
         task.assignedBuddyEtaMinutes = Int.random(in: 8...18)
         openTasks[idx] = task
         if activeTaskForElderly?.id == taskID {
             activeTaskForElderly = task
         }
         MockPushService().send(notification: .taskAccepted(
-            buddyName: MockData.buddyAiyla.firstName,
+            buddyName: chosenBuddy.firstName,
             etaMinutes: task.assignedBuddyEtaMinutes ?? 12
         ))
         MockSMSService().sendSMS(
             to: elderlyUser.phoneNumber ?? "",
-            message: BuddieNotification.taskAccepted(buddyName: MockData.buddyAiyla.firstName, etaMinutes: task.assignedBuddyEtaMinutes ?? 12).title
+            message: BuddieNotification.taskAccepted(buddyName: chosenBuddy.firstName, etaMinutes: task.assignedBuddyEtaMinutes ?? 12).title
         )
     }
 
@@ -328,6 +381,13 @@ final class AppState {
         }
         taskHistory.insert(task, at: 0)
         activeTaskForBuddy = nil
+
+        // Verhoog ervaringsteller voor matching-rangschikking
+        let current = buddyUser.completedTasksByCategory[task.category] ?? 0
+        buddyUser.completedTasksByCategory[task.category] = current + 1
+        if let idx = allBuddies.firstIndex(where: { $0.id == buddyUser.id }) {
+            allBuddies[idx].completedTasksByCategory[task.category] = current + 1
+        }
         // Update elderly so they see the completed state and review prompt
         if activeTaskForElderly?.id == task.id {
             activeTaskForElderly = task

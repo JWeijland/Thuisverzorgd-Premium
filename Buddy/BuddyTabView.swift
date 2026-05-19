@@ -35,6 +35,14 @@ struct BuddyTabView: View {
                 BuddyOnboardingFlow()
             }
         }
+        .sheet(isPresented: Binding(
+            get: { appState.newlyUnlockedLevel != nil },
+            set: { if !$0 { appState.dismissLevelUnlock() } }
+        )) {
+            if let level = appState.newlyUnlockedLevel {
+                LevelUnlockedPreferencesSheet(level: level)
+            }
+        }
     }
 }
 

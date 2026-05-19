@@ -147,6 +147,82 @@ enum TaskCategory: String, CaseIterable, Identifiable, Codable {
     }
 }
 
+// MARK: - Buddy service preferences (mapping)
+
+/// Gedeelde catalogus van specifieke buddy-services per niveau.
+/// De namen worden 1-op-1 gebruikt in onboarding, profiel en matching.
+enum BuddyServiceCatalog {
+
+    struct Item: Hashable {
+        let name: String
+        let icon: String
+        let subtitle: String
+        let level: ServiceLevel
+        /// Categorieën waaraan deze service mapt voor matching.
+        let categories: Set<TaskCategory>
+    }
+
+    static let level0: [Item] = [
+        Item(name: "Gezelschap",           icon: "person.2.fill",           subtitle: "Gesprek en aanwezigheid",                level: .zero, categories: [.companionship]),
+        Item(name: "Wandelen",             icon: "figure.walk",             subtitle: "Buiten begeleiden",                       level: .zero, categories: [.walkOutdoors]),
+        Item(name: "Boodschappen",         icon: "cart.fill",               subtitle: "Inkopen doen of begeleiden",              level: .zero, categories: [.groceries]),
+        Item(name: "Lichte huishouding",   icon: "sparkles",                subtitle: "Opruimen en schoonmaken",                 level: .zero, categories: [.lightCleaning]),
+        Item(name: "Maaltijd opwarmen",    icon: "fork.knife",              subtitle: "Eenvoudig eten klaarzetten",              level: .zero, categories: [.mealPrep]),
+        Item(name: "Begeleiding afspraak", icon: "car.fill",                subtitle: "Meegaan naar arts of specialist",         level: .zero, categories: [.appointment]),
+        Item(name: "Medicatieherinnering", icon: "bell.fill",               subtitle: "Erop wijzen dat medicatie genomen moet worden", level: .zero, categories: [.medicationReminder]),
+        Item(name: "Digitale hulp",        icon: "iphone",                  subtitle: "Helpen met telefoon, tablet of computer", level: .zero, categories: [.other]),
+        Item(name: "Administratie",        icon: "doc.text.fill",           subtitle: "Post sorteren en formulieren invullen",   level: .zero, categories: [.other]),
+        Item(name: "Tuinieren",            icon: "leaf.fill",               subtitle: "Tuin bijhouden en planten verzorgen",     level: .zero, categories: [.other]),
+        Item(name: "Huisdieren",           icon: "pawprint.fill",           subtitle: "Hond uitlaten of dier verzorgen",         level: .zero, categories: [.other]),
+        Item(name: "Spelletjes",           icon: "dice.fill",               subtitle: "Gezelschapsspellen en kaarten",           level: .zero, categories: [.companionship]),
+        Item(name: "Klusjes thuis",        icon: "shoppingbag.fill",        subtitle: "Kleine reparaties en ophanging",          level: .zero, categories: [.other]),
+        Item(name: "Voorlezen",            icon: "book.fill",               subtitle: "Boeken, krant of brieven voorlezen",      level: .zero, categories: [.companionship]),
+    ]
+
+    static let level1: [Item] = [
+        Item(name: "Opstaan / naar bed",   icon: "arrow.up.circle.fill",    subtitle: "Begeleiden bij het opstaan of naar bed gaan", level: .one, categories: [.bedHelp]),
+        Item(name: "Aankleden",            icon: "tshirt.fill",             subtitle: "Helpen bij het aan- en uitkleden",        level: .one, categories: [.bedHelp]),
+        Item(name: "Toiletbegeleiding",    icon: "figure.walk.motion",      subtitle: "Begeleiden naar en op het toilet",        level: .one, categories: [.bedHelp]),
+        Item(name: "Transfers",            icon: "figure.stand",            subtitle: "Veilig van stoel naar bed of rolstoel",   level: .one, categories: [.bedHelp]),
+        Item(name: "Rolstoelbegeleiding",  icon: "figure.seated.seatbelt",  subtitle: "Rijden met en begeleiden in rolstoel",    level: .one, categories: [.walkOutdoors, .appointment]),
+        Item(name: "Maaltijdbereiding",    icon: "fork.knife.circle.fill",  subtitle: "Complete warme maaltijden bereiden",      level: .one, categories: [.mealPrep]),
+        Item(name: "Vocht en voeding",     icon: "drop.fill",               subtitle: "Ondersteunen bij eten en drinken",        level: .one, categories: [.mealPrep]),
+    ]
+
+    static let level2: [Item] = [
+        Item(name: "Volledig wassen",      icon: "shower.fill",             subtitle: "Douchen en wassen bij bed of stoel",      level: .two, categories: [.bedHelp]),
+        Item(name: "Steunkousen",          icon: "bandage.fill",            subtitle: "Aantrekken en uittrekken van steunkousen", level: .two, categories: [.bedHelp]),
+        Item(name: "Medicatietoezicht",    icon: "pills.fill",              subtitle: "Toezicht houden op medicatie-inname",     level: .two, categories: [.medicationReminder]),
+        Item(name: "Volledige ADL",        icon: "cross.case.fill",         subtitle: "Complete dagelijkse lichaamsverzorging",  level: .two, categories: [.bedHelp]),
+        Item(name: "Vitale meting",        icon: "waveform.path.ecg",       subtitle: "Bloeddruk en saturatie meten",            level: .two, categories: [.medicationReminder]),
+    ]
+
+    static let level3: [Item] = [
+        Item(name: "Medicatie toedienen",  icon: "syringe.fill",            subtitle: "Zelf medicijnen verstrekken en documenteren", level: .three, categories: [.medicationReminder]),
+        Item(name: "Stomazorg",            icon: "staroflife.fill",         subtitle: "Verzorging en wisseling van stoma",       level: .three, categories: [.other]),
+        Item(name: "Wondverzorging",       icon: "cross.fill",              subtitle: "Verbanden wisselen en wonden reinigen",   level: .three, categories: [.other]),
+        Item(name: "Katheter aanleggen",   icon: "drop.degreesign.fill",    subtitle: "Inbrengen en beheer van katheter",        level: .three, categories: [.other]),
+        Item(name: "Insuline injecties",   icon: "heart.text.square.fill",  subtitle: "Subcutane injecties toedienen",           level: .three, categories: [.medicationReminder]),
+    ]
+
+    static func items(for level: ServiceLevel) -> [Item] {
+        switch level {
+        case .zero:  return level0
+        case .one:   return level1
+        case .two:   return level2
+        case .three: return level3
+        case .four:  return []
+        }
+    }
+
+    static var allItems: [Item] { level0 + level1 + level2 + level3 }
+
+    /// Geeft alle service-namen die mappen op een bepaalde categorie.
+    static func serviceNames(for category: TaskCategory) -> Set<String> {
+        Set(allItems.filter { $0.categories.contains(category) }.map { $0.name })
+    }
+}
+
 // MARK: - Recurring schedule
 
 enum RecurringFrequency: String, CaseIterable, Identifiable {
@@ -339,8 +415,20 @@ struct BuddyUser: Identifiable, Hashable {
     let vogExpiresAt: Date
     var ibanLast4: String = "****"
     var isAvailableNow: Bool = true
+    /// Locatie van de buddy — gebruikt voor proximity matching.
+    var coordinate: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: 52.3676, longitude: 4.9041)
+    /// Maximale afstand in km die de buddy bereid is af te leggen.
+    var maxDistanceKm: Int = 10
+    /// Aantal voltooide taken per categorie — bron voor "ervaren buddy" matching.
+    var completedTasksByCategory: [TaskCategory: Int] = [:]
+    /// Voorkeuren per niveau: welke specifieke services (ServiceOption-namen) wil de buddy doen.
+    var servicePreferences: [ServiceLevel: Set<String>] = [:]
 
     var fullName: String { "\(firstName) \(lastName)" }
+    /// True als de buddy 3+ taken in deze categorie heeft afgerond.
+    func isExperiencedIn(_ category: TaskCategory) -> Bool {
+        (completedTasksByCategory[category] ?? 0) >= 3
+    }
     func hash(into hasher: inout Hasher) { hasher.combine(id) }
     static func == (lhs: BuddyUser, rhs: BuddyUser) -> Bool { lhs.id == rhs.id }
 }

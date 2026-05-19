@@ -3,6 +3,7 @@ import SwiftUI
 struct BuddyProfileView: View {
     @Environment(AppState.self) private var appState
     @State private var showDiplomaSheet = false
+    @State private var showPreferencesSheet = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -60,6 +61,11 @@ struct BuddyProfileView: View {
                         .tint(BCColors.success)
                     }
                     .padding(.horizontal, BCSpacing.lg)
+
+                    // Voorkeuren — alleen voor zelfstandige buddies (Cordaan-buddies zijn al gecertificeerd)
+                    if !appState.isCordaanBuddy {
+                        preferencesCard
+                    }
 
                     // Verifications
                     BCCard {
@@ -140,6 +146,48 @@ struct BuddyProfileView: View {
         .sheet(isPresented: $showDiplomaSheet) {
             DiplomaUploadSheet()
         }
+        .sheet(isPresented: $showPreferencesSheet) {
+            BuddyPreferencesView()
+                .environment(appState)
+        }
+    }
+
+    private var preferencesCard: some View {
+        Button {
+            showPreferencesSheet = true
+        } label: {
+            BCCard {
+                HStack(spacing: BCSpacing.md) {
+                    Image(systemName: "checklist")
+                        .font(.system(size: 22, weight: .semibold))
+                        .foregroundStyle(BCColors.primary)
+                        .frame(width: 44, height: 44)
+                        .background(Circle().fill(BCColors.primary.opacity(0.12)))
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Mijn voorkeuren")
+                            .font(BCTypography.bodyEmphasized)
+                            .foregroundStyle(BCColors.textPrimary)
+                        Text(preferencesSummary)
+                            .font(BCTypography.caption)
+                            .foregroundStyle(BCColors.textSecondary)
+                            .lineLimit(2)
+                    }
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .foregroundStyle(BCColors.textTertiary)
+                }
+            }
+        }
+        .buttonStyle(.plain)
+        .padding(.horizontal, BCSpacing.lg)
+    }
+
+    private var preferencesSummary: String {
+        let totals = appState.buddyUser.servicePreferences.values.reduce(0) { $0 + $1.count }
+        if totals == 0 {
+            return "Nog geen voorkeuren — kies welke taken je wilt doen"
+        }
+        return "\(totals) taken gekozen — wijzig wanneer je wilt"
     }
 }
 

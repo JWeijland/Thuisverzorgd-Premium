@@ -52,7 +52,20 @@ enum MockData {
         vogValid: true,
         vogExpiresAt: Date().addingTimeInterval(86400 * 365 * 3),
         ibanLast4: "2481",
-        isAvailableNow: true
+        isAvailableNow: true,
+        coordinate: CLLocationCoordinate2D(latitude: 52.3745, longitude: 4.8900),
+        maxDistanceKm: 8,
+        completedTasksByCategory: [
+            .companionship: 12,
+            .groceries: 8,
+            .walkOutdoors: 5,
+            .lightCleaning: 4,
+            .bedHelp: 3
+        ],
+        servicePreferences: [
+            .zero: ["Gezelschap", "Boodschappen", "Wandelen", "Lichte huishouding", "Voorlezen", "Spelletjes"],
+            .one:  ["Opstaan / naar bed", "Aankleden", "Maaltijdbereiding"]
+        ]
     )
 
     static let buddyMark = BuddyUser(
@@ -70,7 +83,21 @@ enum MockData {
         vogValid: true,
         vogExpiresAt: Date().addingTimeInterval(86400 * 365 * 2),
         ibanLast4: "9012",
-        isAvailableNow: false
+        isAvailableNow: false,
+        coordinate: CLLocationCoordinate2D(latitude: 52.3580, longitude: 4.9000),
+        maxDistanceKm: 15,
+        completedTasksByCategory: [
+            .bedHelp: 28,
+            .mealPrep: 22,
+            .medicationReminder: 18,
+            .companionship: 15,
+            .appointment: 10
+        ],
+        servicePreferences: [
+            .zero: ["Gezelschap", "Begeleiding afspraak", "Medicatieherinnering"],
+            .one:  ["Opstaan / naar bed", "Aankleden", "Toiletbegeleiding", "Maaltijdbereiding", "Transfers"],
+            .two:  ["Volledig wassen", "Medicatietoezicht", "Volledige ADL"]
+        ]
     )
 
     static let buddySophie = BuddyUser(
@@ -88,7 +115,17 @@ enum MockData {
         vogValid: true,
         vogExpiresAt: Date().addingTimeInterval(86400 * 365 * 3),
         ibanLast4: "3344",
-        isAvailableNow: true
+        isAvailableNow: true,
+        coordinate: CLLocationCoordinate2D(latitude: 52.3700, longitude: 4.8950),
+        maxDistanceKm: 5,
+        completedTasksByCategory: [
+            .companionship: 4,
+            .lightCleaning: 2,
+            .groceries: 2
+        ],
+        servicePreferences: [
+            .zero: ["Gezelschap", "Voorlezen", "Lichte huishouding", "Boodschappen", "Spelletjes"]
+        ]
     )
 
     static var allBuddies: [BuddyUser] { [buddyAiyla, buddyMark, buddySophie] }

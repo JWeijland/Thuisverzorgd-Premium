@@ -753,7 +753,7 @@ struct BuddyOnboardingFlow: View {
     private var servicesStep: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: BCSpacing.lg) {
-                StepHeader(title: "Diensten", subtitle: "Kies de taken die je wilt uitvoeren. Dit bepaalt met welke ouderen je gematcht wordt.")
+                StepHeader(title: "Diensten", subtitle: "Kies minimaal 3 taken op jouw startniveau (Basis Buddy). Hogere niveaus ontgrendel je later via cursussen.")
 
                 ForEach(serviceGroups, id: \.level) { group in
                     VStack(alignment: .leading, spacing: BCSpacing.sm) {
@@ -1094,6 +1094,7 @@ struct BuddyOnboardingFlow: View {
             Spacer()
 
             BCPrimaryButton(title: "Ga aan de slag (prototype)", icon: "arrow.right") {
+                appState.setBuddyPreferences(level: .zero, services: selectedServices)
                 appState.isOnboardingComplete = true
             }
             .padding(.horizontal, BCSpacing.lg)
@@ -1162,7 +1163,7 @@ struct BuddyOnboardingFlow: View {
         case 5:  return isZzper != nil && (isZzper == false || !kvkNumber.isEmpty)
         case 6:  return !iban.isEmpty && !ibanHolderName.isEmpty
         case 7:  return hasInsurance != nil
-        case 9:  return !selectedServices.isEmpty
+        case 9:  return selectedServices.count >= 3
         case 11: return agreedToHouseRules && agreedToZzpContract
         default: return true
         }

@@ -13,6 +13,7 @@ struct RequestHelpFlow: View {
     @State private var showingConfirmation = false
     @State private var customDate: Date = Date().addingTimeInterval(3600)
     @State private var useCustomDate: Bool = false
+    @State private var showVoiceInput: Bool = false
     // Recurring
     @State private var isRecurring: Bool = false
     @State private var recurringFrequency: RecurringFrequency = .daily
@@ -53,6 +54,27 @@ struct RequestHelpFlow: View {
                         .tint(BCColors.primary)
                 }
             }
+            .sheet(isPresented: $showVoiceInput) {
+                VoiceTaskInputView { spokenText in
+                    applySpokenTranscript(spokenText)
+                }
+            }
+        }
+    }
+
+    private func applySpokenTranscript(_ text: String) {
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+        descriptionText = trimmed
+        if let match = recognizeCategory(from: trimmed) {
+            selectedCategory = match
+            if match == .other {
+                otherDescription = trimmed
+            }
+        } else {
+            // Geen categorie herkend → val terug op 'Anders' met transcript
+            selectedCategory = .other
+            otherDescription = trimmed
         }
     }
 
@@ -66,6 +88,47 @@ struct RequestHelpFlow: View {
         }
     }
 
+    private var voiceInputCallout: some View {
+        Button {
+            showVoiceInput = true
+        } label: {
+            HStack(spacing: BCSpacing.md) {
+                ZStack {
+                    Circle()
+                        .fill(BCColors.primary)
+                        .frame(width: 64, height: 64)
+                    Image(systemName: "mic.fill")
+                        .font(.system(size: 28, weight: .bold))
+                        .foregroundStyle(.white)
+                }
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Spreek het in")
+                        .font(et.button)
+                        .foregroundStyle(BCColors.textPrimary)
+                    Text("Tik en vertel rustig wat u nodig heeft")
+                        .font(et.caption)
+                        .foregroundStyle(BCColors.textSecondary)
+                        .multilineTextAlignment(.leading)
+                }
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(BCColors.primary)
+            }
+            .padding(BCSpacing.md)
+            .frame(maxWidth: .infinity)
+            .background(
+                RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous)
+                    .fill(BCColors.primary.opacity(0.08))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous)
+                    .stroke(BCColors.primary.opacity(0.35), lineWidth: 1.5)
+            )
+        }
+        .buttonStyle(.plain)
+    }
+
     // STEP 0 — categorie
     private var categoryStep: some View {
         ScrollView {
@@ -75,6 +138,18 @@ struct RequestHelpFlow: View {
                     .foregroundStyle(BCColors.textPrimary)
                     .padding(.horizontal, BCSpacing.lg)
                     .padding(.top, BCSpacing.md)
+
+                voiceInputCallout
+                    .padding(.horizontal, BCSpacing.lg)
+
+                HStack(spacing: BCSpacing.sm) {
+                    Rectangle().fill(BCColors.border).frame(height: 1)
+                    Text("of kies hieronder")
+                        .font(BCTypography.caption)
+                        .foregroundStyle(BCColors.textTertiary)
+                    Rectangle().fill(BCColors.border).frame(height: 1)
+                }
+                .padding(.horizontal, BCSpacing.lg)
 
                 // Smart description field
                 VStack(alignment: .leading, spacing: BCSpacing.xs) {

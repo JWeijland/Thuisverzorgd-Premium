@@ -14,7 +14,8 @@ struct BuddyMapView: View {
     @State private var showActiveTask = false
 
     var visibleTasks: [ServiceTask] {
-        appState.openTasks.filter { $0.requiredLevel.rawValue <= maxLevelFilter }
+        guard appState.isAvailableNow else { return [] }
+        return appState.openTasks.filter { $0.requiredLevel.rawValue <= maxLevelFilter }
     }
 
     var body: some View {
@@ -42,6 +43,9 @@ struct BuddyMapView: View {
             VStack(spacing: BCSpacing.sm) {
                 topBar
                 filterStrip
+                if !appState.isAvailableNow {
+                    offlineBanner
+                }
             }
             .padding(.horizontal, BCSpacing.md)
             .padding(.top, BCSpacing.sm)
@@ -74,12 +78,69 @@ struct BuddyMapView: View {
                     .foregroundStyle(BCColors.textPrimary)
             }
             Spacer()
+            availabilityPill
             BCStatusPill(label: "\(visibleTasks.count) open", color: BCColors.primary)
         }
         .padding(.horizontal, BCSpacing.md)
         .padding(.vertical, BCSpacing.sm)
         .background(
             Capsule().fill(BCColors.surface)
+                .shadow(color: .black.opacity(0.10), radius: 8, x: 0, y: 2)
+        )
+    }
+
+    private var availabilityPill: some View {
+        Button {
+            appState.isAvailableNow.toggle()
+        } label: {
+            HStack(spacing: 6) {
+                Circle()
+                    .fill(appState.isAvailableNow ? BCColors.success : BCColors.textTertiary)
+                    .frame(width: 8, height: 8)
+                Text(appState.isAvailableNow ? "Aan" : "Uit")
+                    .font(BCTypography.captionEmphasized)
+                    .foregroundStyle(appState.isAvailableNow ? BCColors.success : BCColors.textSecondary)
+            }
+            .padding(.horizontal, BCSpacing.sm)
+            .padding(.vertical, 6)
+            .background(
+                Capsule().fill(
+                    appState.isAvailableNow
+                        ? BCColors.success.opacity(0.12)
+                        : BCColors.surfaceMuted
+                )
+            )
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var offlineBanner: some View {
+        HStack(spacing: BCSpacing.sm) {
+            Image(systemName: "bell.slash.fill")
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundStyle(BCColors.textSecondary)
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Je staat op niet-beschikbaar")
+                    .font(BCTypography.bodyEmphasized)
+                    .foregroundStyle(BCColors.textPrimary)
+                Text("Zet \u{201C}Aan\u{201D} om hulpaanvragen in de buurt te ontvangen")
+                    .font(BCTypography.caption)
+                    .foregroundStyle(BCColors.textSecondary)
+            }
+            Spacer()
+            Button("Aanzetten") {
+                appState.isAvailableNow = true
+            }
+            .font(BCTypography.captionEmphasized)
+            .padding(.horizontal, BCSpacing.sm)
+            .padding(.vertical, 6)
+            .background(Capsule().fill(BCColors.primary))
+            .foregroundStyle(.white)
+        }
+        .padding(BCSpacing.md)
+        .background(
+            RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous)
+                .fill(BCColors.surface)
                 .shadow(color: .black.opacity(0.10), radius: 8, x: 0, y: 2)
         )
     }
