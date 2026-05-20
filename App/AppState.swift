@@ -85,6 +85,8 @@ final class AppState {
     var diplomaStatus: DiplomaStatus = .none
 
     var effectiveBuddyLevel: ServiceLevel {
+        // Buddies via een zorginstelling zijn gediplomeerd en bevoegd voor alles.
+        if isCordaanBuddy { return .three }
         guard case .verified = diplomaStatus else { return buddyUser.level }
         let kort = CourseContent.course_basisWelkom_kort
         let done = completedModules[kort.id] ?? []
@@ -104,14 +106,6 @@ final class AppState {
             self?.showToast(text: "Diploma geverifieerd! Voltooi de verkorte Basis Buddy cursus.", icon: "checkmark.shield.fill")
         }
     }
-
-    // Check-in state
-    private var selfieCapturedAt: Date? = nil
-    var hasSelfieToday: Bool {
-        guard let d = selfieCapturedAt else { return false }
-        return Calendar.current.isDateInToday(d)
-    }
-    func recordSelfie() { selfieCapturedAt = Date() }
 
     // Elderly — favorites & ratings
     var favoriteBuddyNames: Set<String> = ["Aiyla", "Mark"]

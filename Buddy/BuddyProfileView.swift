@@ -27,10 +27,16 @@ struct BuddyProfileView: View {
                                 Text(appState.buddyUser.study)
                                     .font(BCTypography.subheadline)
                                     .foregroundStyle(BCColors.textSecondary)
-                                BCRatingStars(value: appState.buddyUser.ratingAverage, size: 16)
+                                // Ratingcijfer niet tonen aan zorginstelling-buddies
+                                if !appState.isCordaanBuddy {
+                                    BCRatingStars(value: appState.buddyUser.ratingAverage, size: 16)
+                                }
                             }
                             HStack(spacing: BCSpacing.sm) {
-                                BCLevelBadge(level: appState.buddyUser.level)
+                                // Niveau niet tonen aan zorginstelling-buddies
+                                if !appState.isCordaanBuddy {
+                                    BCLevelBadge(level: appState.buddyUser.level)
+                                }
                                 BCStatusPill(label: "\(appState.buddyUser.totalTasks) bezoeken", color: BCColors.primary)
                             }
                         }
@@ -81,8 +87,10 @@ struct BuddyProfileView: View {
                     }
                     .padding(.horizontal, BCSpacing.lg)
 
-                    // Diploma
-                    DiplomaCard(showSheet: $showDiplomaSheet)
+                    // Diploma — niet voor zorginstelling-buddies (zij zijn al gediplomeerd)
+                    if !appState.isCordaanBuddy {
+                        DiplomaCard(showSheet: $showDiplomaSheet)
+                    }
 
                     // Bio
                     BCCard {
@@ -97,31 +105,33 @@ struct BuddyProfileView: View {
                     }
                     .padding(.horizontal, BCSpacing.lg)
 
-                    // Reviews
-                    BCSectionHeader(title: "Recente beoordelingen")
-                        .padding(.horizontal, BCSpacing.lg)
-                    VStack(spacing: BCSpacing.sm) {
-                        ForEach(MockData.reviewsForBuddy) { review in
-                            BCCard {
-                                VStack(alignment: .leading, spacing: 6) {
-                                    HStack(spacing: BCSpacing.sm) {
-                                        BCRatingStars(value: Double(review.stars))
-                                        Spacer()
-                                        Text(dateFormatter.string(from: review.date))
+                    // Reviews — niet zichtbaar voor zorginstelling-buddies
+                    if !appState.isCordaanBuddy {
+                        BCSectionHeader(title: "Recente beoordelingen")
+                            .padding(.horizontal, BCSpacing.lg)
+                        VStack(spacing: BCSpacing.sm) {
+                            ForEach(MockData.reviewsForBuddy) { review in
+                                BCCard {
+                                    VStack(alignment: .leading, spacing: 6) {
+                                        HStack(spacing: BCSpacing.sm) {
+                                            BCRatingStars(value: Double(review.stars))
+                                            Spacer()
+                                            Text(dateFormatter.string(from: review.date))
+                                                .font(BCTypography.caption)
+                                                .foregroundStyle(BCColors.textTertiary)
+                                        }
+                                        Text(review.body)
+                                            .font(BCTypography.body)
+                                            .foregroundStyle(BCColors.textPrimary)
+                                        Text("— \(review.authorName)")
                                             .font(BCTypography.caption)
-                                            .foregroundStyle(BCColors.textTertiary)
+                                            .foregroundStyle(BCColors.textSecondary)
                                     }
-                                    Text(review.body)
-                                        .font(BCTypography.body)
-                                        .foregroundStyle(BCColors.textPrimary)
-                                    Text("— \(review.authorName)")
-                                        .font(BCTypography.caption)
-                                        .foregroundStyle(BCColors.textSecondary)
                                 }
                             }
                         }
+                        .padding(.horizontal, BCSpacing.lg)
                     }
-                    .padding(.horizontal, BCSpacing.lg)
 
                     Button {
                         appState.resetToRoleSelection()

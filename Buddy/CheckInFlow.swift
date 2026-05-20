@@ -67,19 +67,12 @@ struct CheckInFlowView: View {
                 }
             }
         }
-        .onAppear {
-            if appState.hasSelfieToday {
-                step = .qr
-                selfieConfirmed = true
-            }
-        }
     }
 
     // MARK: - Step handlers
 
     private func handleSelfieConfirmed(image: UIImage) {
         capturedSelfie = image
-        appState.recordSelfie()
         selfieConfirmed = true
         withAnimation { step = .qr }
     }
@@ -99,7 +92,7 @@ struct CheckInFlowView: View {
     // MARK: - Step indicator
 
     private var stepIndicator: some View {
-        let steps: [Step] = appState.hasSelfieToday ? [.qr, .gps] : [.selfie, .qr, .gps]
+        let steps: [Step] = [.selfie, .qr, .gps]
         let currentIndex = steps.firstIndex(of: step) ?? 0
 
         return HStack(spacing: 6) {
@@ -144,7 +137,7 @@ private struct SelfieStepView: View {
                     Text("Selfie voor check-in")
                         .font(BCTypography.title)
                         .foregroundStyle(BCColors.textPrimary)
-                    Text("Eenmalig per dag. Bevestigt dat jij het bent die uitcheckt.")
+                    Text("Eenmalig per bezoek. Bevestigt dat jij het bent die incheckt.")
                         .font(BCTypography.body)
                         .foregroundStyle(BCColors.textSecondary)
                         .multilineTextAlignment(.center)

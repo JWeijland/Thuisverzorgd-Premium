@@ -37,35 +37,38 @@ struct ElderlyProfileView: View {
                     }
                     .padding(.horizontal, BCSpacing.lg)
 
-                    BCCard {
-                        VStack(alignment: .leading, spacing: BCSpacing.sm) {
-                            Label("Tegoed", systemImage: "creditcard.fill")
-                                .font(BCTypography.headline)
-                                .foregroundStyle(BCColors.textPrimary)
-                            Text(String(format: "€ %.2f", appState.elderlyUser.creditEuros).replacingOccurrences(of: ".", with: ","))
-                                .font(BCTypography.title)
-                                .foregroundStyle(BCColors.primary)
-                            HStack(spacing: BCSpacing.sm) {
-                                Text("Bij elke nieuwe gebruiker via uw link krijgt u € 10 erbij.")
-                                    .font(BCTypography.caption)
-                                    .foregroundStyle(BCColors.textSecondary)
-                                Spacer()
-                                ShareLink(
-                                    item: referralURL,
-                                    subject: Text("Buddie Care — zorg dichtbij"),
-                                    message: Text("Download de Buddie Care app via mijn persoonlijke link en vraag eenvoudig hulp aan bij jou in de buurt.")
-                                ) {
-                                    Image(systemName: "link")
-                                        .font(.system(size: 15, weight: .semibold))
-                                        .foregroundStyle(BCColors.primary)
-                                        .frame(width: 36, height: 36)
-                                        .background(Circle().fill(BCColors.primary.opacity(0.10)))
+                    // Tegoed alleen voor particuliere cliënten — bij Cordaan-zorg niet relevant
+                    if !appState.isCordaanElderly {
+                        BCCard {
+                            VStack(alignment: .leading, spacing: BCSpacing.sm) {
+                                Label("Tegoed", systemImage: "creditcard.fill")
+                                    .font(BCTypography.headline)
+                                    .foregroundStyle(BCColors.textPrimary)
+                                Text(String(format: "€ %.2f", appState.elderlyUser.creditEuros).replacingOccurrences(of: ".", with: ","))
+                                    .font(BCTypography.title)
+                                    .foregroundStyle(BCColors.primary)
+                                HStack(spacing: BCSpacing.sm) {
+                                    Text("Bij elke nieuwe gebruiker via uw link krijgt u € 10 erbij.")
+                                        .font(BCTypography.caption)
+                                        .foregroundStyle(BCColors.textSecondary)
+                                    Spacer()
+                                    ShareLink(
+                                        item: referralURL,
+                                        subject: Text("Buddie Care — zorg dichtbij"),
+                                        message: Text("Download de Buddie Care app via mijn persoonlijke link en vraag eenvoudig hulp aan bij jou in de buurt.")
+                                    ) {
+                                        Image(systemName: "link")
+                                            .font(.system(size: 15, weight: .semibold))
+                                            .foregroundStyle(BCColors.primary)
+                                            .frame(width: 36, height: 36)
+                                            .background(Circle().fill(BCColors.primary.opacity(0.10)))
+                                    }
+                                    .buttonStyle(.plain)
                                 }
-                                .buttonStyle(.plain)
                             }
                         }
+                        .padding(.horizontal, BCSpacing.lg)
                     }
-                    .padding(.horizontal, BCSpacing.lg)
 
                     VStack(spacing: 0) {
                         HStack {
@@ -145,8 +148,9 @@ struct ElderlyProfileView: View {
                     }
                     .background(BCColors.surface)
 
-                    // Betalingstype (alleen voor Cordaan-cliënten)
-                    if appState.isCordaanElderly {
+                    // Betalingswijze alleen voor particuliere cliënten —
+                    // Cordaan-cliënten gaan altijd via natura/verzekering
+                    if !appState.isCordaanElderly {
                         PaymentTypeSection()
                             .padding(.horizontal, BCSpacing.lg)
                     }

@@ -1,6 +1,18 @@
 import SwiftUI
 import MapKit
 
+// MARK: - Maps routing
+
+/// Opent Apple Maps met een looproute naar het adres van de oudere.
+func openRouteInMaps(to task: ServiceTask) {
+    let placemark = MKPlacemark(coordinate: task.coordinate)
+    let item = MKMapItem(placemark: placemark)
+    item.name = "\(task.elderlyName) — \(task.elderlyAddress)"
+    item.openInMaps(launchOptions: [
+        MKLaunchOptionsDirectionsModeKey: MKLaunchOptionsDirectionsModeWalking
+    ])
+}
+
 // MARK: - Task detail sheet (tapped from map)
 
 struct TaskDetailSheet: View {
@@ -33,23 +45,27 @@ struct TaskDetailSheet: View {
                 }
 
                 HStack(spacing: BCSpacing.sm) {
-                    BCLevelBadge(level: task.requiredLevel)
+                    if !appState.isCordaanBuddy {
+                        BCLevelBadge(level: task.requiredLevel)
+                    }
                     BCStatusPill(label: task.timing.displayName, color: BCColors.primary)
                     Spacer()
                 }
 
                 BCCard {
                     HStack {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Vergoeding")
-                                .font(BCTypography.caption)
-                                .foregroundStyle(BCColors.textSecondary)
-                            Text(task.priceFormatted)
-                                .font(BCTypography.title2)
-                                .foregroundStyle(BCColors.textPrimary)
+                        if !appState.isCordaanBuddy {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Vergoeding")
+                                    .font(BCTypography.caption)
+                                    .foregroundStyle(BCColors.textSecondary)
+                                Text(task.priceFormatted)
+                                    .font(BCTypography.title2)
+                                    .foregroundStyle(BCColors.textPrimary)
+                            }
+                            Spacer()
                         }
-                        Spacer()
-                        VStack(alignment: .trailing, spacing: 2) {
+                        VStack(alignment: appState.isCordaanBuddy ? .leading : .trailing, spacing: 2) {
                             Text("Afstand")
                                 .font(BCTypography.caption)
                                 .foregroundStyle(BCColors.textSecondary)
@@ -57,6 +73,7 @@ struct TaskDetailSheet: View {
                                 .font(BCTypography.title3)
                                 .foregroundStyle(BCColors.textPrimary)
                         }
+                        if appState.isCordaanBuddy { Spacer() }
                     }
                 }
 
@@ -89,7 +106,9 @@ struct TaskDetailSheet: View {
                     }
                 }
 
-                BCSecondaryButton(title: "Naar route bekijken", icon: "map.fill") { }
+                BCSecondaryButton(title: "Naar route bekijken", icon: "map.fill") {
+                    openRouteInMaps(to: task)
+                }
             }
             .padding(BCSpacing.lg)
         }
@@ -174,7 +193,9 @@ struct TaskInProgressView: View {
 
                 miniMap
 
-                BCSecondaryButton(title: "Open route in kaart", icon: "map.fill") { }
+                BCSecondaryButton(title: "Open route in kaart", icon: "map.fill") {
+                    openRouteInMaps(to: task)
+                }
             }
             .padding(BCSpacing.lg)
         }
@@ -196,7 +217,7 @@ struct TaskInProgressView: View {
                         .foregroundStyle(BCColors.textSecondary)
                         .multilineTextAlignment(.center)
                     VStack(alignment: .leading, spacing: BCSpacing.xs) {
-                        CheckInStepLabel(icon: "faceid", text: "Selfie (1× per dag)")
+                        CheckInStepLabel(icon: "faceid", text: "Selfie (elk bezoek)")
                         CheckInStepLabel(icon: "qrcode.viewfinder", text: "QR-code scannen")
                         CheckInStepLabel(icon: "location.fill", text: "GPS-locatie bevestigen")
                     }
@@ -281,7 +302,9 @@ struct TaskInProgressView: View {
             Text("Goed gedaan!")
                 .font(BCTypography.title2)
                 .foregroundStyle(BCColors.textPrimary)
-            Text("De vergoeding wordt binnen 24 uur uitbetaald.")
+            Text(appState.isCordaanBuddy
+                 ? "Het bezoek is geregistreerd bij de zorginstelling."
+                 : "De vergoeding wordt binnen 24 uur uitbetaald.")
                 .font(BCTypography.body)
                 .foregroundStyle(BCColors.textSecondary)
                 .multilineTextAlignment(.center)

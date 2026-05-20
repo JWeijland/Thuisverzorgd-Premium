@@ -386,7 +386,8 @@ private struct PastVisitSheet: View {
                         .animation(.easeInOut(duration: 0.2), value: isFavorite)
                     }
 
-                    // Rating section
+                    // Rating section — niet voor zorginstelling-cliënten
+                    if !appState.isCordaanElderly {
                     if alreadyRated {
                         BCCard {
                             HStack {
@@ -472,6 +473,7 @@ private struct PastVisitSheet: View {
                         }
                         .animation(.easeInOut(duration: 0.2), value: selectedStars)
                     }
+                    } // einde rating section (niet-Cordaan)
 
                     Spacer(minLength: BCSpacing.xl)
                 }

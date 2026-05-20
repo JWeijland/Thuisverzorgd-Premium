@@ -15,6 +15,8 @@ struct BuddyMapView: View {
 
     var visibleTasks: [ServiceTask] {
         guard appState.isAvailableNow else { return [] }
+        // Zorginstelling-buddies zien alle niveaus; zelfstandige buddies filteren op niveau.
+        if appState.isCordaanBuddy { return appState.openTasks }
         return appState.openTasks.filter { $0.requiredLevel.rawValue <= maxLevelFilter }
     }
 
@@ -42,7 +44,10 @@ struct BuddyMapView: View {
 
             VStack(spacing: BCSpacing.sm) {
                 topBar
-                filterStrip
+                // Niveaufilter niet tonen aan zorginstelling-buddies (zij doen alle niveaus)
+                if !appState.isCordaanBuddy {
+                    filterStrip
+                }
                 if !appState.isAvailableNow {
                     offlineBanner
                 }

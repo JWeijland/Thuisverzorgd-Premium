@@ -21,7 +21,8 @@ struct ElderlyTabView: View {
                         }
                 }
 
-                if appState.isCordaanElderly {
+                // Betalingen alleen voor particuliere cliënten — Cordaan-zorg loopt via de instelling
+                if !appState.isCordaanElderly {
                     PaymentOverviewView()
                         .tag(2)
                         .tabItem {
