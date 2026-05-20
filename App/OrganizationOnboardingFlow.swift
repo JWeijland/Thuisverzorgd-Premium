@@ -40,6 +40,41 @@ struct OrganizationOnboardingFlow: View {
 
     // MARK: - Stap 1: Organisatievraag
 
+    /// Rol-afhankelijke teksten — een oudere "werkt" niet als ZZP'er.
+    private var orgQuestionTitle: String {
+        switch role {
+        case .elderly: return "Meldt u zich aan vanuit een zorginstelling?"
+        case .family:  return "Regelt u de zorg via een zorginstelling?"
+        default:       return "Werk je via een zorgorganisatie?"
+        }
+    }
+
+    private var orgQuestionSubtitle: String {
+        switch role {
+        case .elderly:
+            return "Sommige zorginstellingen zijn partner van Buddy Care. Cliënten van zo'n instelling kunnen direct instappen."
+        case .family:
+            return "Sommige zorginstellingen zijn partner van Buddy Care. Regelt u zorg voor een familielid via zo'n instelling, dan kunt u direct instappen."
+        default:
+            return "Sommige zorgorganisaties zijn partner van Buddy Care. Medewerkers kunnen dan direct instappen."
+        }
+    }
+
+    private var orgYesLabel: String {
+        switch role {
+        case .buddy: return "Ja, via een organisatie"
+        default:     return "Ja, via een zorginstelling"
+        }
+    }
+
+    private var orgNoLabel: String {
+        switch role {
+        case .elderly: return "Nee, ik meld me individueel aan"
+        case .family:  return "Nee, ik regel het zelf"
+        default:       return "Nee, zelfstandig (ZZP)"
+        }
+    }
+
     private var orgQuestionView: some View {
         VStack(spacing: BCSpacing.xl) {
             Spacer()
@@ -54,12 +89,12 @@ struct OrganizationOnboardingFlow: View {
                         .foregroundStyle(BCColors.primary)
                 }
 
-                Text("Werk je via een zorgorganisatie?")
+                Text(orgQuestionTitle)
                     .font(BCTypography.largeTitle)
                     .foregroundStyle(BCColors.textPrimary)
                     .multilineTextAlignment(.center)
 
-                Text("Sommige zorgorganisaties zijn partner van Buddy Care. Medewerkers en cliënten kunnen dan direct instappen.")
+                Text(orgQuestionSubtitle)
                     .font(BCTypography.body)
                     .foregroundStyle(BCColors.textSecondary)
                     .multilineTextAlignment(.center)
@@ -72,7 +107,7 @@ struct OrganizationOnboardingFlow: View {
                 Button {
                     step = .orgSelect
                 } label: {
-                    Text("Ja, via een organisatie")
+                    Text(orgYesLabel)
                         .font(BCTypography.bodyEmphasized)
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity, minHeight: 52)
@@ -83,7 +118,7 @@ struct OrganizationOnboardingFlow: View {
                 Button {
                     proceedWithoutOrg()
                 } label: {
-                    Text("Nee, zelfstandig (ZZP)")
+                    Text(orgNoLabel)
                         .font(BCTypography.bodyEmphasized)
                         .foregroundStyle(BCColors.primary)
                         .frame(maxWidth: .infinity, minHeight: 52)
@@ -295,6 +330,12 @@ struct OrganizationOnboardingFlow: View {
     // MARK: - Helpers
 
     private func proceedWithoutOrg() {
+        // Geen organisatie → wis eventuele eerdere lidmaatschap-staat,
+        // zodat isCordaanBuddy/isCordaanElderly gegarandeerd false zijn en
+        // de zelfstandige (ZZP) onboarding wordt getoond.
+        appState.currentUserMembership = nil
+        appState.selectedOrganization = nil
+        appState.pendingRole = nil
         appState.isOnboardingComplete = false
         appState.hasSeenSplash = true
         appState.currentRole = role

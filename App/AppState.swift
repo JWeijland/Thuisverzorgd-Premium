@@ -287,6 +287,12 @@ final class AppState {
         activeTaskForElderly = nil
         activeTaskForBuddy = nil
         showSOS = false
+        // Organisatie-staat opschonen zodat een volgende rolkeuze schoon start
+        // (anders blijft een eerdere Cordaan-flow de onboarding beïnvloeden).
+        currentUserMembership = nil
+        selectedOrganization = nil
+        pendingRole = nil
+        isDemoMode = false
     }
 
     // MARK: - Task actions
