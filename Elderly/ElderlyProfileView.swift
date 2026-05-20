@@ -223,6 +223,14 @@ struct EditProfileSheet: View {
     @Environment(\.largeTextEnabled) private var largeText
     private var et: BCElderlyType { BCElderlyType(large: largeText) }
 
+    /// Als true bewerkt het familielid de gegevens van de actieve gekoppelde
+    /// oudere; anders bewerkt de oudere zijn/haar eigen gegevens.
+    var editingFamilyElderly: Bool = false
+
+    private var elderly: ElderlyUser {
+        editingFamilyElderly ? appState.activeFamilyElderly : appState.elderlyUser
+    }
+
     @State private var phone: String = ""
     @State private var address: String = ""
     @State private var allergiesText: String = ""
@@ -260,10 +268,10 @@ struct EditProfileSheet: View {
             }
         }
         .onAppear {
-            phone = appState.elderlyUser.phoneNumber ?? ""
-            address = appState.elderlyUser.address
-            allergiesText = appState.elderlyUser.allergies.joined(separator: ", ")
-            medication = appState.elderlyUser.medicationNotes
+            phone = elderly.phoneNumber ?? ""
+            address = elderly.address
+            allergiesText = elderly.allergies.joined(separator: ", ")
+            medication = elderly.medicationNotes
         }
     }
 
@@ -296,10 +304,19 @@ struct EditProfileSheet: View {
             .split(separator: ",")
             .map { $0.trimmingCharacters(in: .whitespaces) }
             .filter { !$0.isEmpty }
-        appState.elderlyUser.phoneNumber = phone.isEmpty ? nil : phone
-        appState.elderlyUser.address = address
-        appState.elderlyUser.allergies = allergies
-        appState.elderlyUser.medicationNotes = medication
+        if editingFamilyElderly {
+            var updated = appState.activeFamilyElderly
+            updated.phoneNumber = phone.isEmpty ? nil : phone
+            updated.address = address
+            updated.allergies = allergies
+            updated.medicationNotes = medication
+            appState.activeFamilyElderly = updated
+        } else {
+            appState.elderlyUser.phoneNumber = phone.isEmpty ? nil : phone
+            appState.elderlyUser.address = address
+            appState.elderlyUser.allergies = allergies
+            appState.elderlyUser.medicationNotes = medication
+        }
         dismiss()
     }
 }

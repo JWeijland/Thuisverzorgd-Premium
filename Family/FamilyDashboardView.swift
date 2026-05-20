@@ -18,21 +18,28 @@ struct FamilyDashboardView: View {
 
             ScrollView {
                 VStack(spacing: BCSpacing.md) {
+                    // Switcher: kies welke oudere je beheert
+                    if appState.familyLinkedElderly.count > 1 {
+                        elderlySwitcher
+                            .padding(.horizontal, BCSpacing.lg)
+                            .padding(.top, BCSpacing.md)
+                    }
+
                     // Linked elderly card
                     BCCard {
                         VStack(alignment: .leading, spacing: BCSpacing.sm) {
                             HStack {
                                 ZStack {
                                     Circle().fill(BCColors.primary.opacity(0.12)).frame(width: 56, height: 56)
-                                    Text("R")
+                                    Text(String(appState.activeFamilyElderly.firstName.prefix(1)))
                                         .font(BCTypography.title3)
                                         .foregroundStyle(BCColors.primary)
                                 }
                                 VStack(alignment: .leading, spacing: 2) {
-                                    Text(appState.elderlyUser.fullName)
+                                    Text(appState.activeFamilyElderly.fullName)
                                         .font(BCTypography.headline)
                                         .foregroundStyle(BCColors.textPrimary)
-                                    Text("\(appState.elderlyUser.age) jaar — \(appState.elderlyUser.address)")
+                                    Text("\(appState.activeFamilyElderly.age) jaar — \(appState.activeFamilyElderly.address)")
                                         .font(BCTypography.caption)
                                         .foregroundStyle(BCColors.textSecondary)
                                 }
@@ -71,7 +78,7 @@ struct FamilyDashboardView: View {
                                         Text("Bezoek wacht op beoordeling")
                                             .font(BCTypography.bodyEmphasized)
                                             .foregroundStyle(BCColors.textPrimary)
-                                        Text("\(appState.elderlyUser.firstName) heeft nog niet beoordeeld — wil jij het doen?")
+                                        Text("\(appState.activeFamilyElderly.firstName) heeft nog niet beoordeeld — wil jij het doen?")
                                             .font(BCTypography.caption)
                                             .foregroundStyle(BCColors.textSecondary)
                                     }
@@ -103,7 +110,7 @@ struct FamilyDashboardView: View {
 
                     VStack(spacing: BCSpacing.sm) {
                         BCBigTile(
-                            title: "Hulp aanvragen voor \(appState.elderlyUser.firstName)",
+                            title: "Hulp aanvragen voor \(appState.activeFamilyElderly.firstName)",
                             subtitle: "Plan een buddy in",
                             icon: "hand.raised.fill",
                             color: BCColors.primary
@@ -136,9 +143,9 @@ struct FamilyDashboardView: View {
                             }
                         }
                         BCBigTile(
-                            title: "Koppel met oudere",
-                            subtitle: "Verbind via 6-cijferige code",
-                            icon: "link.badge.plus",
+                            title: "Oudere koppelen",
+                            subtitle: "Voeg moeder, vader of een andere oudere toe",
+                            icon: "person.badge.plus",
                             color: BCColors.level1
                         ) {
                             showLinking = true
@@ -152,16 +159,57 @@ struct FamilyDashboardView: View {
         }
         .background(BCColors.background.ignoresSafeArea())
         .sheet(isPresented: $showRequestFlow) {
-            RequestHelpFlow()
+            RequestHelpFlow(onBehalfOf: appState.activeFamilyElderly)
         }
         .sheet(isPresented: $showWMOGuide) {
             WMOGuideView()
         }
         .sheet(isPresented: $showEditProfile) {
-            EditProfileSheet()
+            EditProfileSheet(editingFamilyElderly: true)
         }
         .sheet(isPresented: $showRecentVisits) {
             FamilyVisitsSheet()
+        }
+    }
+
+    // MARK: - Elderly switcher
+
+    private var elderlySwitcher: some View {
+        Menu {
+            ForEach(Array(appState.familyLinkedElderly.enumerated()), id: \.element.id) { index, elderly in
+                Button {
+                    appState.activeFamilyElderlyIndex = index
+                } label: {
+                    if index == appState.activeFamilyElderlyIndex {
+                        Label(elderly.fullName, systemImage: "checkmark")
+                    } else {
+                        Text(elderly.fullName)
+                    }
+                }
+            }
+        } label: {
+            HStack(spacing: BCSpacing.sm) {
+                Image(systemName: "person.2.fill")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(BCColors.primary)
+                Text("U beheert: \(appState.activeFamilyElderly.firstName)")
+                    .font(BCTypography.subheadline)
+                    .foregroundStyle(BCColors.textPrimary)
+                Spacer()
+                Image(systemName: "chevron.up.chevron.down")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(BCColors.textSecondary)
+            }
+            .padding(.horizontal, BCSpacing.md)
+            .padding(.vertical, BCSpacing.sm)
+            .background(
+                RoundedRectangle(cornerRadius: BCRadius.md, style: .continuous)
+                    .fill(BCColors.surface)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: BCRadius.md, style: .continuous)
+                            .stroke(BCColors.border, lineWidth: 1)
+                    )
+            )
         }
     }
 }

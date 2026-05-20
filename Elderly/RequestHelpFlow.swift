@@ -4,6 +4,12 @@ struct RequestHelpFlow: View {
     @Environment(AppState.self) private var appState
     @Environment(\.dismiss) private var dismiss
 
+    /// Indien gezet vraagt een familielid hulp aan namens deze oudere.
+    /// Indien nil vraagt de oudere zelf hulp aan.
+    var onBehalfOf: ElderlyUser? = nil
+
+    private var targetElderly: ElderlyUser { onBehalfOf ?? appState.elderlyUser }
+
     @State private var step: Int = 0
     @State private var descriptionText: String = ""
     @State private var selectedCategory: TaskCategory? = nil
@@ -421,7 +427,7 @@ struct RequestHelpFlow: View {
                             SummaryRow(label: "Herhaling", value: sched.displayName, icon: "repeat")
                         }
                         Divider()
-                        SummaryRow(label: "Adres", value: appState.elderlyUser.address, icon: "house.fill")
+                        SummaryRow(label: "Adres", value: targetElderly.address, icon: "house.fill")
                         if !note.isEmpty {
                             Divider()
                             SummaryRow(label: "Opmerking", value: note, icon: "text.bubble.fill")
@@ -516,8 +522,14 @@ struct RequestHelpFlow: View {
             ? (otherDescription + (note.isEmpty ? "" : "\n\(note)"))
             : note
         let levelOverride = cat == .other ? recognizeLevel(from: otherDescription) : nil
-        appState.requestHelp(category: cat, timing: timing, note: finalNote,
-                             recurringSchedule: recurringSchedule, levelOverride: levelOverride)
+        if let elderly = onBehalfOf {
+            appState.requestHelpOnBehalf(for: elderly, category: cat, timing: timing,
+                                         note: finalNote, recurringSchedule: recurringSchedule,
+                                         levelOverride: levelOverride)
+        } else {
+            appState.requestHelp(category: cat, timing: timing, note: finalNote,
+                                 recurringSchedule: recurringSchedule, levelOverride: levelOverride)
+        }
         dismiss()
         // Simulate buddy accepting after a brief delay
         if let task = appState.activeTaskForElderly {

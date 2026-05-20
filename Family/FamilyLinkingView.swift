@@ -8,9 +8,8 @@ struct FamilyLinkingView: View {
     @State private var isVerifying: Bool = false
     @State private var showSuccess: Bool = false
     @State private var showError: Bool = false
+    @State private var linkedName: String = ""
     @FocusState private var fieldFocused: Bool
-
-    private let validCode = "123456"
 
     var body: some View {
         NavigationStack {
@@ -54,7 +53,7 @@ struct FamilyLinkingView: View {
 
                             BCSecondaryButton(title: "Scan QR-code op welkomstkaart", icon: "qrcode.viewfinder") {
                                 // Mock: pretend QR was scanned
-                                code = validCode
+                                code = "123456"
                             }
                             .padding(.horizontal, BCSpacing.lg)
 
@@ -69,9 +68,10 @@ struct FamilyLinkingView: View {
                             .disabled(code.count < 6 || isVerifying)
                             .padding(.horizontal, BCSpacing.lg)
 
-                            Text("Prototype: gebruik code 123456")
+                            Text("Prototype: 123456 (moeder Riet) of 654321 (vader Henk)")
                                 .font(BCTypography.caption)
                                 .foregroundStyle(BCColors.textTertiary)
+                                .multilineTextAlignment(.center)
                         }
                         .padding(.bottom, BCSpacing.xl)
                     }
@@ -99,7 +99,7 @@ struct FamilyLinkingView: View {
                 Text("Gekoppeld!")
                     .font(BCTypography.title2)
                     .foregroundStyle(BCColors.textPrimary)
-                Text("U bent nu gekoppeld aan \(appState.elderlyUser.firstName).")
+                Text("U bent nu gekoppeld aan \(linkedName).")
                     .font(BCTypography.body)
                     .foregroundStyle(BCColors.textSecondary)
                 Text("U ontvangt meldingen wanneer er een buddy wordt geboekt.")
@@ -124,7 +124,8 @@ struct FamilyLinkingView: View {
         showError = false
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
             isVerifying = false
-            if code == validCode {
+            if let name = appState.linkElderly(code: code) {
+                linkedName = name
                 showSuccess = true
             } else {
                 showError = true

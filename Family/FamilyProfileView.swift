@@ -5,6 +5,7 @@ struct FamilyProfileView: View {
     @State private var notifyOnVisit = true
     @State private var notifyOnSOS = true
     @State private var notifyOnReview = false
+    @State private var showLinking = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -39,18 +40,32 @@ struct FamilyProfileView: View {
                             Label("Gekoppelde personen", systemImage: "link")
                                 .font(BCTypography.headline)
                                 .foregroundStyle(BCColors.textPrimary)
-                            HStack(spacing: BCSpacing.sm) {
-                                ZStack {
-                                    Circle().fill(BCColors.primary.opacity(0.10)).frame(width: 40, height: 40)
-                                    Text("R").font(BCTypography.bodyEmphasized).foregroundStyle(BCColors.primary)
+                            ForEach(Array(appState.familyLinkedElderly.enumerated()), id: \.element.id) { index, elderly in
+                                HStack(spacing: BCSpacing.sm) {
+                                    ZStack {
+                                        Circle().fill(BCColors.primary.opacity(0.10)).frame(width: 40, height: 40)
+                                        Text(String(elderly.firstName.prefix(1)))
+                                            .font(BCTypography.bodyEmphasized)
+                                            .foregroundStyle(BCColors.primary)
+                                    }
+                                    Text(elderly.fullName)
+                                        .font(BCTypography.body)
+                                        .foregroundStyle(BCColors.textPrimary)
+                                    Spacer()
+                                    if index == appState.activeFamilyElderlyIndex {
+                                        BCStatusPill(label: "Actief", color: BCColors.success)
+                                    } else {
+                                        Button("Beheer") {
+                                            appState.activeFamilyElderlyIndex = index
+                                        }
+                                        .font(BCTypography.captionEmphasized)
+                                        .foregroundStyle(BCColors.primary)
+                                    }
                                 }
-                                Text(appState.elderlyUser.fullName)
-                                    .font(BCTypography.body)
-                                    .foregroundStyle(BCColors.textPrimary)
-                                Spacer()
-                                BCStatusPill(label: "Actief", color: BCColors.success)
                             }
-                            BCSecondaryButton(title: "Nog iemand koppelen", icon: "person.fill.badge.plus") { }
+                            BCSecondaryButton(title: "Nog iemand koppelen", icon: "person.fill.badge.plus") {
+                                showLinking = true
+                            }
                         }
                     }
                     .padding(.horizontal, BCSpacing.lg)
@@ -98,6 +113,9 @@ struct FamilyProfileView: View {
             }
         }
         .background(BCColors.background.ignoresSafeArea())
+        .sheet(isPresented: $showLinking) {
+            FamilyLinkingView()
+        }
     }
 
     private var initials: String {

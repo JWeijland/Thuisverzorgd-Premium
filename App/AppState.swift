@@ -27,6 +27,43 @@ final class AppState {
     var familyUser: FamilyUser = MockData.familySandra
     var allElderlyUsers: [ElderlyUser] = [MockData.omaRiet, MockData.opaHenk]
 
+    // MARK: - Familie — gekoppelde ouderen
+    // Eén familielid kan meerdere ouderen beheren (bijv. moeder én vader).
+    // Meerdere familieleden kunnen dezelfde oudere koppelen via dezelfde code.
+    var familyLinkedElderly: [ElderlyUser] = [MockData.omaRiet]
+    var activeFamilyElderlyIndex: Int = 0
+
+    /// De oudere die het familielid nu beheert.
+    var activeFamilyElderly: ElderlyUser {
+        get {
+            guard familyLinkedElderly.indices.contains(activeFamilyElderlyIndex) else {
+                return familyLinkedElderly.first ?? MockData.omaRiet
+            }
+            return familyLinkedElderly[activeFamilyElderlyIndex]
+        }
+        set {
+            guard familyLinkedElderly.indices.contains(activeFamilyElderlyIndex) else { return }
+            familyLinkedElderly[activeFamilyElderlyIndex] = newValue
+        }
+    }
+
+    /// Koppelt een oudere via een 6-cijferige code. Geeft de voornaam terug
+    /// bij succes, of nil als de code onbekend is.
+    func linkElderly(code: String) -> String? {
+        let known: [String: ElderlyUser] = [
+            "123456": MockData.omaRiet,
+            "654321": MockData.opaHenk
+        ]
+        guard let elderly = known[code] else { return nil }
+        if let existing = familyLinkedElderly.firstIndex(where: { $0.id == elderly.id }) {
+            activeFamilyElderlyIndex = existing
+        } else {
+            familyLinkedElderly.append(elderly)
+            activeFamilyElderlyIndex = familyLinkedElderly.count - 1
+        }
+        return elderly.firstName
+    }
+
     // Tasks
     var openTasks: [ServiceTask] = MockData.openTasks
     var activeTaskForElderly: ServiceTask? = nil
@@ -308,7 +345,13 @@ final class AppState {
         )
         task.recurringSchedule = recurringSchedule
         openTasks.insert(task, at: 0)
+        activeTaskForElderly = task
         showToast(text: "Aanvraag ingezet voor \(elderly.firstName)", icon: "phone.fill")
+
+        // Matching: vind buddies en stuur hen een notificatie
+        let matches = matchingService.rankBuddies(for: task, from: allBuddies, cordaanBuddyIDs: cordaanBuddyIDs)
+        lastMatches = matches
+        matchingService.notifyMatchedBuddies(matches: matches, task: task)
     }
 
     func simulateBuddyAccepts(taskID: UUID) {
