@@ -4,6 +4,7 @@ enum BuddieNotification {
     case newTaskInArea(elderlyName: String, distanceKm: Double, level: Int, priceEuros: Double)
     case priorityFavorite(elderlyName: String)
     case taskAccepted(buddyName: String, etaMinutes: Int)
+    case taskReassigned(elderlyName: String)
     case buddyArrived(buddyName: String)
     case taskCompleted
     case sosTriggered(elderlyName: String)
@@ -22,6 +23,8 @@ enum BuddieNotification {
             return "\(name) vraagt hulp! Jij hebt 5 min voorrang."
         case .taskAccepted(let buddy, let eta):
             return "\(buddy) komt over \(eta) min."
+        case .taskReassigned(let name):
+            return "De buddy van \(name) is verhinderd — we zoeken iemand anders."
         case .buddyArrived(let buddy):
             return "\(buddy) staat voor de deur."
         case .taskCompleted:
@@ -48,6 +51,7 @@ enum BuddieNotification {
         case .newTaskInArea: return "mappin.circle.fill"
         case .priorityFavorite: return "heart.fill"
         case .taskAccepted: return "person.fill.checkmark"
+        case .taskReassigned: return "arrow.triangle.2.circlepath"
         case .buddyArrived: return "door.sliding.open"
         case .taskCompleted: return "checkmark.seal.fill"
         case .sosTriggered: return "exclamationmark.triangle.fill"

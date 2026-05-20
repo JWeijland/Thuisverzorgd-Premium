@@ -347,6 +347,51 @@ final class AppState {
         activeTaskForBuddy = updated
     }
 
+    /// De toegewezen buddy annuleert vóór de check-in. De taak gaat terug
+    /// naar 'open', wordt opnieuw gematcht en de andere buddies krijgen
+    /// opnieuw een melding. De oudere wordt geïnformeerd.
+    func buddyCancelsAcceptedTask() {
+        guard var task = activeTaskForBuddy else { return }
+        let cancellingBuddyName = task.assignedBuddyName ?? buddyUser.firstName
+
+        // Taak terugzetten naar open
+        task.status = .open
+        task.assignedBuddyName = nil
+        task.assignedBuddyRating = nil
+        task.assignedBuddyEtaMinutes = nil
+        task.checkInRecord = nil
+
+        if let idx = openTasks.firstIndex(where: { $0.id == task.id }) {
+            openTasks[idx] = task
+        } else {
+            openTasks.insert(task, at: 0)
+        }
+        activeTaskForBuddy = nil
+        if activeTaskForElderly?.id == task.id {
+            activeTaskForElderly = task
+        }
+
+        // Opnieuw matchen, exclusief de buddy die net annuleerde
+        let remaining = allBuddies.filter { $0.firstName != cancellingBuddyName }
+        let matches = matchingService.rankBuddies(for: task, from: remaining, cordaanBuddyIDs: cordaanBuddyIDs)
+        lastMatches = matches
+        matchingService.notifyMatchedBuddies(matches: matches, task: task)
+
+        // Oudere informeren
+        MockPushService().send(notification: .taskReassigned(elderlyName: task.elderlyName))
+        MockSMSService().sendSMS(
+            to: elderlyUser.phoneNumber ?? "",
+            message: BuddieNotification.taskReassigned(elderlyName: task.elderlyName).title
+        )
+        showToast(text: "Taak geannuleerd — we zoeken een andere buddy", icon: "arrow.triangle.2.circlepath")
+
+        // Simuleer dat een andere buddy de taak weer oppakt
+        let taskID = task.id
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) { [weak self] in
+            self?.simulateBuddyAccepts(taskID: taskID)
+        }
+    }
+
     func buddyArrives(checkIn: CheckInRecord) {
         guard var task = activeTaskForBuddy else { return }
         task.status = .arrived

@@ -133,6 +133,7 @@ struct TaskInProgressView: View {
     ]
     @State private var note: String = ""
     @State private var showCheckIn = false
+    @State private var showCancelConfirm = false
 
     enum Stage { case onTheWay, atDoor, inProgress, completing, done }
 
@@ -169,6 +170,19 @@ struct TaskInProgressView: View {
                     appState.buddyArrives(checkIn: checkInRecord)
                     stage = .inProgress
                 }
+            }
+            .confirmationDialog(
+                "Taak annuleren?",
+                isPresented: $showCancelConfirm,
+                titleVisibility: .visible
+            ) {
+                Button("Ja, annuleer deze taak", role: .destructive) {
+                    appState.buddyCancelsAcceptedTask()
+                    dismiss()
+                }
+                Button("Nee, ga door", role: .cancel) { }
+            } message: {
+                Text("De aanvraag wordt direct opnieuw aangeboden aan andere buddies in de buurt. \(task.elderlyName) krijgt hiervan bericht.")
             }
         }
     }
@@ -355,13 +369,19 @@ struct TaskInProgressView: View {
             Divider()
             switch stage {
             case .onTheWay:
-                BCPrimaryButton(title: "Ik ben aangekomen", icon: "qrcode") {
-                    stage = .atDoor
+                VStack(spacing: BCSpacing.sm) {
+                    BCPrimaryButton(title: "Ik ben aangekomen", icon: "qrcode") {
+                        stage = .atDoor
+                    }
+                    cancelTaskButton
                 }
                 .padding(BCSpacing.lg)
             case .atDoor:
-                BCPrimaryButton(title: "Start check-in", icon: "qrcode.viewfinder") {
-                    showCheckIn = true
+                VStack(spacing: BCSpacing.sm) {
+                    BCPrimaryButton(title: "Start check-in", icon: "qrcode.viewfinder") {
+                        showCheckIn = true
+                    }
+                    cancelTaskButton
                 }
                 .padding(BCSpacing.lg)
             case .inProgress:
@@ -391,6 +411,21 @@ struct TaskInProgressView: View {
             }
         }
         .background(BCColors.background)
+    }
+
+    private var cancelTaskButton: some View {
+        Button(role: .destructive) {
+            showCancelConfirm = true
+        } label: {
+            HStack(spacing: BCSpacing.xs) {
+                Image(systemName: "xmark.circle")
+                Text("Taak annuleren")
+            }
+            .font(BCTypography.bodyEmphasized)
+            .foregroundStyle(BCColors.danger)
+            .frame(maxWidth: .infinity, minHeight: 44)
+        }
+        .buttonStyle(.plain)
     }
 }
 
