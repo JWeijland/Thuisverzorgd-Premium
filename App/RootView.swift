@@ -6,19 +6,18 @@ struct RootView: View {
     var body: some View {
         ZStack {
             Group {
-                if appState.isInitializing {
-                    initLoadingScreen
-                } else if appState.showLogin {
-                    LoginView()
-                } else if !appState.hasSeenSplash {
+                if !appState.hasSeenSplash {
+                    // Geanimeerde openingspagina — altijd als eerste bij het opstarten.
+                    // Het herstellen van een sessie loopt ondertussen op de achtergrond.
                     SplashView {
-                        // Na de splash direct naar het rolkeuzescherm
-                        // (currentRole blijft nil → RoleSelectionView).
                         withAnimation(.easeInOut(duration: 0.35)) {
-                            appState.showLogin = false
                             appState.hasSeenSplash = true
                         }
                     }
+                } else if appState.isInitializing {
+                    initLoadingScreen
+                } else if appState.showLogin {
+                    LoginView()
                 } else {
                     switch appState.currentRole {
                     case .none:

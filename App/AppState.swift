@@ -264,7 +264,8 @@ final class AppState {
             }
         }
         showLogin = false
-        hasSeenSplash = true
+        // hasSeenSplash niet hier zetten — de SplashView beheert die vlag,
+        // anders verdwijnt de openingsanimatie meteen bij sessieherstel.
         isOnboardingComplete = true
     }
 
