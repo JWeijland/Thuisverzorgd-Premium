@@ -12,15 +12,10 @@ struct RootView: View {
                     LoginView()
                 } else if !appState.hasSeenSplash {
                     SplashView {
+                        // Na de splash direct naar het rolkeuzescherm
+                        // (currentRole blijft nil → RoleSelectionView).
                         withAnimation(.easeInOut(duration: 0.35)) {
-                            appState.showLogin = true
-                            appState.hasSeenSplash = true
-                        }
-                    } onDemoMap: {
-                        appState.isDemoMode = true
-                        appState.isOnboardingComplete = true
-                        appState.currentRole = .buddy
-                        withAnimation(.easeInOut(duration: 0.35)) {
+                            appState.showLogin = false
                             appState.hasSeenSplash = true
                         }
                     }

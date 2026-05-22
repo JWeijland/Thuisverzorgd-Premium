@@ -93,7 +93,7 @@ struct CordaanBuddyOnboardingFlow: View {
                     .foregroundStyle(BCColors.textPrimary)
                     .multilineTextAlignment(.center)
 
-                Text("Via Thuisverzorgt kun je als Cordaan-medewerker direct ingepland worden bij cliënten. Je registratie is een stuk korter dan voor zelfstandige buddies.")
+                Text("Via Thuisverzorgd kun je als Cordaan-medewerker direct ingepland worden bij cliënten. Je registratie is een stuk korter dan voor zelfstandige buddies.")
                     .font(BCTypography.body)
                     .foregroundStyle(BCColors.textSecondary)
                     .multilineTextAlignment(.center)
@@ -223,7 +223,7 @@ struct CordaanBuddyOnboardingFlow: View {
                     Image(systemName: agreedToRules ? "checkmark.square.fill" : "square")
                         .font(.system(size: 22, weight: .semibold))
                         .foregroundStyle(agreedToRules ? BCColors.primary : BCColors.textTertiary)
-                    Text("Ik ga akkoord met de huisregels van Thuisverzorgt")
+                    Text("Ik ga akkoord met de huisregels van Thuisverzorgd")
                         .font(BCTypography.body)
                         .foregroundStyle(BCColors.textPrimary)
                     Spacer()
@@ -301,7 +301,7 @@ struct CordaanBuddyOnboardingFlow: View {
 
     private func finishOnboarding() {
         appState.isOnboardingComplete = true
-        appState.showToast(text: "Welkom bij Thuisverzorgt, \(firstName)!", icon: "building.2.fill")
+        appState.showToast(text: "Welkom bij Thuisverzorgd, \(firstName)!", icon: "building.2.fill")
     }
 }
 

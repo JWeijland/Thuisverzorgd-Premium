@@ -54,8 +54,8 @@ struct ElderlyProfileView: View {
                                     Spacer()
                                     ShareLink(
                                         item: referralURL,
-                                        subject: Text("Thuisverzorgt — zorg dichtbij"),
-                                        message: Text("Download de Thuisverzorgt app via mijn persoonlijke link en vraag eenvoudig hulp aan bij jou in de buurt.")
+                                        subject: Text("Thuisverzorgd — zorg dichtbij"),
+                                        message: Text("Download de Thuisverzorgd app via mijn persoonlijke link en vraag eenvoudig hulp aan bij jou in de buurt.")
                                     ) {
                                         Image(systemName: "link")
                                             .font(.system(size: 15, weight: .semibold))
@@ -190,7 +190,7 @@ struct ElderlyProfileView: View {
             .lowercased()
             .filter { $0.isLetter }
             .prefix(10)
-        return URL(string: "https://thuisverzorgt.nl/uitnodigen/\(slug)")!
+        return URL(string: "https://thuisverzorgd.nl/uitnodigen/\(slug)")!
     }
 
     private var initials: String {

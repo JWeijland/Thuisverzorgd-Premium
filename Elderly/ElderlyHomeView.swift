@@ -15,7 +15,7 @@ struct ElderlyHomeView: View {
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             VStack(spacing: 0) {
-                BCNavBar(title: "Hallo \(appState.elderlyUser.firstName)", subtitle: "Thuisverzorgt")
+                BCNavBar(title: "Hallo \(appState.elderlyUser.firstName)", subtitle: "Thuisverzorgd")
 
                 ScrollView {
                     VStack(spacing: BCSpacing.lg) {

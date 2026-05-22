@@ -48,7 +48,7 @@ struct RoleSelectionView: View {
                 Image(systemName: "heart.text.square.fill")
                     .font(.system(size: 28, weight: .semibold))
                     .foregroundStyle(BCColors.accent)
-                Text("Thuisverzorgt")
+                Text("Thuisverzorgd")
                     .font(BCTypography.titleEmphasized)
                     .foregroundStyle(.white)
                 Spacer()
@@ -61,11 +61,11 @@ struct RoleSelectionView: View {
 
     private var introBlock: some View {
         VStack(spacing: BCSpacing.sm) {
-            Text("Welkom bij Thuisverzorgt")
+            Text("Welkom bij Thuisverzorgd")
                 .font(BCTypography.largeTitle)
                 .foregroundStyle(BCColors.textPrimary)
                 .multilineTextAlignment(.center)
-            Text("Hulp om de hoek, met een hart erbij. Kies hieronder hoe u Thuisverzorgt wilt gebruiken.")
+            Text("Hulp om de hoek, met een hart erbij. Kies hieronder hoe u Thuisverzorgd wilt gebruiken.")
                 .font(BCTypography.body)
                 .foregroundStyle(BCColors.textSecondary)
                 .multilineTextAlignment(.center)

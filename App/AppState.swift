@@ -633,7 +633,7 @@ enum UserRole: String, CaseIterable, Identifiable {
 
     var displayName: String {
         switch self {
-        case .elderly: return "Ik ben oudere"
+        case .elderly: return "Ik zoek hulp"
         case .buddy:   return "Ik ben buddy"
         case .family:  return "Ik ben familielid"
         case .admin:   return "Admin"

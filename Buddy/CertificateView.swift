@@ -47,7 +47,7 @@ struct CertificateView: View {
                 Image(systemName: "heart.text.square.fill")
                     .font(.system(size: 36, weight: .semibold))
                     .foregroundStyle(BCColors.accent)
-                Text("Thuisverzorgt")
+                Text("Thuisverzorgd")
                     .font(.system(size: 24, weight: .heavy, design: .rounded))
                     .foregroundStyle(.white)
                 Text("Opleidingsinstituut")
@@ -124,7 +124,7 @@ struct CertificateView: View {
                 Image(systemName: "checkmark.seal.fill")
                     .font(.system(size: 12))
                     .foregroundStyle(BCColors.success)
-                Text("Erkend door Thuisverzorgt | Geldig voor \(Config.certificateValidityYears) jaar")
+                Text("Erkend door Thuisverzorgd | Geldig voor \(Config.certificateValidityYears) jaar")
                     .font(BCTypography.caption)
                     .foregroundStyle(BCColors.textTertiary)
             }

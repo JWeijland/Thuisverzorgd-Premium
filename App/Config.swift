@@ -20,7 +20,7 @@ enum Config {
     static let priceLevel3CentsPerHour: Int = 3200   // buddy net €25,60
     static let travelCostCentsPerKmAfter5: Int = 23
 
-    // WMO contracted rates (cents per hour, municipality pays Thuisverzorgt)
+    // WMO contracted rates (cents per hour, municipality pays Thuisverzorgd)
     static let wmoLevel0CentsPerHour: Int = 2200     // buddy net €17,60
     static let wmoLevel1CentsPerHour: Int = 2700     // buddy net €21,60
     static let wmoLevel2CentsPerHour: Int = 3300     // buddy net €26,40
@@ -28,7 +28,7 @@ enum Config {
 
     // Mock contact (replace before TestFlight)
     static let supportPhoneNumber: String = "085-XXX XXXX"
-    static let supportEmail: String = "hulp@thuisverzorgt.nl"
+    static let supportEmail: String = "hulp@thuisverzorgd.nl"
 
     // Feature flags (all false for MVP)
     static let enableRealPayments: Bool = false

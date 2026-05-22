@@ -109,7 +109,7 @@ private struct WalletHeroCard: View {
 
             VStack(alignment: .leading, spacing: BCSpacing.md) {
                 HStack {
-                    Label("Thuisverzorgt Wallet", systemImage: "wallet.pass.fill")
+                    Label("Thuisverzorgd Wallet", systemImage: "wallet.pass.fill")
                         .font(BCTypography.captionEmphasized)
                         .foregroundStyle(.white.opacity(0.8))
                     Spacer()

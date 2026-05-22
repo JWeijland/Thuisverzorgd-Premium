@@ -90,7 +90,7 @@ final class SpeechService {
                     if micGranted {
                         completion(true, "")
                     } else {
-                        completion(false, "Thuisverzorgt heeft geen toegang tot de microfoon. Ga naar Instellingen om dit aan te zetten.")
+                        completion(false, "Thuisverzorgd heeft geen toegang tot de microfoon. Ga naar Instellingen om dit aan te zetten.")
                     }
                 }
             case .denied:

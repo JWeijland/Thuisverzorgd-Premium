@@ -78,7 +78,7 @@ struct BuddyMapView: View {
             HStack(spacing: BCSpacing.xs) {
                 Image(systemName: "heart.text.square.fill")
                     .foregroundStyle(BCColors.accent)
-                Text("Thuisverzorgt")
+                Text("Thuisverzorgd")
                     .font(BCTypography.bodyEmphasized)
                     .foregroundStyle(BCColors.textPrimary)
             }

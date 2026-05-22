@@ -331,7 +331,7 @@ private struct VOGInfoSheet: View {
                         .font(BCTypography.body)
                         .foregroundStyle(BCColors.textSecondary)
 
-                    Text("Elke buddy bij Thuisverzorgt heeft een geldige VOG. Deze wordt elke \(Config.vogRenewalYears) jaar vernieuwd en gecontroleerd door Thuisverzorgt.")
+                    Text("Elke buddy bij Thuisverzorgd heeft een geldige VOG. Deze wordt elke \(Config.vogRenewalYears) jaar vernieuwd en gecontroleerd door Thuisverzorgd.")
                         .font(BCTypography.body)
                         .foregroundStyle(BCColors.textSecondary)
                 }

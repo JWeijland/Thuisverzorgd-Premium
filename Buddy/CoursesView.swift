@@ -426,7 +426,7 @@ struct CourseDetailView: View {
                 Text("Praktijktoets vereist")
                     .font(BCTypography.bodyEmphasized)
                     .foregroundStyle(BCColors.level2)
-                Text("Na het afronden van de e-learning moet je een praktijktoets afleggen bij een erkende Thuisverzorgt-locatie. Locaties worden bekendgemaakt zodra Niveau 2 beschikbaar komt. Na de toets ontvang je het officiële niveau-certificaat.")
+                Text("Na het afronden van de e-learning moet je een praktijktoets afleggen bij een erkende Thuisverzorgd-locatie. Locaties worden bekendgemaakt zodra Niveau 2 beschikbaar komt. Na de toets ontvang je het officiële niveau-certificaat.")
                     .font(BCTypography.caption)
                     .foregroundStyle(BCColors.textSecondary)
             }
