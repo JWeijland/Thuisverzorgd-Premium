@@ -244,7 +244,7 @@ struct AdminBillingView: View {
 
     private func exportCSV() {
         let csv = appState.csvExport(month: selectedMonth)
-        let filename = selectedMonth.map { "buddy-care-\($0).csv" } ?? "buddy-care-alle.csv"
+        let filename = selectedMonth.map { "thuisverzorgt-\($0).csv" } ?? "thuisverzorgt-alle.csv"
         let url = FileManager.default.temporaryDirectory.appendingPathComponent(filename)
         try? csv.write(to: url, atomically: true, encoding: .utf8)
         shareItems = [url]
@@ -261,7 +261,7 @@ struct AdminBillingView: View {
         let month = selectedMonth ?? "alle"
         let records = filteredRecords
         var lines: [String] = [
-            "BUDDY CARE — FACTUUROVERZICHT",
+            "THUISVERZORGT — FACTUUROVERZICHT",
             "Periode: \(selectedMonth.map { monthLabel($0) } ?? "Alle maanden")",
             "Gegenereerd: \(dateNow())",
             "",
@@ -273,7 +273,7 @@ struct AdminBillingView: View {
         lines.append("TOTALEN")
         lines.append("Omzet (klant/gemeente): \(euros(totalClient))")
         lines.append("Uitbetaling aan buddies: \(euros(totalBuddy))")
-        lines.append("Nettowinst Buddy Care: \(euros(totalProfit))")
+        lines.append("Nettowinst Thuisverzorgt: \(euros(totalProfit))")
         lines.append("")
         lines.append("Particulier: \(euros(records.filter { $0.paymentType == .particulier }.reduce(0) { $0 + $1.clientChargeCents }))")
         lines.append("Zorg in Natura: \(euros(records.filter { $0.paymentType == .zinNatura }.reduce(0) { $0 + $1.clientChargeCents }))")

@@ -247,7 +247,7 @@ private struct DiplomaCard: View {
                             Text(type)
                                 .font(BCTypography.bodyEmphasized)
                                 .foregroundStyle(BCColors.textPrimary)
-                            Text("Wordt geverifieerd door Buddy Care…")
+                            Text("Wordt geverifieerd door Thuisverzorgt…")
                                 .font(BCTypography.caption)
                                 .foregroundStyle(BCColors.textSecondary)
                         }
@@ -305,7 +305,7 @@ private struct DiplomaUploadSheet: View {
                         Text("Welk diploma upload je?")
                             .font(BCTypography.title3)
                             .foregroundStyle(BCColors.textPrimary)
-                        Text("Buddy Care verifieert je diploma. Na goedkeuring kun je direct Niveau 3 taken aannemen — zodra je de verkorte Basis Buddy cursus (18 min) hebt afgerond.")
+                        Text("Thuisverzorgt verifieert je diploma. Na goedkeuring kun je direct Niveau 3 taken aannemen — zodra je de verkorte Basis Buddy cursus (18 min) hebt afgerond.")
                             .font(BCTypography.body)
                             .foregroundStyle(BCColors.textSecondary)
                     }
@@ -353,7 +353,7 @@ private struct DiplomaUploadSheet: View {
                             HStack(spacing: BCSpacing.sm) {
                                 Image(systemName: "info.circle.fill")
                                     .foregroundStyle(BCColors.primary)
-                                Text("In de demo wordt je diploma direct na 3 seconden geverifieerd. In de echte app controleert het Buddy Care team je document binnen 1 werkdag.")
+                                Text("In de demo wordt je diploma direct na 3 seconden geverifieerd. In de echte app controleert het Thuisverzorgt team je document binnen 1 werkdag.")
                                     .font(BCTypography.caption)
                                     .foregroundStyle(BCColors.textSecondary)
                             }

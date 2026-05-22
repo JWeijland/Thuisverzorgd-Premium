@@ -111,7 +111,7 @@ struct BuddyOnboardingFlow: View {
         ScrollView {
             VStack(alignment: .leading, spacing: BCSpacing.lg) {
                 VStack(alignment: .leading, spacing: BCSpacing.sm) {
-                    Text("Welkom bij Buddy Care")
+                    Text("Welkom bij Thuisverzorgt")
                         .font(BCTypography.title)
                         .foregroundStyle(BCColors.textPrimary)
                     Text("Verdien geld met zorgtaken bij jou in de buurt — op jouw momenten, als zelfstandige.")
@@ -147,7 +147,7 @@ struct BuddyOnboardingFlow: View {
                         Label("Juridisch", systemImage: "exclamationmark.triangle.fill")
                             .font(BCTypography.captionEmphasized)
                             .foregroundStyle(BCColors.warning)
-                        Text("Voorbehouden handelingen (Wet BIG art. 36) zoals injecteren mogen nooit worden uitgevoerd door niet-BIG-geregistreerde personen. Buddy Care biedt deze taken niet aan.")
+                        Text("Voorbehouden handelingen (Wet BIG art. 36) zoals injecteren mogen nooit worden uitgevoerd door niet-BIG-geregistreerde personen. Thuisverzorgt biedt deze taken niet aan.")
                             .font(BCTypography.caption)
                             .foregroundStyle(BCColors.textSecondary)
                     }
@@ -174,7 +174,7 @@ struct BuddyOnboardingFlow: View {
     private var accountStep: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: BCSpacing.md) {
-                StepHeader(title: "Account aanmaken", subtitle: "Dit wordt jouw inlogaccount bij Buddy Care.")
+                StepHeader(title: "Account aanmaken", subtitle: "Dit wordt jouw inlogaccount bij Thuisverzorgt.")
 
                 VStack(alignment: .leading, spacing: BCSpacing.sm) {
                     FieldLabel("Voornaam")
@@ -410,7 +410,7 @@ struct BuddyOnboardingFlow: View {
             VStack(alignment: .leading, spacing: BCSpacing.md) {
                 StepHeader(
                     title: "ZZP-verificatie",
-                    subtitle: "Om via Buddy Care te werken, moet je als zzp'er ingeschreven staan bij de Kamer van Koophandel."
+                    subtitle: "Om via Thuisverzorgt te werken, moet je als zzp'er ingeschreven staan bij de Kamer van Koophandel."
                 )
 
                 HStack(spacing: BCSpacing.sm) {
@@ -449,7 +449,7 @@ struct BuddyOnboardingFlow: View {
                             Label("Hoe word je zzp'er?", systemImage: "building.2.fill")
                                 .font(BCTypography.headline)
                                 .foregroundStyle(BCColors.textPrimary)
-                            Text("Inschrijven bij de KvK kost ca. 10 minuten en €75,–. Na inschrijving kun je direct via Buddy Care aan de slag.")
+                            Text("Inschrijven bij de KvK kost ca. 10 minuten en €75,–. Na inschrijving kun je direct via Thuisverzorgt aan de slag.")
                                 .font(BCTypography.body)
                                 .foregroundStyle(BCColors.textSecondary)
                             BCPrimaryButton(title: "Word zzp'er via KvK", icon: "arrow.up.right.square") { }
@@ -916,7 +916,7 @@ struct BuddyOnboardingFlow: View {
                         Label("Waarom jij het tarief bepaalt", systemImage: "info.circle.fill")
                             .font(BCTypography.captionEmphasized)
                             .foregroundStyle(BCColors.primary)
-                        Text("Als zzp'er stel jij je eigen tarief vast. Dit is een juridisch kenmerk van zelfstandig werken en geen loondienst. Buddy Care rekent \(Int(Config.platformCommissionPercent * 100))% als platformkosten.")
+                        Text("Als zzp'er stel jij je eigen tarief vast. Dit is een juridisch kenmerk van zelfstandig werken en geen loondienst. Thuisverzorgt rekent \(Int(Config.platformCommissionPercent * 100))% als platformkosten.")
                             .font(BCTypography.caption)
                             .foregroundStyle(BCColors.textSecondary)
                     }
@@ -953,7 +953,7 @@ struct BuddyOnboardingFlow: View {
                         Label("ZZP-overeenkomst", systemImage: "doc.text.fill")
                             .font(BCTypography.headline)
                             .foregroundStyle(BCColors.textPrimary)
-                        Text("Je werkt als zelfstandige ondernemer (zzp'er) via het Buddy Care platform. Er is geen sprake van een arbeidsovereenkomst of dienstverband. Je bent zelf verantwoordelijk voor je belastingaangifte, verzekeringen en andere verplichtingen als zelfstandige.")
+                        Text("Je werkt als zelfstandige ondernemer (zzp'er) via het Thuisverzorgt platform. Er is geen sprake van een arbeidsovereenkomst of dienstverband. Je bent zelf verantwoordelijk voor je belastingaangifte, verzekeringen en andere verplichtingen als zelfstandige.")
                             .font(BCTypography.caption)
                             .foregroundStyle(BCColors.textSecondary)
                     }
@@ -973,7 +973,7 @@ struct BuddyOnboardingFlow: View {
                         Label("Privacyverklaring", systemImage: "lock.shield.fill")
                             .font(BCTypography.captionEmphasized)
                             .foregroundStyle(BCColors.textSecondary)
-                        Text("Buddy Care verwerkt je persoonsgegevens conform de AVG. Je gegevens worden niet gedeeld met derden zonder jouw toestemming.")
+                        Text("Thuisverzorgt verwerkt je persoonsgegevens conform de AVG. Je gegevens worden niet gedeeld met derden zonder jouw toestemming.")
                             .font(BCTypography.caption)
                             .foregroundStyle(BCColors.textTertiary)
                     }
@@ -1111,7 +1111,7 @@ struct BuddyOnboardingFlow: View {
                 Button {
                     firstName = "Demo"
                     lastName = "Buddy"
-                    email = "demo@buddycare.nl"
+                    email = "demo@thuisverzorgt.nl"
                     phone = "+31612345678"
                     step += 1
                 } label: {

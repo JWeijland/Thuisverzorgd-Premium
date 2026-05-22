@@ -1,6 +1,6 @@
 import Foundation
 
-// MARK: - All course content for Buddy Care Training Institute
+// MARK: - All course content for Thuisverzorgt Training Institute
 // Content reviewed against: Calibris competentieprofiel Verzorgende IG,
 // KNGF valpreventierichtlijn, KNMP medicatieveiligheid, AVG toepassing in zorg.
 
@@ -39,10 +39,10 @@ enum CourseContent {
         durationMinutes: 35,
         progressPercent: 100,
         unlocked: true,
-        summary: "Kennismaken met Buddy Care, de spelregels, communicatie met ouderen en wat er van je verwacht wordt.",
+        summary: "Kennismaken met Thuisverzorgt, de spelregels, communicatie met ouderen en wat er van je verwacht wordt.",
         modules: [
-            video("Welkom bij Buddy Care", symbol: "heart.text.square.fill", duration: 8, """
-In deze introductievideo maak je kennis met de missie van Buddy Care: studenten koppelen aan ouderen voor lichte, waardevolle zorg. Je ziet hoe een bezoek er van begin tot eind uitziet — van het accepteren van een taak op de kaart tot het schrijven van een afsluitende notitie. Je maakt ook kennis met het Level-systeem en hoe je kunt doorgroeien.
+            video("Welkom bij Thuisverzorgt", symbol: "heart.text.square.fill", duration: 8, """
+In deze introductievideo maak je kennis met de missie van Thuisverzorgt: studenten koppelen aan ouderen voor lichte, waardevolle zorg. Je ziet hoe een bezoek er van begin tot eind uitziet — van het accepteren van een taak op de kaart tot het schrijven van een afsluitende notitie. Je maakt ook kennis met het Level-systeem en hoe je kunt doorgroeien.
 """),
             reading("Communicatie met ouderen", symbol: "message.fill", duration: 15, [
                 section("Helder en rustig spreken", symbol: "waveform", """
@@ -67,18 +67,18 @@ Bijzonderheden — zoals een val, ongewone verwardheid, of zorgen van de oudere 
 """)
             ]),
             quiz("Eindtoets — Basis Buddy", symbol: "checkmark.seal.fill", [
-                q("Wat is de minimale leeftijd om buddy te worden bij Buddy Care?",
+                q("Wat is de minimale leeftijd om buddy te worden bij Thuisverzorgt?",
                   ["16 jaar", "18 jaar", "21 jaar", "Geen minimum"], correct: 1,
-                  "Buddy Care werkt met meerderjarige zorgverleners. De minimumleeftijd is 18 jaar, conform het arbeidsrecht en de vereisten van de VOG."),
+                  "Thuisverzorgt werkt met meerderjarige zorgverleners. De minimumleeftijd is 18 jaar, conform het arbeidsrecht en de vereisten van de VOG."),
                 q("Welk document is verplicht voor elke buddy vóór de eerste taak?",
                   ["Rijbewijs", "VOG (Verklaring Omtrent Gedrag)", "BIG-registratie", "Zorgdiploma"], correct: 1,
                   "De VOG is verplicht voor alle buddies. Dit is een screening door Justis (Ministerie van Justitie) om te controleren of er geen relevante strafblad-aantekeningen zijn."),
                 q("Je merkt dat een oudere jou niet herkent en verward raakt. Wat doe je?",
                   ["Jezelf nadrukkelijk voorstellen en corrigeren", "Kalm blijven, je naam noemen en rustig aanwezig zijn", "Weggaan en later terugkomen", "Direct 112 bellen"], correct: 1,
                   "Verwardheid is bij dementie geen keuze. Blijf rustig, spreek zacht en bevestig je aanwezigheid zonder te corrigeren. Schakel alleen hulp in als er gevaar is."),
-                q("Hoe lang is een VOG bij Buddy Care geldig?",
+                q("Hoe lang is een VOG bij Thuisverzorgt geldig?",
                   ["1 jaar", "2 jaar", "3 jaar", "5 jaar"], correct: 2,
-                  "Bij Buddy Care is de VOG 3 jaar geldig, waarna hernieuwing verplicht is. Dit is in lijn met richtlijnen van VWS voor informele zorgverleners."),
+                  "Bij Thuisverzorgt is de VOG 3 jaar geldig, waarna hernieuwing verplicht is. Dit is in lijn met richtlijnen van VWS voor informele zorgverleners."),
                 q("Wat doe je na elk bezoek?",
                   ["Niets, dat is niet nodig", "Een korte objectieve notitie schrijven in de app", "Een rapport sturen naar de huisarts", "Bellen met de familie om alles door te nemen"], correct: 1,
                   "De notitie in de app is de officiële overdracht. Familie en zorgcoördinatoren lezen mee. Wees objectief, feitelijk en meld bijzonderheden direct.")
@@ -94,15 +94,15 @@ Bijzonderheden — zoals een val, ongewone verwardheid, of zorgen van de oudere 
         durationMinutes: 18,
         progressPercent: 0,
         unlocked: true,
-        summary: "Speciaal voor zorggediplomeerden: alleen de Buddy Care-specifieke normen, gedragscode en app-gebruik. Communicatie en zorgvaardigheden worden als bekend verondersteld.",
+        summary: "Speciaal voor zorggediplomeerden: alleen de Thuisverzorgt-specifieke normen, gedragscode en app-gebruik. Communicatie en zorgvaardigheden worden als bekend verondersteld.",
         modules: [
-            video("Welkom bij Buddy Care", symbol: "heart.text.square.fill", duration: 8, """
-In deze verkorte introductie maak je kennis met de missie en spelregels van Buddy Care. Omdat jij al een erkend zorgdiploma hebt, slaan we de basis zorgvaardigheden over. We focussen op wat Buddy Care specifiek van je vraagt: hoe werkt de app, wat zijn onze gedragsnormen, en hoe ga je om met het bezoekprotocol.
+            video("Welkom bij Thuisverzorgt", symbol: "heart.text.square.fill", duration: 8, """
+In deze verkorte introductie maak je kennis met de missie en spelregels van Thuisverzorgt. Omdat jij al een erkend zorgdiploma hebt, slaan we de basis zorgvaardigheden over. We focussen op wat Thuisverzorgt specifiek van je vraagt: hoe werkt de app, wat zijn onze gedragsnormen, en hoe ga je om met het bezoekprotocol.
 
-Belangrijk: ook met een diploma blijf jij als buddy verantwoordelijk voor het naleven van de Buddy Care-gedragscode. Jouw ervaring is een groot voordeel — maar de normen van ons platform gelden voor iedereen gelijk.
+Belangrijk: ook met een diploma blijf jij als buddy verantwoordelijk voor het naleven van de Thuisverzorgt-gedragscode. Jouw ervaring is een groot voordeel — maar de normen van ons platform gelden voor iedereen gelijk.
 """),
-            reading("Buddy Care Gedragscode", symbol: "checkmark.shield.fill", duration: 5, [
-                section("Wat verwacht Buddy Care van jou", symbol: "person.badge.shield.checkmark.fill", """
+            reading("Thuisverzorgt Gedragscode", symbol: "checkmark.shield.fill", duration: 5, [
+                section("Wat verwacht Thuisverzorgt van jou", symbol: "person.badge.shield.checkmark.fill", """
 Als gecertificeerde buddy handel je altijd binnen jouw bevoegdheid én bekwaamheid. Een diploma geeft bevoegdheid — jij bepaalt zelf of je ook bekwaam bent voor een specifieke situatie bij een specifieke cliënt. Twijfel je? Doe het niet en overleg.
 
 Wees altijd op tijd, geef minimaal 2 uur van tevoren af als je onverhoopt niet kunt, en schrijf altijd een objectieve overdrachtsnotitie na elk bezoek.
@@ -111,15 +111,15 @@ Wees altijd op tijd, geef minimaal 2 uur van tevoren af als je onverhoopt niet k
 Bij elk bezoek check je in via de app: QR-code op de telefoon van de oudere scannen, GPS-verificatie en (eenmalig per dag) een selfie. Dit is niet optioneel — ook niet voor gediplomeerden. Het check-in systeem beschermt zowel jou als de cliënt en is de officiële tijdregistratie voor je vergoeding.
 """),
                 section("Privacy en beroepsgeheim", symbol: "lock.shield.fill", """
-Alles wat je ziet, hoort of leest tijdens een bezoek valt onder je beroepsgeheim. Deel nooit informatie over een cliënt via persoonlijke kanalen — ook niet met vrienden of familie, ook niet 'anoniem'. Gebruik uitsluitend de Buddy Care app voor overdracht en communicatie.
+Alles wat je ziet, hoort of leest tijdens een bezoek valt onder je beroepsgeheim. Deel nooit informatie over een cliënt via persoonlijke kanalen — ook niet met vrienden of familie, ook niet 'anoniem'. Gebruik uitsluitend de Thuisverzorgt app voor overdracht en communicatie.
 
 Schending van het beroepsgeheim kan leiden tot directe uitsluiting van het platform en aangifte bij de bevoegde instanties.
 """)
             ]),
-            quiz("Eindtoets — Buddy Care Gedragscode", symbol: "checkmark.seal.fill", [
+            quiz("Eindtoets — Thuisverzorgt Gedragscode", symbol: "checkmark.seal.fill", [
                 q("Je hebt een MBO Helpende diploma. Een oudere vraagt je om een injectie toe te dienen. Wat doe je?",
                   ["Je doet het, want je hebt een diploma", "Je weigert: medicatie toedienen via injectie vereist Niveau 4 (BIG)", "Je vraagt de familie of het mag", "Je belt de huisarts voor toestemming"], correct: 1,
-                  "Injecties zijn voorbehouden handelingen waarvoor een BIG-registratie vereist is. Ook met een Helpende diploma — Niveau 3 — mag je dit niet uitvoeren. Buddy Care werkt met strikte niveaubevoegdheden."),
+                  "Injecties zijn voorbehouden handelingen waarvoor een BIG-registratie vereist is. Ook met een Helpende diploma — Niveau 3 — mag je dit niet uitvoeren. Thuisverzorgt werkt met strikte niveaubevoegdheden."),
                 q("Je bent 10 minuten te laat voor een bezoek. Wat doe je?",
                   ["Niets, het is maar 10 minuten", "Je belt of appt de oudere voor aanvang", "Je belt af via de app en meldt je vertraging", "Je gaat gewoon en meldt het na afloop"], correct: 2,
                   "Ouderen rekenen op jou. Meld je vertraging altijd via de app — zo kan de familie ook meekijken en weet de oudere dat je eraan komt."),
@@ -296,7 +296,7 @@ De Algemene Verordening Gegevensbescherming (AVG) geldt voor iedereen die persoo
 Als buddy verwerk je automatisch gevoelige informatie: de naam en het adres van de oudere, gezondheidssituatie, medicatiegebruik en soms ook financiële situatie. Al deze informatie is strikt vertrouwelijk.
 """),
                 section("Geheimhouding: wat en met wie?", symbol: "eye.slash.fill", """
-Informatie over de oudere deel je alleen met wie het nodig heeft voor de directe zorgverlening: de familie die via de app gekoppeld is en Buddy Care zelf. Je deelt niets met vrienden, klasgenoten of andere buddies.
+Informatie over de oudere deel je alleen met wie het nodig heeft voor de directe zorgverlening: de familie die via de app gekoppeld is en Thuisverzorgt zelf. Je deelt niets met vrienden, klasgenoten of andere buddies.
 
 Dit geldt ook voor mondelinge informatie: vertel niet aan een andere cliënt hoe het met een andere oudere gaat. Vertel het niet aan je buren. Wees ook voorzichtig in openbare ruimtes — een telefoongesprek in de tram over een cliënt is een privacyschending.
 """),
@@ -306,9 +306,9 @@ Je maakt nooit foto's van de cliënt, de woning of bezittingen zonder expliciete
 Plaats nooit iets op social media over je werk als buddy — ook niet anoniem of geanonimiseerd als er details herkenbaar zijn. Een beschrijving als 'grappige 80-jarige dame in Rotterdam-Zuid met drie katten' kan de persoon identificeerbaar maken.
 """),
                 section("Digitale veiligheid", symbol: "iphone.lockscreen", """
-De Buddy Care-app gebruikt versleutelde verbindingen voor alle communicatie. Gebruik de app alleen op uw eigen apparaat. Deel je inloggegevens niet met anderen — ook niet met een collega-buddy.
+De Thuisverzorgt-app gebruikt versleutelde verbindingen voor alle communicatie. Gebruik de app alleen op uw eigen apparaat. Deel je inloggegevens niet met anderen — ook niet met een collega-buddy.
 
-Stuur nooit medische informatie via WhatsApp of e-mail. Als de familie via de app communiceert, gebruik dan alleen dat kanaal. Bij een datalek of verlies van je telefoon: meld dit direct via hulp@buddiecare.nl.
+Stuur nooit medische informatie via WhatsApp of e-mail. Als de familie via de app communiceert, gebruik dan alleen dat kanaal. Bij een datalek of verlies van je telefoon: meld dit direct via hulp@thuisverzorgt.nl.
 """)
             ]),
             reading("Omgaan met verzoeken en grenzen", symbol: "hand.raised.circle.fill", duration: 12, [
@@ -320,12 +320,12 @@ Iedere cliënt heeft een eigen, afgeschermd dossier. Informatie over de ene pers
                 section("Wanneer mag je informatie delen zonder toestemming?", symbol: "exclamationmark.shield.fill", """
 De AVG kent een uitzondering voor situaties waarbij er ernstig gevaar is voor de cliënt of anderen. Als je overtuigd bent dat iemand in gevaar is (mishandeling, verwaarlozing, suïcidaliteit), mag je informatie doorgeven aan de juiste instantie — zonder toestemming van de cliënt.
 
-Maar dit is een hoge drempel. Twijfel je? Bel Buddy Care. Ga nooit op eigen houtje informatie doorgeven buiten de app om — er zijn hiervoor meldprotocollen.
+Maar dit is een hoge drempel. Twijfel je? Bel Thuisverzorgt. Ga nooit op eigen houtje informatie doorgeven buiten de app om — er zijn hiervoor meldprotocollen.
 """),
                 section("Hoe ga je om met een datalek?", symbol: "wifi.exclamationmark", """
 Een datalek betekent dat persoonsgegevens onbedoeld toegankelijk zijn geworden voor onbevoegden: je telefoon verloren, je inloggegevens gedeeld, een screenshot per ongeluk aan de verkeerde persoon gestuurd.
 
-Meld dit onmiddellijk bij Buddy Care via hulp@buddiecare.nl. Buddy Care heeft wettelijk 72 uur om een datalek te melden bij de Autoriteit Persoonsgegevens. Hoe sneller jij meldt, hoe sneller de schade beperkt kan worden.
+Meld dit onmiddellijk bij Thuisverzorgt via hulp@thuisverzorgt.nl. Thuisverzorgt heeft wettelijk 72 uur om een datalek te melden bij de Autoriteit Persoonsgegevens. Hoe sneller jij meldt, hoe sneller de schade beperkt kan worden.
 """)
             ]),
             quiz("Eindtoets — Privacy & AVG", symbol: "lock.shield.fill", [
@@ -333,14 +333,14 @@ Meld dit onmiddellijk bij Buddy Care via hulp@buddiecare.nl. Buddy Care heeft we
                   ["Boodschappen doen namens de cliënt", "Een foto van de woning delen op social media", "Een objectieve notitie schrijven in de app", "Uitleggen wat je gaat doen voordat je begint"], correct: 1,
                   "Foto's van de woning, cliënt of bezittingen zijn strikt verboden zonder schriftelijke toestemming. Dit is een directe schending van de AVG en de vertrouwensrelatie."),
                 q("Met wie mag je informatie over de cliënt delen?",
-                  ["Met andere buddies zodat ze weten wat ze kunnen verwachten", "Alleen met gekoppelde familie en Buddy Care via de beveiligde app", "Met de huisarts als je je zorgen maakt", "Met je medestudenten voor een casusopdracht"], correct: 1,
-                  "Informatie delen buiten de gekoppelde familie en Buddy Care is een privacyschending, ook als je goede bedoelingen hebt. Voor zorgen: meld altijd via de app."),
+                  ["Met andere buddies zodat ze weten wat ze kunnen verwachten", "Alleen met gekoppelde familie en Thuisverzorgt via de beveiligde app", "Met de huisarts als je je zorgen maakt", "Met je medestudenten voor een casusopdracht"], correct: 1,
+                  "Informatie delen buiten de gekoppelde familie en Thuisverzorgt is een privacyschending, ook als je goede bedoelingen hebt. Voor zorgen: meld altijd via de app."),
                 q("Een familielid van een andere cliënt vraagt hoe het gaat met jouw cliënt. Wat doe je?",
-                  ["Vriendelijk vertellen dat het goed gaat", "Zeggen dat je geen informatie deelt over anderen", "Doorverwijzen naar Buddy Care", "Alleen zeggen 'geen bijzonderheden'"], correct: 1,
-                  "Elke informatie over een cliënt is vertrouwelijk, ook het feit dat het 'goed gaat'. Je deelt nooit iets zonder toestemming van de cliënt of Buddy Care."),
-                q("Wat doe je als je telefoon verloren gaat en de Buddy Care-app erop staat?",
-                  ["Afwachten of je hem terugvindt", "Niets — de app heeft een wachtwoord", "Direct melden bij Buddy Care via hulp@buddiecare.nl", "Je account verwijderen en opnieuw aanmaken"], correct: 2,
-                  "Bij verlies of diefstal van een apparaat met toegang tot patiëntgegevens moet je dit direct melden. Buddy Care kan dan de toegang intrekken om misbruik te voorkomen."),
+                  ["Vriendelijk vertellen dat het goed gaat", "Zeggen dat je geen informatie deelt over anderen", "Doorverwijzen naar Thuisverzorgt", "Alleen zeggen 'geen bijzonderheden'"], correct: 1,
+                  "Elke informatie over een cliënt is vertrouwelijk, ook het feit dat het 'goed gaat'. Je deelt nooit iets zonder toestemming van de cliënt of Thuisverzorgt."),
+                q("Wat doe je als je telefoon verloren gaat en de Thuisverzorgt-app erop staat?",
+                  ["Afwachten of je hem terugvindt", "Niets — de app heeft een wachtwoord", "Direct melden bij Thuisverzorgt via hulp@thuisverzorgt.nl", "Je account verwijderen en opnieuw aanmaken"], correct: 2,
+                  "Bij verlies of diefstal van een apparaat met toegang tot patiëntgegevens moet je dit direct melden. Thuisverzorgt kan dan de toegang intrekken om misbruik te voorkomen."),
                 q("Mag je in een opdracht voor je studie een casus beschrijven gebaseerd op een van je cliënten?",
                   ["Ja, als je de naam verandert", "Ja, als de casus meer dan 6 maanden geleden is", "Nee, nooit zonder schriftelijke toestemming van de cliënt", "Ja, als je docent ermee instemt"], correct: 2,
                   "Zelfs geanonimiseerde casussen zijn alleen toegestaan met expliciete toestemming. Herkenbare details (leeftijd, stad, situatie) kunnen de persoon identificeerbaar maken.")
@@ -653,7 +653,7 @@ Een Niveau 2 buddy mag NOOIT: medicatie zelfstandig klaarzetten zonder protocol,
 
 Medicatie daadwerkelijk toedienen is een voorbehouden handeling (Wet BIG art. 36) en vereist het Helpende Plus-certificaat op Niveau 3. Als Niveau 2 buddy zit je erbij en documenteer je — de cliënt neemt zijn medicatie zelf in.
 
-Overtreding van de Wet BIG is niet alleen een fout binnen Buddy Care, maar kan ook strafrechtelijk worden vervolgd.
+Overtreding van de Wet BIG is niet alleen een fout binnen Thuisverzorgt, maar kan ook strafrechtelijk worden vervolgd.
 """)
             ]),
             reading("Het medicatieschema lezen", symbol: "calendar", duration: 16, [

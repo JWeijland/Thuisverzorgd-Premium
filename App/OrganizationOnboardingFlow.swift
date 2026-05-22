@@ -52,11 +52,11 @@ struct OrganizationOnboardingFlow: View {
     private var orgQuestionSubtitle: String {
         switch role {
         case .elderly:
-            return "Sommige zorginstellingen zijn partner van Buddy Care. Cliënten van zo'n instelling kunnen direct instappen."
+            return "Sommige zorginstellingen zijn partner van Thuisverzorgt. Cliënten van zo'n instelling kunnen direct instappen."
         case .family:
-            return "Sommige zorginstellingen zijn partner van Buddy Care. Regelt u zorg voor een familielid via zo'n instelling, dan kunt u direct instappen."
+            return "Sommige zorginstellingen zijn partner van Thuisverzorgt. Regelt u zorg voor een familielid via zo'n instelling, dan kunt u direct instappen."
         default:
-            return "Sommige zorgorganisaties zijn partner van Buddy Care. Medewerkers kunnen dan direct instappen."
+            return "Sommige zorgorganisaties zijn partner van Thuisverzorgt. Medewerkers kunnen dan direct instappen."
         }
     }
 
@@ -287,7 +287,7 @@ struct OrganizationOnboardingFlow: View {
                     .foregroundStyle(BCColors.textPrimary)
                     .multilineTextAlignment(.center)
 
-                Text("Je bewijs wordt beoordeeld door het Buddy Care team. Je ontvangt een melding zodra je aanvraag is goedgekeurd. Dit duurt meestal 1 werkdag.")
+                Text("Je bewijs wordt beoordeeld door het Thuisverzorgt team. Je ontvangt een melding zodra je aanvraag is goedgekeurd. Dit duurt meestal 1 werkdag.")
                     .font(BCTypography.body)
                     .foregroundStyle(BCColors.textSecondary)
                     .multilineTextAlignment(.center)

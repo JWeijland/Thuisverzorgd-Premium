@@ -89,7 +89,7 @@ struct LoginView: View {
                     Image(systemName: "heart.text.square.fill")
                         .font(.system(size: 28, weight: .semibold))
                         .foregroundStyle(BCColors.accent)
-                    Text("Buddy Care")
+                    Text("Thuisverzorgt")
                         .font(BCTypography.titleEmphasized)
                         .foregroundStyle(.white)
                 }
@@ -180,7 +180,7 @@ struct LoginView: View {
 
     private var rolePicker: some View {
         VStack(alignment: .leading, spacing: BCSpacing.sm) {
-            Text("Ik gebruik Buddy Care als")
+            Text("Ik gebruik Thuisverzorgt als")
                 .font(BCTypography.captionEmphasized)
                 .foregroundStyle(BCColors.textSecondary)
 

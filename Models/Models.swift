@@ -46,7 +46,7 @@ enum ServiceLevel: Int, CaseIterable, Identifiable, Codable {
     var requirementText: String {
         switch self {
         case .zero: return "Onboarding + ID-verificatie + VOG"
-        case .one: return "Niveau 0 + Buddy Care interne training (~3u e-learning)"
+        case .one: return "Niveau 0 + Thuisverzorgt interne training (~3u e-learning)"
         case .two: return "Niveau 1 + MBO-deelcertificaat zorg + e-learning + praktijktoets (~8u)"
         case .three: return "MBO niveau 2 diploma Helpende Zorg & Welzijn (of gelijkwaardig)"
         case .four: return "BIG-registratie verpleegkundige (V&V niveau 4/5)"
@@ -546,7 +546,7 @@ struct Organization: Identifiable, Hashable {
     let shortName: String
     let logoSymbol: String
     let buddyHourlyRateCents: Int  // wat de buddy per uur ontvangt
-    let markupPercent: Double      // Buddy Care winstopslag (%)
+    let markupPercent: Double      // Thuisverzorgt winstopslag (%)
     let isActive: Bool
 
     var clientHourlyRateCents: Int {

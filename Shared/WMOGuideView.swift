@@ -73,10 +73,10 @@ struct WMOGuideView: View {
                     .foregroundStyle(BCColors.warning)
                     .padding(.top, 2)
                 VStack(alignment: .leading, spacing: BCSpacing.xs) {
-                    Text("Buddy Care betalen via PGB")
+                    Text("Thuisverzorgt betalen via PGB")
                         .font(BCTypography.headline)
                         .foregroundStyle(BCColors.textPrimary)
-                    Text("Heeft u een PGB-indicatie? Dan kunt u een Buddy via Buddy Care betalen. U sluit een zorgovereenkomst af en de SVB betaalt de Buddy rechtstreeks — u betaalt niets zelf bij.")
+                    Text("Heeft u een PGB-indicatie? Dan kunt u een Buddy via Thuisverzorgt betalen. U sluit een zorgovereenkomst af en de SVB betaalt de Buddy rechtstreeks — u betaalt niets zelf bij.")
                         .font(BCTypography.body)
                         .foregroundStyle(BCColors.textSecondary)
                 }
@@ -95,7 +95,7 @@ struct WMOGuideView: View {
                     Text("Neem contact op met uw gemeente")
                         .font(BCTypography.headline)
                         .foregroundStyle(BCColors.textPrimary)
-                    Text("Zoek het Wmo-loket via de website van uw gemeente, of bel het gemeentelijke nummer. Uw huisarts of een medewerker van Buddy Care kan u ook verder helpen.")
+                    Text("Zoek het Wmo-loket via de website van uw gemeente, of bel het gemeentelijke nummer. Uw huisarts of een medewerker van Thuisverzorgt kan u ook verder helpen.")
                         .font(BCTypography.body)
                         .foregroundStyle(BCColors.textSecondary)
                 }
@@ -136,7 +136,7 @@ private let wmoSteps = [
         id: 4,
         icon: "arrow.triangle.branch",
         title: "Kies: Zorg in Natura of PGB",
-        description: "Zorg in Natura: de gemeente regelt de hulp direct. PGB: u krijgt een budget om zelf iemand in te huren — zoals een Buddy via Buddy Care."
+        description: "Zorg in Natura: de gemeente regelt de hulp direct. PGB: u krijgt een budget om zelf iemand in te huren — zoals een Buddy via Thuisverzorgt."
     ),
     WMOStep(
         id: 5,

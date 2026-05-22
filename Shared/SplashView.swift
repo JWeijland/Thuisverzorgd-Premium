@@ -32,7 +32,7 @@ struct SplashView: View {
                     }
 
                     VStack(spacing: BCSpacing.sm) {
-                        Text("Buddy Care")
+                        Text("Thuisverzorgt")
                             .font(.system(size: 38, weight: .heavy, design: .rounded))
                             .foregroundStyle(.white)
 
@@ -62,7 +62,7 @@ struct SplashView: View {
                     }
                     .buttonStyle(.plain)
                     .padding(.horizontal, BCSpacing.lg)
-                    .accessibilityLabel("Aan de slag, begin met Buddy Care")
+                    .accessibilityLabel("Aan de slag, begin met Thuisverzorgt")
 
                     if let onDemoMap {
                         Button {
