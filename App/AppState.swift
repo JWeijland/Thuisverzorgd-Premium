@@ -387,9 +387,14 @@ final class AppState {
         task.assignedBuddyRating = chosenBuddy.ratingAverage
         task.assignedBuddyEtaMinutes = Int.random(in: 8...18)
         openTasks[idx] = task
-        if activeTaskForElderly?.id == taskID {
+        // Werk het cliëntscherm bij als dit bezoek bij de actieve cliënt hoort.
+        // (Niet alleen op id matchen — de actieve taak kan een kopie zijn.)
+        if activeTaskForElderly?.id == taskID
+            || task.elderlyName == elderlyUser.firstName
+            || task.elderlyName == elderlyUser.fullName {
             activeTaskForElderly = task
         }
+        print("[DEMO-ACCEPT] taskID=\(taskID) elderlyName=\(task.elderlyName) → activeTaskForElderly.buddy=\(activeTaskForElderly?.assignedBuddyName ?? "nil"), status=\(activeTaskForElderly?.status.rawValue ?? "nil")")
         MockPushService().send(notification: .taskAccepted(
             buddyName: chosenBuddy.firstName,
             etaMinutes: task.assignedBuddyEtaMinutes ?? 12
