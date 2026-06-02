@@ -97,7 +97,7 @@ struct BuddyOnboardingFlow: View {
         HStack(spacing: 3) {
             ForEach(0..<totalSteps, id: \.self) { i in
                 Capsule()
-                    .fill(i <= step ? BCColors.primary : BCColors.border)
+                    .fill(i <= step ? BCColors.accent : BCColors.border)
                     .frame(height: 4)
             }
         }
@@ -259,7 +259,7 @@ struct BuddyOnboardingFlow: View {
                 }
                 .padding(BCSpacing.md)
                 .background(RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous).fill(BCColors.surface))
-                .overlay(RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous).stroke(BCColors.border, lineWidth: 1))
+                .bcSoftShadow(.card)
 
                 // Bio
                 VStack(alignment: .leading, spacing: 4) {
@@ -620,10 +620,10 @@ struct BuddyOnboardingFlow: View {
                                         } label: {
                                             Text(slot)
                                                 .font(BCTypography.captionEmphasized)
-                                                .foregroundStyle(isOn ? .white : BCColors.textSecondary)
+                                                .foregroundStyle(isOn ? BCColors.navy900 : BCColors.textSecondary)
                                                 .padding(.horizontal, BCSpacing.sm)
                                                 .padding(.vertical, BCSpacing.xs)
-                                                .background(Capsule().fill(isOn ? BCColors.primary : BCColors.border))
+                                                .background(Capsule().fill(isOn ? BCColors.accent : BCColors.surfaceMuted))
                                         }
                                         .buttonStyle(.plain)
                                     }
@@ -649,7 +649,7 @@ struct BuddyOnboardingFlow: View {
                         value: Binding(get: { Double(maxDistanceKm) }, set: { maxDistanceKm = Int($0) }),
                         in: 1...50, step: 1
                     )
-                    .tint(BCColors.primary)
+                    .tint(BCColors.accent)
                     HStack {
                         Text("1 km")
                         Spacer()
@@ -660,7 +660,7 @@ struct BuddyOnboardingFlow: View {
                 }
                 .padding(BCSpacing.md)
                 .background(RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous).fill(BCColors.surface))
-                .overlay(RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous).stroke(BCColors.border, lineWidth: 1))
+                .bcSoftShadow(.card)
             }
             .padding(.horizontal, BCSpacing.lg)
             .padding(.top, BCSpacing.lg)
@@ -825,7 +825,7 @@ struct BuddyOnboardingFlow: View {
                                         } else {
                                             Image(systemName: "circle")
                                                 .font(.system(size: 20))
-                                                .foregroundStyle(BCColors.border)
+                                                .foregroundStyle(BCColors.textTertiary.opacity(0.5))
                                         }
                                     }
                                     .padding(.horizontal, BCSpacing.md)
@@ -837,11 +837,11 @@ struct BuddyOnboardingFlow: View {
                                     .overlay(
                                         RoundedRectangle(cornerRadius: BCRadius.md, style: .continuous)
                                             .stroke(
-                                                isLocked ? BCColors.border.opacity(0.5) :
-                                                (selected ? group.color : BCColors.border),
-                                                lineWidth: selected ? 1.5 : 1
+                                                selected ? group.color : Color.clear,
+                                                lineWidth: selected ? 2 : 0
                                             )
                                     )
+                                    .bcSoftShadow(isLocked ? .subtle : .card)
                                     .opacity(isLocked ? 0.65 : 1)
                                 }
                                 .buttonStyle(.plain)
@@ -909,7 +909,7 @@ struct BuddyOnboardingFlow: View {
                 }
                 .padding(BCSpacing.md)
                 .background(RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous).fill(BCColors.surface))
-                .overlay(RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous).stroke(BCColors.border, lineWidth: 1))
+                .bcSoftShadow(.card)
 
                 BCCard {
                     VStack(alignment: .leading, spacing: BCSpacing.xs) {
@@ -1093,7 +1093,7 @@ struct BuddyOnboardingFlow: View {
 
             Spacer()
 
-            BCPrimaryButton(title: "Ga aan de slag (prototype)", icon: "arrow.right") {
+            BCCTAButton(title: "Ga aan de slag (prototype)", icon: "arrow.right") {
                 appState.setBuddyPreferences(level: .zero, services: selectedServices)
                 appState.isOnboardingComplete = true
             }
@@ -1142,7 +1142,7 @@ struct BuddyOnboardingFlow: View {
                         step -= 1
                     }
                 }
-                BCPrimaryButton(
+                BCCTAButton(
                     title: step == 12 ? "Aanvraag indienen" : "Volgende",
                     icon: step == 12 ? "checkmark" : "chevron.right"
                 ) {
@@ -1217,8 +1217,10 @@ private struct ChoiceButton: View {
             )
             .overlay(
                 RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous)
-                    .stroke(selected ? BCColors.primary : BCColors.border, lineWidth: selected ? 0 : 1)
+                    .stroke(BCColors.primary, lineWidth: selected ? 0 : 1.5)
+                    .opacity(selected ? 0 : 0.25)
             )
+            .bcSoftShadow(.card)
         }
         .buttonStyle(.plain)
     }
@@ -1233,7 +1235,7 @@ private struct AgreementCheckbox: View {
             HStack(alignment: .top, spacing: BCSpacing.sm) {
                 Image(systemName: checked ? "checkmark.square.fill" : "square")
                     .font(.system(size: 26, weight: .semibold))
-                    .foregroundStyle(checked ? BCColors.primary : BCColors.textTertiary)
+                    .foregroundStyle(checked ? BCColors.accentDark : BCColors.textTertiary)
                 Text(text)
                     .font(BCTypography.body)
                     .foregroundStyle(BCColors.textPrimary)
@@ -1244,8 +1246,9 @@ private struct AgreementCheckbox: View {
             .background(RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous).fill(BCColors.surface))
             .overlay(
                 RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous)
-                    .stroke(checked ? BCColors.primary : BCColors.border, lineWidth: checked ? 2 : 1)
+                    .stroke(checked ? BCColors.accent : Color.clear, lineWidth: 2)
             )
+            .bcSoftShadow(.card)
         }
         .buttonStyle(.plain)
     }
@@ -1289,7 +1292,7 @@ private struct ReviewCheckRow: View {
         }
         .padding(BCSpacing.md)
         .background(RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous).fill(BCColors.surface))
-        .overlay(RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous).stroke(BCColors.border, lineWidth: 1))
+        .bcSoftShadow(.card)
     }
 }
 
@@ -1338,7 +1341,7 @@ private struct IDUploadBox: View {
         }
         .padding(BCSpacing.md)
         .background(RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous).fill(BCColors.surface))
-        .overlay(RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous).stroke(BCColors.border, lineWidth: 1))
+        .bcSoftShadow(.card)
     }
 }
 

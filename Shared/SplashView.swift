@@ -29,20 +29,23 @@ struct SplashView: View {
             VStack(spacing: BCSpacing.lg) {
                 ZStack {
                     Circle()
-                        .fill(BCColors.accent.opacity(0.18))
+                        .fill(.white.opacity(0.12))
                         .frame(width: 128, height: 128)
                         .scaleEffect(iconPulse ? 1.08 : 1.0)
-                    Image(systemName: "heart.text.square.fill")
-                        .font(.system(size: 68, weight: .semibold))
+                    Circle()
+                        .fill(BCColors.accent.opacity(0.22))
+                        .frame(width: 104, height: 104)
+                    Image(systemName: "house.fill")
+                        .font(.system(size: 60, weight: .semibold))
                         .foregroundStyle(BCColors.accent)
                 }
                 .scaleEffect(iconScale)
                 .opacity(iconOpacity)
 
                 VStack(spacing: BCSpacing.sm) {
-                    Text("Thuisverzorgd")
+                    (Text("Thuis").foregroundStyle(.white)
+                     + Text("verzorgd").foregroundStyle(BCColors.accent))
                         .font(.system(size: 38, weight: .heavy, design: .rounded))
-                        .foregroundStyle(.white)
                         .opacity(wordmarkOpacity)
                         .offset(y: wordmarkOffset)
 

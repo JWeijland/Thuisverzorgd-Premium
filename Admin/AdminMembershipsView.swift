@@ -94,17 +94,11 @@ struct AdminMembershipsView: View {
 
     private var emptyState: some View {
         BCCard {
-            VStack(spacing: BCSpacing.sm) {
-                Image(systemName: "checkmark.circle.fill")
-                    .font(.system(size: 36))
-                    .foregroundStyle(BCColors.success)
-                Text("Geen aanvragen gevonden.")
-                    .font(BCTypography.body)
-                    .foregroundStyle(BCColors.textSecondary)
-                    .multilineTextAlignment(.center)
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, BCSpacing.md)
+            BCEmptyState(
+                icon: "checkmark.circle.fill",
+                title: "Geen aanvragen",
+                message: "Er zijn geen aanvragen gevonden voor dit filter."
+            )
         }
         .padding(.horizontal, BCSpacing.lg)
     }
@@ -158,7 +152,9 @@ private struct MembershipCard: View {
                         }
                     }
                     Spacer()
-                    StatusBadge(status: membership.status)
+                    BCStatusPill(label: membership.status.displayLabel,
+                                 color: membership.status.color,
+                                 showDot: true)
                 }
 
                 // Bewijs en datum
@@ -190,25 +186,30 @@ private struct MembershipCard: View {
                     HStack(spacing: BCSpacing.md) {
                         Button(action: onReject) {
                             Text("Afwijzen")
-                                .font(BCTypography.captionEmphasized)
+                                .font(BCTypography.bodyEmphasized)
                                 .foregroundStyle(BCColors.danger)
-                                .frame(maxWidth: .infinity, minHeight: 40)
+                                .frame(maxWidth: .infinity, minHeight: 48)
                                 .background(
-                                    RoundedRectangle(cornerRadius: BCRadius.md)
-                                        .stroke(BCColors.danger, lineWidth: 1.5)
+                                    RoundedRectangle(cornerRadius: BCRadius.md, style: .continuous)
+                                        .fill(BCColors.surface)
+                                )
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: BCRadius.md, style: .continuous)
+                                        .stroke(BCColors.danger.opacity(0.5), lineWidth: 1.5)
                                 )
                         }
                         .buttonStyle(.plain)
 
                         Button(action: onApprove) {
                             Text("Goedkeuren")
-                                .font(BCTypography.captionEmphasized)
+                                .font(BCTypography.bodyEmphasized)
                                 .foregroundStyle(.white)
-                                .frame(maxWidth: .infinity, minHeight: 40)
+                                .frame(maxWidth: .infinity, minHeight: 48)
                                 .background(
-                                    RoundedRectangle(cornerRadius: BCRadius.md)
+                                    RoundedRectangle(cornerRadius: BCRadius.md, style: .continuous)
                                         .fill(BCColors.success)
                                 )
+                                .bcSoftShadow(.subtle)
                         }
                         .buttonStyle(.plain)
                     }
@@ -219,19 +220,6 @@ private struct MembershipCard: View {
 
     private var initials: String {
         membership.userName.split(separator: " ").compactMap(\.first).map(String.init).prefix(2).joined()
-    }
-}
-
-private struct StatusBadge: View {
-    let status: MembershipStatus
-
-    var body: some View {
-        Text(status.displayLabel)
-            .font(BCTypography.caption)
-            .foregroundStyle(status.color)
-            .padding(.horizontal, BCSpacing.sm)
-            .padding(.vertical, BCSpacing.xs)
-            .background(Capsule().fill(status.color.opacity(0.12)))
     }
 }
 

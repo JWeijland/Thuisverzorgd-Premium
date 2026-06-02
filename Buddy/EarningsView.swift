@@ -144,10 +144,10 @@ private struct WalletHeroCard: View {
                     } label: {
                         Text("Uitbetalen")
                             .font(BCTypography.bodyEmphasized)
-                            .foregroundStyle(BCColors.primary)
+                            .foregroundStyle(BCColors.navy900)
                             .padding(.horizontal, BCSpacing.md)
                             .padding(.vertical, 10)
-                            .background(Capsule().fill(Color.white))
+                            .background(Capsule(style: .continuous).fill(BCColors.accent))
                     }
                     .buttonStyle(.plain)
                 }

@@ -222,7 +222,7 @@ private struct SelfieStepView: View {
                 .font(BCTypography.bodyEmphasized)
                 .foregroundStyle(BCColors.success)
             VStack(spacing: BCSpacing.sm) {
-                BCPrimaryButton(title: "Bevestigen & doorgaan", icon: "arrow.right.circle.fill") {
+                BCCTAButton(title: "Bevestigen & doorgaan", icon: "arrow.right") {
                     onConfirmed(img)
                 }
                 BCSecondaryButton(title: "Opnieuw nemen", icon: "arrow.counterclockwise") {

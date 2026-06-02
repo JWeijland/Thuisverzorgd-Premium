@@ -1,20 +1,22 @@
 import SwiftUI
 
 struct ActivityTimelineView: View {
+    @Environment(AppState.self) private var appState
+
     var body: some View {
         VStack(spacing: 0) {
             BCNavBar(title: "Activiteit", subtitle: "Wat is er gebeurd")
 
             ScrollView {
                 VStack(alignment: .leading, spacing: BCSpacing.lg) {
-                    Text("Tijdlijn van bezoeken en gebeurtenissen rond Riet.")
+                    Text("Tijdlijn van bezoeken en gebeurtenissen rond \(appState.activeFamilyElderly.firstName).")
                         .font(BCTypography.subheadline)
                         .foregroundStyle(BCColors.textSecondary)
                         .padding(.horizontal, BCSpacing.lg)
                         .padding(.top, BCSpacing.md)
 
                     VStack(alignment: .leading, spacing: 0) {
-                        ForEach(MockData.familyActivity) { item in
+                        ForEach(MockData.familyActivity(for: appState.activeFamilyElderly.firstName)) { item in
                             TimelineRow(item: item)
                         }
                     }

@@ -44,7 +44,7 @@ struct CertificateView: View {
         VStack(spacing: BCSpacing.lg) {
             // Header stripe
             VStack(spacing: BCSpacing.sm) {
-                Image(systemName: "heart.text.square.fill")
+                Image(systemName: "house.fill")
                     .font(.system(size: 36, weight: .semibold))
                     .foregroundStyle(BCColors.accent)
                 Text("Thuisverzorgd")
@@ -57,6 +57,7 @@ struct CertificateView: View {
             .frame(maxWidth: .infinity)
             .padding(BCSpacing.lg)
             .background(BCColors.primary)
+            .cornerRadius(BCRadius.lg, corners: [.topLeft, .topRight])
 
             VStack(spacing: BCSpacing.md) {
                 Text("CERTIFICAAT")
@@ -138,7 +139,7 @@ struct CertificateView: View {
             RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous)
                 .stroke(BCColors.border, lineWidth: 1)
         )
-        .shadow(color: .black.opacity(0.06), radius: 12, x: 0, y: 4)
+        .bcSoftShadow(.card)
     }
 
     private func dateString(from date: Date) -> String {

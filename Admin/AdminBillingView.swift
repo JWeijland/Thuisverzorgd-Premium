@@ -163,10 +163,11 @@ struct AdminBillingView: View {
                 exportCSV()
             } label: {
                 Label("Export CSV", systemImage: "tablecells.fill")
-                    .font(BCTypography.captionEmphasized)
+                    .font(BCTypography.bodyEmphasized)
                     .foregroundStyle(.white)
-                    .frame(maxWidth: .infinity, minHeight: 44)
-                    .background(RoundedRectangle(cornerRadius: BCRadius.md).fill(BCColors.primary))
+                    .frame(maxWidth: .infinity, minHeight: 48)
+                    .background(RoundedRectangle(cornerRadius: BCRadius.md, style: .continuous).fill(BCColors.primary))
+                    .bcSoftShadow(.subtle)
             }
             .buttonStyle(.plain)
 
@@ -175,10 +176,11 @@ struct AdminBillingView: View {
                 exportPDF()
             } label: {
                 Label("Factuur PDF", systemImage: "doc.richtext.fill")
-                    .font(BCTypography.captionEmphasized)
-                    .foregroundStyle(.white)
-                    .frame(maxWidth: .infinity, minHeight: 44)
-                    .background(RoundedRectangle(cornerRadius: BCRadius.md).fill(BCColors.accent))
+                    .font(BCTypography.bodyEmphasized)
+                    .foregroundStyle(BCColors.navy900)
+                    .frame(maxWidth: .infinity, minHeight: 48)
+                    .background(RoundedRectangle(cornerRadius: BCRadius.md, style: .continuous).fill(BCColors.accent))
+                    .bcSoftShadow(.subtle)
             }
             .buttonStyle(.plain)
         }
@@ -368,14 +370,13 @@ private struct BillingRecordRow: View {
                     Label("Buddy: \(euros(record.buddyEarningsCents))", systemImage: "person.fill")
                     Spacer()
                     Label("Winst: \(euros(record.profitCents))", systemImage: "chart.line.uptrend.xyaxis")
+                        .foregroundStyle(BCColors.success)
                     Spacer()
-                    if record.isFinalized {
-                        Label("Definitief", systemImage: "checkmark.seal.fill")
-                            .foregroundStyle(BCColors.success)
-                    } else {
-                        Label("Concept", systemImage: "clock")
-                            .foregroundStyle(BCColors.warning)
-                    }
+                    BCStatusPill(
+                        label: record.isFinalized ? "Definitief" : "Concept",
+                        color: record.isFinalized ? BCColors.success : BCColors.warning,
+                        showDot: true
+                    )
                 }
                 .font(BCTypography.caption)
                 .foregroundStyle(BCColors.textSecondary)
@@ -416,9 +417,10 @@ private struct TotalTile: View {
     var body: some View {
         VStack(spacing: 4) {
             Text(String(format: "€ %.2f", Double(amount) / 100).replacingOccurrences(of: ".", with: ","))
-                .font(BCTypography.headline)
+                .font(BCTypography.title3)
                 .foregroundStyle(color)
-                .minimumScaleFactor(0.7)
+                .minimumScaleFactor(0.6)
+                .lineLimit(1)
             Text(label)
                 .font(BCTypography.caption)
                 .foregroundStyle(BCColors.textSecondary)

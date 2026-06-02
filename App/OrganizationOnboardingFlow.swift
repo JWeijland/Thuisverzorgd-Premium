@@ -104,30 +104,13 @@ struct OrganizationOnboardingFlow: View {
             Spacer()
 
             VStack(spacing: BCSpacing.md) {
-                Button {
+                BCCTAButton(title: orgYesLabel) {
                     step = .orgSelect
-                } label: {
-                    Text(orgYesLabel)
-                        .font(BCTypography.bodyEmphasized)
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity, minHeight: 52)
-                        .background(RoundedRectangle(cornerRadius: BCRadius.lg).fill(BCColors.primary))
                 }
-                .buttonStyle(.plain)
 
-                Button {
+                BCSecondaryButton(title: orgNoLabel) {
                     proceedWithoutOrg()
-                } label: {
-                    Text(orgNoLabel)
-                        .font(BCTypography.bodyEmphasized)
-                        .foregroundStyle(BCColors.primary)
-                        .frame(maxWidth: .infinity, minHeight: 52)
-                        .background(
-                            RoundedRectangle(cornerRadius: BCRadius.lg)
-                                .stroke(BCColors.primary, lineWidth: 1.5)
-                        )
                 }
-                .buttonStyle(.plain)
             }
             .padding(.horizontal, BCSpacing.lg)
             .padding(.bottom, BCSpacing.xl)
@@ -160,19 +143,10 @@ struct OrganizationOnboardingFlow: View {
                 }
                 .padding(.horizontal, BCSpacing.lg)
 
-                Button {
+                BCCTAButton(title: "Volgende", icon: "chevron.right") {
                     if selectedOrg != nil { step = .proofUpload }
-                } label: {
-                    Text("Volgende")
-                        .font(BCTypography.bodyEmphasized)
-                        .foregroundStyle(selectedOrg != nil ? .white : BCColors.textTertiary)
-                        .frame(maxWidth: .infinity, minHeight: 52)
-                        .background(
-                            RoundedRectangle(cornerRadius: BCRadius.lg)
-                                .fill(selectedOrg != nil ? BCColors.primary : BCColors.border)
-                        )
                 }
-                .buttonStyle(.plain)
+                .opacity(selectedOrg != nil ? 1.0 : 0.4)
                 .disabled(selectedOrg == nil)
                 .padding(.horizontal, BCSpacing.lg)
                 .padding(.bottom, BCSpacing.xl)
@@ -244,22 +218,13 @@ struct OrganizationOnboardingFlow: View {
                         .padding(.horizontal, BCSpacing.lg)
                 }
 
-                Button {
+                BCCTAButton(title: "Indienen", icon: "checkmark") {
                     guard let org = selectedOrg else { return }
                     let note = proofNote.isEmpty ? "Document geüpload" : proofNote
                     appState.pendingRole = role
                     appState.submitMembershipRequest(organization: org, proofNote: note)
                     step = .pending
-                } label: {
-                    Text("Indienen")
-                        .font(BCTypography.bodyEmphasized)
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity, minHeight: 52)
-                        .background(
-                            RoundedRectangle(cornerRadius: BCRadius.lg).fill(BCColors.primary)
-                        )
                 }
-                .buttonStyle(.plain)
                 .padding(.horizontal, BCSpacing.lg)
                 .padding(.bottom, BCSpacing.xl)
             }
@@ -370,7 +335,7 @@ private struct OrgCard: View {
                 Spacer()
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
                     .font(.system(size: 22, weight: .semibold))
-                    .foregroundStyle(isSelected ? BCColors.primary : BCColors.border)
+                    .foregroundStyle(isSelected ? BCColors.accentDark : BCColors.textTertiary.opacity(0.5))
             }
             .padding(BCSpacing.md)
             .background(
@@ -379,8 +344,9 @@ private struct OrgCard: View {
             )
             .overlay(
                 RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous)
-                    .stroke(isSelected ? BCColors.primary : BCColors.border, lineWidth: isSelected ? 2 : 1)
+                    .stroke(isSelected ? BCColors.accent : Color.clear, lineWidth: 2)
             )
+            .bcSoftShadow(.card)
         }
         .buttonStyle(.plain)
     }

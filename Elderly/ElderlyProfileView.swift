@@ -102,7 +102,12 @@ struct ElderlyProfileView: View {
                         ProfileRow(icon: "pills.fill", label: "Medicatie", value: appState.elderlyUser.medicationNotes)
                             .padding(.horizontal, BCSpacing.lg)
                     }
-                    .background(BCColors.surface)
+                    .background(
+                        RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous)
+                            .fill(BCColors.surface)
+                    )
+                    .bcSoftShadow(.card)
+                    .padding(.horizontal, BCSpacing.lg)
                     .sheet(isPresented: $showEditSheet) {
                         EditProfileSheet()
                     }
@@ -146,7 +151,12 @@ struct ElderlyProfileView: View {
                         .padding(.horizontal, BCSpacing.lg)
                         .padding(.vertical, BCSpacing.md)
                     }
-                    .background(BCColors.surface)
+                    .background(
+                        RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous)
+                            .fill(BCColors.surface)
+                    )
+                    .bcSoftShadow(.card)
+                    .padding(.horizontal, BCSpacing.lg)
 
                     // Betalingswijze alleen voor particuliere cliënten —
                     // Cordaan-cliënten gaan altijd via natura/verzekering
@@ -362,17 +372,18 @@ private struct PaymentTypeSection: View {
                                   ? "checkmark.circle.fill" : "circle")
                                 .font(.system(size: 20, weight: .semibold))
                                 .foregroundStyle(appState.elderlyPaymentType == type
-                                                 ? BCColors.primary : BCColors.border)
+                                                 ? BCColors.accentDark : BCColors.textTertiary)
                         }
                         .padding(BCSpacing.md)
                         .background(
                             RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous)
-                                .fill(BCColors.surface)
+                                .fill(appState.elderlyPaymentType == type
+                                      ? BCColors.accent.opacity(0.10) : BCColors.surfaceMuted)
                                 .overlay(
                                     RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous)
                                         .stroke(appState.elderlyPaymentType == type
-                                                ? BCColors.primary : BCColors.border,
-                                                lineWidth: appState.elderlyPaymentType == type ? 2 : 1)
+                                                ? BCColors.accentDark : Color.clear,
+                                                lineWidth: appState.elderlyPaymentType == type ? 2 : 0)
                                 )
                         )
                     }
@@ -403,12 +414,11 @@ private struct PaymentTypeSection: View {
                 }
             }
         }
-        .background(BCColors.surface)
-        .clipShape(RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous))
-        .overlay(
+        .background(
             RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous)
-                .stroke(BCColors.border, lineWidth: 1)
+                .fill(BCColors.surface)
         )
+        .bcSoftShadow(.card)
     }
 }
 

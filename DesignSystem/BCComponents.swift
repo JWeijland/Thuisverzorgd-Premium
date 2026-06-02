@@ -30,9 +30,54 @@ struct BCPrimaryButton: View {
             .frame(height: 72)
             .padding(.horizontal, BCSpacing.lg)
             .background(
-                RoundedRectangle(cornerRadius: BCRadius.md, style: .continuous)
+                RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous)
                     .fill(BCColors.primary)
             )
+            .bcSoftShadow(.subtle)
+        }
+        .buttonStyle(.plain)
+        .disabled(isLoading)
+        .accessibilityLabel(accessibilityLabel ?? title)
+    }
+}
+
+/// Groene "begin"-knop voor de belangrijkste actie ("Begin hier", "Taak aannemen").
+struct BCCTAButton: View {
+    let title: String
+    var icon: String? = "arrow.right"
+    var iconLeading: Bool = false
+    var fullWidth: Bool = true
+    var isLoading: Bool = false
+    var accessibilityLabel: String? = nil
+    let action: () -> Void
+
+    var body: some View {
+        Button {
+            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+            action()
+        } label: {
+            HStack(spacing: BCSpacing.sm) {
+                if isLoading {
+                    ProgressView().tint(BCColors.navy900)
+                } else {
+                    if iconLeading, let icon {
+                        Image(systemName: icon).font(.system(size: 18, weight: .bold))
+                    }
+                    Text(title).font(BCTypography.bodyEmphasized)
+                    if !iconLeading, let icon {
+                        Image(systemName: icon).font(.system(size: 18, weight: .bold))
+                    }
+                }
+            }
+            .foregroundStyle(BCColors.navy900)
+            .frame(maxWidth: fullWidth ? .infinity : nil)
+            .frame(height: 72)
+            .padding(.horizontal, BCSpacing.lg)
+            .background(
+                RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous)
+                    .fill(BCColors.accent)
+            )
+            .bcSoftShadow(.subtle)
         }
         .buttonStyle(.plain)
         .disabled(isLoading)
@@ -64,13 +109,14 @@ struct BCSecondaryButton: View {
             .frame(height: 72)
             .padding(.horizontal, BCSpacing.lg)
             .background(
-                RoundedRectangle(cornerRadius: BCRadius.md, style: .continuous)
+                RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous)
                     .fill(BCColors.surface)
             )
             .overlay(
-                RoundedRectangle(cornerRadius: BCRadius.md, style: .continuous)
-                    .stroke(BCColors.primary, lineWidth: 1.5)
+                RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous)
+                    .stroke(BCColors.primary.opacity(0.4), lineWidth: 1.5)
             )
+            .bcSoftShadow(.subtle)
         }
         .buttonStyle(.plain)
     }
@@ -96,7 +142,7 @@ struct BCDangerButton: View {
             .frame(maxWidth: .infinity)
             .frame(height: 72)
             .background(
-                RoundedRectangle(cornerRadius: BCRadius.md, style: .continuous)
+                RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous)
                     .fill(BCColors.danger)
             )
         }
@@ -104,7 +150,74 @@ struct BCDangerButton: View {
     }
 }
 
-// Large tappable card for elderly home screen — 120pt+ height, accent strip on left
+// MARK: - Help hero (variant C — wit & rustig, zachte toon)
+//
+// De belangrijkste actie van cliënt & familie. Witte card met navy icoon-blok,
+// groen "DIRECT GEREGELD"-label, navy titel en een groene ronde pijlknop.
+
+struct BCHelpHeroCard: View {
+    @Environment(\.largeTextEnabled) private var largeText
+    var eyebrow: String = "DIRECT GEREGELD"
+    var title: String = "Hulp vragen"
+    var subtitle: String = "Een buddy uit de buurt komt u helpen."
+    var icon: String = "hand.raised.fill"
+    let action: () -> Void
+
+    private var et: BCElderlyType { BCElderlyType(large: largeText) }
+
+    var body: some View {
+        Button(action: {
+            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+            action()
+        }) {
+            HStack(spacing: BCSpacing.md) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: BCRadius.md, style: .continuous)
+                        .fill(BCColors.navy900)
+                    Image(systemName: icon)
+                        .font(.system(size: largeText ? 34 : 28, weight: .semibold))
+                        .foregroundStyle(.white)
+                }
+                .frame(width: et.iconBoxSize, height: et.iconBoxSize)
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(eyebrow)
+                        .font(BCTypography.captionEmphasized)
+                        .tracking(0.8)
+                        .foregroundStyle(BCColors.green600)
+                    Text(title)
+                        .font(et.heading)
+                        .foregroundStyle(BCColors.navy900)
+                    Text(subtitle)
+                        .font(et.caption)
+                        .foregroundStyle(BCColors.textSecondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+                Spacer(minLength: BCSpacing.sm)
+
+                ZStack {
+                    Circle().fill(BCColors.accent)
+                    Image(systemName: "arrow.right")
+                        .font(.system(size: largeText ? 24 : 20, weight: .bold))
+                        .foregroundStyle(BCColors.navy900)
+                }
+                .frame(width: largeText ? 64 : 56, height: largeText ? 64 : 56)
+            }
+            .padding(largeText ? BCSpacing.lg : BCSpacing.md)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(
+                RoundedRectangle(cornerRadius: BCRadius.xl, style: .continuous)
+                    .fill(BCColors.surface)
+            )
+            .bcSoftShadow(.raised)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("\(title). \(subtitle)")
+    }
+}
+
+// Large tappable card for elderly home screen — 120pt+ height, soft elevation
 struct BCBigTile: View {
     @Environment(\.largeTextEnabled) private var largeText
     let title: String
@@ -117,52 +230,90 @@ struct BCBigTile: View {
 
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 0) {
-                Rectangle()
-                    .fill(color)
-                    .frame(width: 6)
-                    .frame(maxHeight: .infinity)
-                    .cornerRadius(BCRadius.sm, corners: [.topLeft, .bottomLeft])
-
-                HStack(spacing: BCSpacing.md) {
-                    ZStack {
-                        RoundedRectangle(cornerRadius: BCRadius.md, style: .continuous)
-                            .fill(color.opacity(0.10))
-                            .frame(width: et.iconBoxSize, height: et.iconBoxSize)
-                        Image(systemName: icon)
-                            .font(.system(size: et.iconSize, weight: .semibold))
-                            .foregroundStyle(color)
-                    }
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(title)
-                            .font(et.button)
-                            .foregroundStyle(BCColors.textPrimary)
-                            .multilineTextAlignment(.leading)
-                        if let subtitle {
-                            Text(subtitle)
-                                .font(et.caption)
-                                .foregroundStyle(BCColors.textSecondary)
-                                .multilineTextAlignment(.leading)
-                                .lineLimit(2)
-                        }
-                    }
-                    Spacer(minLength: 0)
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: largeText ? 20 : 16, weight: .semibold))
-                        .foregroundStyle(BCColors.textTertiary)
+            HStack(spacing: BCSpacing.md) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: BCRadius.md, style: .continuous)
+                        .fill(color.opacity(0.12))
+                        .frame(width: et.iconBoxSize, height: et.iconBoxSize)
+                    Image(systemName: icon)
+                        .font(.system(size: et.iconSize, weight: .semibold))
+                        .foregroundStyle(color)
                 }
-                .padding(largeText ? BCSpacing.lg : BCSpacing.md)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(title)
+                        .font(et.button)
+                        .foregroundStyle(BCColors.textPrimary)
+                        .multilineTextAlignment(.leading)
+                    if let subtitle {
+                        Text(subtitle)
+                            .font(et.caption)
+                            .foregroundStyle(BCColors.textSecondary)
+                            .multilineTextAlignment(.leading)
+                            .lineLimit(2)
+                    }
+                }
+                Spacer(minLength: 0)
+                Image(systemName: "chevron.right")
+                    .font(.system(size: largeText ? 20 : 16, weight: .semibold))
+                    .foregroundStyle(BCColors.textTertiary)
             }
+            .padding(largeText ? BCSpacing.lg : BCSpacing.md)
             .frame(maxWidth: .infinity, minHeight: et.tileHeight, alignment: .leading)
             .background(
                 RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous)
                     .fill(BCColors.surface)
             )
-            .overlay(
+            .bcSoftShadow(.card)
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+/// Compacte vierkante tegel ("Ook handig" / "Snel regelen") — icoon boven, label onder.
+struct BCQuickTile: View {
+    @Environment(\.largeTextEnabled) private var largeText
+    let title: String
+    var subtitle: String? = nil
+    let icon: String
+    var color: Color = BCColors.navy500
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: {
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            action()
+        }) {
+            VStack(alignment: .leading, spacing: BCSpacing.sm) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: BCRadius.md, style: .continuous)
+                        .fill(color.opacity(0.12))
+                    Image(systemName: icon)
+                        .font(.system(size: largeText ? 26 : 22, weight: .semibold))
+                        .foregroundStyle(color)
+                }
+                .frame(width: largeText ? 64 : 52, height: largeText ? 64 : 52)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title)
+                        .font(largeText ? BCTypography.elderlyButton : BCTypography.headline)
+                        .foregroundStyle(BCColors.textPrimary)
+                        .multilineTextAlignment(.leading)
+                    if let subtitle {
+                        Text(subtitle)
+                            .font(largeText ? BCTypography.elderlyCaption : BCTypography.caption)
+                            .foregroundStyle(BCColors.textSecondary)
+                            .multilineTextAlignment(.leading)
+                            .lineLimit(2)
+                    }
+                }
+            }
+            .padding(BCSpacing.md)
+            .frame(maxWidth: .infinity, minHeight: largeText ? 150 : 124, alignment: .topLeading)
+            .background(
                 RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous)
-                    .stroke(BCColors.border, lineWidth: 1)
+                    .fill(BCColors.surface)
             )
-            .clipShape(RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous))
+            .bcSoftShadow(.card)
         }
         .buttonStyle(.plain)
     }
@@ -171,20 +322,18 @@ struct BCBigTile: View {
 // MARK: - Cards
 
 struct BCCard<Content: View>: View {
+    var padding: CGFloat = BCSpacing.md
     @ViewBuilder var content: () -> Content
 
     var body: some View {
         content()
-            .padding(BCSpacing.md)
+            .padding(padding)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
                 RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous)
                     .fill(BCColors.surface)
             )
-            .overlay(
-                RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous)
-                    .stroke(BCColors.border, lineWidth: 1)
-            )
+            .bcSoftShadow(.card)
     }
 }
 
@@ -212,16 +361,22 @@ struct BCLevelBadge: View {
 struct BCStatusPill: View {
     let label: String
     let color: Color
+    var showDot: Bool = false
 
     var body: some View {
-        Text(label)
-            .font(BCTypography.captionEmphasized)
-            .foregroundStyle(color)
-            .padding(.horizontal, 10)
-            .padding(.vertical, 4)
-            .background(
-                Capsule(style: .continuous).fill(color.opacity(0.12))
-            )
+        HStack(spacing: 6) {
+            if showDot {
+                Circle().fill(color).frame(width: 7, height: 7)
+            }
+            Text(label)
+                .font(BCTypography.captionEmphasized)
+                .foregroundStyle(color)
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 5)
+        .background(
+            Capsule(style: .continuous).fill(color.opacity(0.12))
+        )
     }
 }
 
@@ -256,7 +411,7 @@ struct BCRatingStars: View {
 struct BCProgressBar: View {
     let value: Double     // 0.0–1.0
     var label: String? = nil
-    var color: Color = BCColors.primary
+    var color: Color = BCColors.accent
 
     var body: some View {
         VStack(alignment: .leading, spacing: BCSpacing.xs) {
@@ -267,10 +422,10 @@ struct BCProgressBar: View {
             }
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
-                    RoundedRectangle(cornerRadius: BCRadius.sm)
-                        .fill(color.opacity(0.15))
+                    Capsule()
+                        .fill(color.opacity(0.18))
                         .frame(height: 8)
-                    RoundedRectangle(cornerRadius: BCRadius.sm)
+                    Capsule()
                         .fill(color)
                         .frame(width: geo.size.width * max(0, min(1, value)), height: 8)
                 }
@@ -394,7 +549,7 @@ struct BCToast: View {
         .padding(.horizontal, BCSpacing.lg)
         .padding(.vertical, BCSpacing.md)
         .background(
-            Capsule(style: .continuous).fill(BCColors.textPrimary)
+            Capsule(style: .continuous).fill(BCColors.navy900)
         )
         .shadow(color: .black.opacity(0.15), radius: 12, x: 0, y: 4)
     }
@@ -476,7 +631,12 @@ struct BCNavBar: View {
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            BCColors.primary.ignoresSafeArea(edges: .top)
+            LinearGradient(
+                colors: [BCColors.navy900, BCColors.navy700],
+                startPoint: .top, endPoint: .bottom
+            )
+            .ignoresSafeArea(edges: .top)
+
             HStack(alignment: .bottom, spacing: BCSpacing.sm) {
                 if let backAction {
                     Button(action: backAction) {
@@ -499,8 +659,8 @@ struct BCNavBar: View {
                         .foregroundStyle(.white)
                 }
                 Spacer()
-                Image(systemName: "heart.text.square.fill")
-                    .font(.system(size: 22, weight: .semibold))
+                Image(systemName: "house.fill")
+                    .font(.system(size: 20, weight: .semibold))
                     .foregroundStyle(BCColors.accent)
                     .accessibilityHidden(true)
             }

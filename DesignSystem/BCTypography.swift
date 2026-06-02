@@ -1,26 +1,72 @@
 import SwiftUI
+import UIKit
+
+// MARK: - Font routing (Montserrat koppen + Open Sans tekst, met systeem-fallback)
+//
+// Zodra de fontbestanden in de bundle zitten (zie stuk 10) gebruiken alle
+// tokens automatisch Montserrat/Open Sans. Is een font niet aanwezig, dan
+// valt alles netjes terug op het afgeronde systeem-font — geen lelijke
+// kale San Francisco en geen code-wijziging nodig.
+
+enum BCFontFamily {
+    case heading   // Montserrat
+    case body      // Open Sans
+}
+
+enum BCFont {
+    /// Naam van een geïnstalleerd custom font of nil als het niet bestaat.
+    private static func installedName(_ candidates: [String]) -> String? {
+        for name in candidates where UIFont(name: name, size: 12) != nil {
+            return name
+        }
+        return nil
+    }
+
+    static func heading(_ size: CGFloat, _ weight: Font.Weight = .bold) -> Font {
+        let names: [String]
+        switch weight {
+        case .heavy, .black:       names = ["Montserrat-ExtraBold", "Montserrat-Bold"]
+        case .bold:                names = ["Montserrat-Bold"]
+        case .semibold, .medium:   names = ["Montserrat-SemiBold"]
+        default:                   names = ["Montserrat-Medium", "Montserrat-Regular"]
+        }
+        if let n = installedName(names) { return .custom(n, size: size) }
+        return .system(size: size, weight: weight, design: .rounded)
+    }
+
+    static func body(_ size: CGFloat, _ weight: Font.Weight = .regular) -> Font {
+        let names: [String]
+        switch weight {
+        case .bold, .heavy, .black: names = ["OpenSans-Bold", "OpenSans-SemiBold"]
+        case .semibold, .medium:    names = ["OpenSans-SemiBold"]
+        default:                    names = ["OpenSans-Regular"]
+        }
+        if let n = installedName(names) { return .custom(n, size: size) }
+        return .system(size: size, weight: weight, design: .rounded)
+    }
+}
 
 enum BCTypography {
-    // Standard mode (buddy/family) — all use .rounded per spec
-    static let largeTitle = Font.system(size: 34, weight: .bold, design: .rounded)
-    static let title = Font.system(size: 28, weight: .bold, design: .rounded)
-    static let titleEmphasized = Font.system(size: 22, weight: .heavy, design: .rounded)
-    static let title2 = Font.system(size: 22, weight: .semibold, design: .rounded)
-    static let title3 = Font.system(size: 20, weight: .semibold, design: .rounded)
-    static let headline = Font.system(size: 18, weight: .semibold, design: .rounded)
-    static let body = Font.system(size: 17, weight: .regular, design: .rounded)
-    static let bodyEmphasized = Font.system(size: 17, weight: .semibold, design: .rounded)
-    static let subheadline = Font.system(size: 15, weight: .regular, design: .rounded)
-    static let callout = Font.system(size: 16, weight: .regular, design: .rounded)
-    static let caption = Font.system(size: 13, weight: .regular, design: .rounded)
-    static let captionEmphasized = Font.system(size: 13, weight: .semibold, design: .rounded)
+    // Standard mode (buddy/family) — koppen via Montserrat, tekst via Open Sans
+    static let largeTitle        = BCFont.heading(34, .bold)
+    static let title             = BCFont.heading(28, .bold)
+    static let titleEmphasized   = BCFont.heading(22, .heavy)
+    static let title2            = BCFont.heading(22, .semibold)
+    static let title3            = BCFont.heading(20, .semibold)
+    static let headline          = BCFont.heading(18, .semibold)
+    static let body              = BCFont.body(17, .regular)
+    static let bodyEmphasized    = BCFont.body(17, .semibold)
+    static let subheadline       = BCFont.body(15, .regular)
+    static let callout           = BCFont.body(16, .regular)
+    static let caption           = BCFont.body(13, .regular)
+    static let captionEmphasized = BCFont.body(13, .semibold)
 
     // Elderly mode — larger sizes, minimum 20pt body per accessibility spec
-    static let elderlyTitle = Font.system(size: 28, weight: .bold, design: .rounded)
-    static let elderlyHeading = Font.system(size: 24, weight: .bold, design: .rounded)
-    static let elderlyBody = Font.system(size: 20, weight: .regular, design: .rounded)
-    static let elderlyCaption = Font.system(size: 17, weight: .regular, design: .rounded)
-    static let elderlyButton = Font.system(size: 22, weight: .semibold, design: .rounded)
+    static let elderlyTitle      = BCFont.heading(28, .bold)
+    static let elderlyHeading    = BCFont.heading(24, .bold)
+    static let elderlyBody       = BCFont.body(20, .regular)
+    static let elderlyCaption    = BCFont.body(17, .regular)
+    static let elderlyButton     = BCFont.heading(22, .semibold)
 }
 
 // MARK: - Elderly large-text scale
@@ -28,11 +74,11 @@ enum BCTypography {
 struct BCElderlyType {
     let large: Bool
     // Normal → Large: each step adds ~6pt
-    var title:   Font { .system(size: large ? 36 : 28, weight: .bold,     design: .rounded) }
-    var heading: Font { .system(size: large ? 30 : 24, weight: .bold,     design: .rounded) }
-    var body:    Font { .system(size: large ? 26 : 20, weight: .regular,  design: .rounded) }
-    var caption: Font { .system(size: large ? 21 : 17, weight: .regular,  design: .rounded) }
-    var button:  Font { .system(size: large ? 28 : 22, weight: .semibold, design: .rounded) }
+    var title:   Font { BCFont.heading(large ? 36 : 28, .bold) }
+    var heading: Font { BCFont.heading(large ? 30 : 24, .bold) }
+    var body:    Font { BCFont.body(large ? 26 : 20, .regular) }
+    var caption: Font { BCFont.body(large ? 21 : 17, .regular) }
+    var button:  Font { BCFont.heading(large ? 28 : 22, .semibold) }
     var iconBoxSize: CGFloat { large ? 88 : 72 }
     var iconSize:    CGFloat { large ? 40 : 32 }
     var tileHeight:  CGFloat { large ? 148 : 120 }

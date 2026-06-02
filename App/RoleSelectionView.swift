@@ -19,7 +19,13 @@ struct RoleSelectionView: View {
                         VStack(spacing: BCSpacing.md) {
                             ForEach([UserRole.elderly, .buddy, .family], id: \.id) { role in
                                 RoleCard(role: role) {
-                                    orgFlowRole = role
+                                    // Alleen buddy's kunnen via een zorgorganisatie werken;
+                                    // ouderen en familie stappen direct in (geen jargon-vraag).
+                                    if role == .buddy {
+                                        orgFlowRole = role
+                                    } else {
+                                        enterDirectly(as: role)
+                                    }
                                 }
                             }
                         }
@@ -41,16 +47,35 @@ struct RoleSelectionView: View {
         }
     }
 
+    /// Ouderen/familie zonder organisatie: meteen de juiste rol in (zelfstandig pad).
+    private func enterDirectly(as role: UserRole) {
+        appState.currentUserMembership = nil
+        appState.selectedOrganization = nil
+        appState.pendingRole = nil
+        appState.isOnboardingComplete = false
+        appState.hasSeenSplash = true
+        appState.currentRole = role
+    }
+
     private var header: some View {
         ZStack(alignment: .bottom) {
-            BCColors.primary.ignoresSafeArea(edges: .top)
+            LinearGradient(
+                colors: [BCColors.navy900, BCColors.navy700],
+                startPoint: .top, endPoint: .bottom
+            )
+            .ignoresSafeArea(edges: .top)
             HStack(spacing: BCSpacing.sm) {
-                Image(systemName: "heart.text.square.fill")
-                    .font(.system(size: 28, weight: .semibold))
-                    .foregroundStyle(BCColors.accent)
-                Text("Thuisverzorgd")
+                ZStack {
+                    RoundedRectangle(cornerRadius: BCRadius.sm, style: .continuous)
+                        .fill(.white.opacity(0.12))
+                        .frame(width: 38, height: 38)
+                    Image(systemName: "house.fill")
+                        .font(.system(size: 20, weight: .semibold))
+                        .foregroundStyle(BCColors.accent)
+                }
+                (Text("Thuis").foregroundStyle(.white)
+                 + Text("verzorgd").foregroundStyle(BCColors.accent))
                     .font(BCTypography.titleEmphasized)
-                    .foregroundStyle(.white)
                 Spacer()
             }
             .padding(.horizontal, BCSpacing.lg)
@@ -144,37 +169,39 @@ private struct RoleCard: View {
         Button(action: action) {
             HStack(spacing: BCSpacing.md) {
                 ZStack {
-                    Circle()
-                        .fill(BCColors.primary.opacity(0.08))
-                        .frame(width: 56, height: 56)
+                    RoundedRectangle(cornerRadius: BCRadius.md, style: .continuous)
+                        .fill(BCColors.navy900)
+                        .frame(width: 60, height: 60)
                     Image(systemName: role.icon)
-                        .font(.system(size: 24, weight: .semibold))
-                        .foregroundStyle(BCColors.primary)
+                        .font(.system(size: 26, weight: .semibold))
+                        .foregroundStyle(.white)
                 }
                 VStack(alignment: .leading, spacing: 4) {
                     Text(role.displayName)
                         .font(BCTypography.headline)
-                        .foregroundStyle(BCColors.textPrimary)
+                        .foregroundStyle(BCColors.navy900)
                     Text(role.subtitle)
                         .font(BCTypography.subheadline)
                         .foregroundStyle(BCColors.textSecondary)
                         .multilineTextAlignment(.leading)
                 }
-                Spacer()
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundStyle(BCColors.textTertiary)
+                Spacer(minLength: BCSpacing.sm)
+                ZStack {
+                    Circle()
+                        .fill(BCColors.accent.opacity(0.15))
+                        .frame(width: 36, height: 36)
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 15, weight: .bold))
+                        .foregroundStyle(BCColors.green600)
+                }
             }
             .padding(BCSpacing.md)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
-                RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous)
+                RoundedRectangle(cornerRadius: BCRadius.xl, style: .continuous)
                     .fill(BCColors.surface)
             )
-            .overlay(
-                RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous)
-                    .stroke(BCColors.border, lineWidth: 1)
-            )
+            .bcSoftShadow(.card)
         }
         .buttonStyle(.plain)
     }

@@ -163,29 +163,64 @@ struct CoursesView: View {
         return built
     }
 
+    /// Het eerstvolgende niveau (indien aanwezig) en de voortgang van de cursussen daarvan.
+    private var nextLevel: ServiceLevel? {
+        ServiceLevel(rawValue: appState.buddyUser.level.rawValue + 1)
+            .flatMap { lvl in lvl.rawValue <= 3 ? lvl : nil }
+    }
+
+    private var nextLevelProgress: Double {
+        guard let next = nextLevel else { return 1 }
+        let courses = appliedCourses.filter { $0.level == next }
+        guard !courses.isEmpty else { return 0 }
+        let avg = courses.reduce(0) { $0 + $1.progressPercent } / courses.count
+        return Double(avg) / 100
+    }
+
     private var levelHeader: some View {
-        BCCard {
-            HStack(spacing: BCSpacing.md) {
-                ZStack {
-                    Circle().fill(appState.buddyUser.level.color.opacity(0.15)).frame(width: 56, height: 56)
-                    Image(systemName: "shield.lefthalf.filled")
-                        .font(.system(size: 22, weight: .semibold))
-                        .foregroundStyle(appState.buddyUser.level.color)
+        ZStack {
+            RoundedRectangle(cornerRadius: BCRadius.xl, style: .continuous)
+                .fill(
+                    LinearGradient(
+                        colors: [BCColors.navy900, BCColors.navy700],
+                        startPoint: .topLeading, endPoint: .bottomTrailing
+                    )
+                )
+
+            VStack(alignment: .leading, spacing: BCSpacing.md) {
+                HStack(spacing: BCSpacing.md) {
+                    ZStack {
+                        Circle().fill(Color.white.opacity(0.12)).frame(width: 52, height: 52)
+                        Image(systemName: "shield.lefthalf.filled")
+                            .font(.system(size: 22, weight: .semibold))
+                            .foregroundStyle(BCColors.accent)
+                    }
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Jouw niveau")
+                            .font(BCTypography.captionEmphasized)
+                            .foregroundStyle(.white.opacity(0.75))
+                        Text("\(appState.buddyUser.level.title) · niveau \(appState.buddyUser.level.rawValue)")
+                            .font(BCTypography.title3)
+                            .foregroundStyle(.white)
+                    }
+                    Spacer()
                 }
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Jouw huidige niveau")
-                        .font(BCTypography.caption)
-                        .foregroundStyle(BCColors.textSecondary)
-                    Text("Niveau \(appState.buddyUser.level.rawValue) — \(appState.buddyUser.level.title)")
-                        .font(BCTypography.title3)
-                        .foregroundStyle(BCColors.textPrimary)
-                    Text(appState.buddyUser.level.summary)
-                        .font(BCTypography.caption)
-                        .foregroundStyle(BCColors.textSecondary)
+
+                Text(appState.buddyUser.level.summary)
+                    .font(BCTypography.caption)
+                    .foregroundStyle(.white.opacity(0.8))
+                    .fixedSize(horizontal: false, vertical: true)
+
+                if let next = nextLevel {
+                    BCProgressBar(value: nextLevelProgress, color: BCColors.accent)
+                    Text("Op weg naar niveau \(next.rawValue) — \(next.title)")
+                        .font(BCTypography.captionEmphasized)
+                        .foregroundStyle(.white.opacity(0.9))
                 }
-                Spacer()
             }
+            .padding(BCSpacing.lg)
         }
+        .bcSoftShadow(.raised)
     }
 }
 
@@ -360,9 +395,10 @@ struct CourseDetailView: View {
                                 showCertificate = true
                             }
                         } else {
-                            BCPrimaryButton(
+                            BCCTAButton(
                                 title: progressPercent > 0 ? "Doorgaan" : "Start cursus",
-                                icon: progressPercent > 0 ? "arrow.right.circle.fill" : "play.fill"
+                                icon: progressPercent > 0 ? "arrow.right" : "play.fill",
+                                iconLeading: true
                             ) {
                                 activeModule = firstIncompleteModule
                             }

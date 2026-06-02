@@ -66,22 +66,30 @@ struct WMOGuideView: View {
     }
 
     private var pgbHighlight: some View {
-        BCCard {
-            HStack(alignment: .top, spacing: BCSpacing.md) {
+        HStack(alignment: .top, spacing: BCSpacing.md) {
+            ZStack {
+                Circle().fill(BCColors.accent.opacity(0.18))
                 Image(systemName: "lightbulb.fill")
-                    .font(.system(size: 22))
-                    .foregroundStyle(BCColors.warning)
-                    .padding(.top, 2)
-                VStack(alignment: .leading, spacing: BCSpacing.xs) {
-                    Text("Thuisverzorgd betalen via PGB")
-                        .font(BCTypography.headline)
-                        .foregroundStyle(BCColors.textPrimary)
-                    Text("Heeft u een PGB-indicatie? Dan kunt u een Buddy via Thuisverzorgd betalen. U sluit een zorgovereenkomst af en de SVB betaalt de Buddy rechtstreeks — u betaalt niets zelf bij.")
-                        .font(BCTypography.body)
-                        .foregroundStyle(BCColors.textSecondary)
-                }
+                    .font(.system(size: 20, weight: .semibold))
+                    .foregroundStyle(BCColors.green700)
+            }
+            .frame(width: 44, height: 44)
+            VStack(alignment: .leading, spacing: BCSpacing.xs) {
+                Text("Thuisverzorgd betalen via PGB")
+                    .font(BCTypography.headline)
+                    .foregroundStyle(BCColors.textPrimary)
+                Text("Heeft u een PGB-indicatie? Dan kunt u een Buddy via Thuisverzorgd betalen. U sluit een zorgovereenkomst af en de SVB betaalt de Buddy rechtstreeks — u betaalt niets zelf bij.")
+                    .font(BCTypography.body)
+                    .foregroundStyle(BCColors.textSecondary)
             }
         }
+        .padding(BCSpacing.md)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous)
+                .fill(BCColors.accent.opacity(0.08))
+        )
+        .bcSoftShadow(.card)
     }
 
     private var contactNote: some View {

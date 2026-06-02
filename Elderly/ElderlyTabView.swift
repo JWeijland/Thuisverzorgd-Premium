@@ -10,7 +10,7 @@ struct ElderlyTabView: View {
                 ElderlyHomeView()
                     .tag(0)
                     .tabItem {
-                        Label("Hulp", systemImage: "heart.fill")
+                        Label("Hulp", systemImage: "house.fill")
                     }
 
                 if !appState.isCordaanElderly {

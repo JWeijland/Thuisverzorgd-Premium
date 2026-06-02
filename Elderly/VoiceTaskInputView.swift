@@ -132,16 +132,13 @@ struct VoiceTaskInputView: View {
                     RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous)
                         .fill(BCColors.surface)
                 )
-                .overlay(
-                    RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous)
-                        .stroke(BCColors.border, lineWidth: 1)
-                )
+                .bcSoftShadow(.card)
         }
     }
 
     private var actionButtons: some View {
         VStack(spacing: BCSpacing.sm) {
-            BCPrimaryButton(
+            BCCTAButton(
                 title: "Gebruik deze tekst",
                 icon: "checkmark",
                 fullWidth: true

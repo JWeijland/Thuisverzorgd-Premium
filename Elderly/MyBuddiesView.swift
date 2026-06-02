@@ -54,7 +54,12 @@ struct MyBuddiesView: View {
                                 }
                             }
                         }
-                        .background(BCColors.surface)
+                        .background(
+                            RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous)
+                                .fill(BCColors.surface)
+                        )
+                        .bcSoftShadow(.card)
+                        .padding(.horizontal, BCSpacing.lg)
                     }
 
                     // Past (not favorited)
@@ -76,7 +81,12 @@ struct MyBuddiesView: View {
                                 }
                             }
                         }
-                        .background(BCColors.surface)
+                        .background(
+                            RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous)
+                                .fill(BCColors.surface)
+                        )
+                        .bcSoftShadow(.card)
+                        .padding(.horizontal, BCSpacing.lg)
                     }
                 }
                 .padding(.bottom, BCSpacing.xl)
@@ -138,7 +148,7 @@ private struct BuddyRow: View {
             .buttonStyle(.plain)
             .animation(.easeInOut(duration: 0.2), value: isFavorite)
         }
-        .padding(.horizontal, BCSpacing.lg)
+        .padding(.horizontal, BCSpacing.md)
         .padding(.vertical, BCSpacing.md)
         .frame(maxWidth: .infinity, alignment: .leading)
     }

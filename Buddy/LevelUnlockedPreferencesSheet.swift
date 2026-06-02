@@ -63,9 +63,10 @@ struct LevelUnlockedPreferencesSheet: View {
                 .padding(.horizontal, BCSpacing.lg)
 
                 VStack(spacing: BCSpacing.sm) {
-                    BCPrimaryButton(
+                    BCCTAButton(
                         title: "Kies mijn voorkeuren",
                         icon: "checklist",
+                        iconLeading: true,
                         fullWidth: true
                     ) {
                         showPreferences = true

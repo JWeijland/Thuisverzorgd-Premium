@@ -10,7 +10,7 @@ struct BuddyMapView: View {
         ))
     )
     @State private var selectedTask: ServiceTask? = nil
-    @State private var maxLevelFilter: Int = 1
+    @State private var maxLevelFilter: Int = 4   // standaard: alle niveaus tonen
     @State private var showActiveTask = false
 
     var visibleTasks: [ServiceTask] {
@@ -76,11 +76,11 @@ struct BuddyMapView: View {
     private var topBar: some View {
         HStack(spacing: BCSpacing.sm) {
             HStack(spacing: BCSpacing.xs) {
-                Image(systemName: "heart.text.square.fill")
+                Image(systemName: "house.fill")
                     .foregroundStyle(BCColors.accent)
                 Text("Thuisverzorgd")
                     .font(BCTypography.bodyEmphasized)
-                    .foregroundStyle(BCColors.textPrimary)
+                    .foregroundStyle(BCColors.navy900)
             }
             Spacer()
             availabilityPill
@@ -89,9 +89,9 @@ struct BuddyMapView: View {
         .padding(.horizontal, BCSpacing.md)
         .padding(.vertical, BCSpacing.sm)
         .background(
-            Capsule().fill(BCColors.surface)
-                .shadow(color: .black.opacity(0.10), radius: 8, x: 0, y: 2)
+            Capsule(style: .continuous).fill(BCColors.surface)
         )
+        .bcSoftShadow(.raised)
     }
 
     private var availabilityPill: some View {
@@ -100,18 +100,18 @@ struct BuddyMapView: View {
         } label: {
             HStack(spacing: 6) {
                 Circle()
-                    .fill(appState.isAvailableNow ? BCColors.success : BCColors.textTertiary)
+                    .fill(appState.isAvailableNow ? BCColors.navy900 : BCColors.textTertiary)
                     .frame(width: 8, height: 8)
-                Text(appState.isAvailableNow ? "Aan" : "Uit")
+                Text(appState.isAvailableNow ? "Beschikbaar" : "Uit")
                     .font(BCTypography.captionEmphasized)
-                    .foregroundStyle(appState.isAvailableNow ? BCColors.success : BCColors.textSecondary)
+                    .foregroundStyle(appState.isAvailableNow ? BCColors.navy900 : BCColors.textSecondary)
             }
-            .padding(.horizontal, BCSpacing.sm)
-            .padding(.vertical, 6)
+            .padding(.horizontal, BCSpacing.md)
+            .padding(.vertical, 7)
             .background(
-                Capsule().fill(
+                Capsule(style: .continuous).fill(
                     appState.isAvailableNow
-                        ? BCColors.success.opacity(0.12)
+                        ? BCColors.accent
                         : BCColors.surfaceMuted
                 )
             )
@@ -137,46 +137,44 @@ struct BuddyMapView: View {
                 appState.isAvailableNow = true
             }
             .font(BCTypography.captionEmphasized)
-            .padding(.horizontal, BCSpacing.sm)
-            .padding(.vertical, 6)
-            .background(Capsule().fill(BCColors.primary))
-            .foregroundStyle(.white)
+            .padding(.horizontal, BCSpacing.md)
+            .padding(.vertical, 8)
+            .background(Capsule(style: .continuous).fill(BCColors.accent))
+            .foregroundStyle(BCColors.navy900)
         }
         .padding(BCSpacing.md)
         .background(
             RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous)
                 .fill(BCColors.surface)
-                .shadow(color: .black.opacity(0.10), radius: 8, x: 0, y: 2)
         )
+        .bcSoftShadow(.raised)
     }
 
     private var filterStrip: some View {
         HStack(spacing: BCSpacing.xs) {
-            ForEach(ServiceLevel.allCases.prefix(4), id: \.self) { level in
-                Button {
-                    maxLevelFilter = level.rawValue
-                } label: {
-                    Text("Niv. \(level.rawValue)")
-                        .font(BCTypography.captionEmphasized)
-                        .foregroundStyle(maxLevelFilter == level.rawValue ? .white : BCColors.textPrimary)
-                        .padding(.horizontal, BCSpacing.md)
-                        .padding(.vertical, BCSpacing.sm)
-                        .background(
-                            Capsule().fill(
-                                maxLevelFilter == level.rawValue ? BCColors.primary : BCColors.surface
-                            )
-                        )
-                        .overlay(
-                            Capsule().stroke(BCColors.border, lineWidth: maxLevelFilter == level.rawValue ? 0 : 1)
-                        )
-                }
-                .buttonStyle(.plain)
+            // "Alle" toont alles; de niveau-chips zijn cumulatief ("t/m").
+            filterChip(label: "Alle", isOn: maxLevelFilter >= 4) { maxLevelFilter = 4 }
+            ForEach([1, 2, 3], id: \.self) { lvl in
+                filterChip(label: "t/m Niv. \(lvl)", isOn: maxLevelFilter == lvl) { maxLevelFilter = lvl }
             }
         }
         .padding(BCSpacing.xs)
         .background(
             Capsule().fill(BCColors.background.opacity(0.95))
         )
+    }
+
+    private func filterChip(label: String, isOn: Bool, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(label)
+                .font(BCTypography.captionEmphasized)
+                .foregroundStyle(isOn ? .white : BCColors.textPrimary)
+                .padding(.horizontal, BCSpacing.sm)
+                .padding(.vertical, BCSpacing.sm)
+                .background(Capsule().fill(isOn ? BCColors.primary : BCColors.surface))
+                .overlay(Capsule().stroke(BCColors.border, lineWidth: isOn ? 0 : 1))
+        }
+        .buttonStyle(.plain)
     }
 }
 

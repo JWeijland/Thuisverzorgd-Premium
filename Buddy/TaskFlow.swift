@@ -45,35 +45,20 @@ struct TaskDetailSheet: View {
                 }
 
                 HStack(spacing: BCSpacing.sm) {
-                    if !appState.isCordaanBuddy {
-                        BCLevelBadge(level: task.requiredLevel)
-                    }
+                    BCStatusPill(label: "Nieuw · dichtbij", color: BCColors.accentDark, showDot: true)
                     BCStatusPill(label: task.timing.displayName, color: BCColors.primary)
                     Spacer()
                 }
 
                 BCCard {
-                    HStack {
+                    HStack(spacing: BCSpacing.sm) {
+                        statBox(label: "Afstand", value: "± 1,4 km", color: BCColors.textPrimary)
                         if !appState.isCordaanBuddy {
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text("Vergoeding")
-                                    .font(BCTypography.caption)
-                                    .foregroundStyle(BCColors.textSecondary)
-                                Text(task.priceFormatted)
-                                    .font(BCTypography.title2)
-                                    .foregroundStyle(BCColors.textPrimary)
-                            }
-                            Spacer()
+                            Divider().frame(height: 40)
+                            statBox(label: "Niveau", value: "Niv. \(task.requiredLevel.rawValue)", color: task.requiredLevel.color)
+                            Divider().frame(height: 40)
+                            statBox(label: "Verdienste", value: task.priceFormatted, color: BCColors.green600)
                         }
-                        VStack(alignment: appState.isCordaanBuddy ? .leading : .trailing, spacing: 2) {
-                            Text("Afstand")
-                                .font(BCTypography.caption)
-                                .foregroundStyle(BCColors.textSecondary)
-                            Text("± 1,4 km")
-                                .font(BCTypography.title3)
-                                .foregroundStyle(BCColors.textPrimary)
-                        }
-                        if appState.isCordaanBuddy { Spacer() }
                     }
                 }
 
@@ -91,7 +76,7 @@ struct TaskDetailSheet: View {
                 }
 
                 if canAccept {
-                    BCPrimaryButton(title: "Aannemen", icon: "checkmark.circle.fill") {
+                    BCCTAButton(title: "Taak aannemen", icon: "checkmark", iconLeading: true) {
                         onAccept()
                     }
                 } else {
@@ -113,6 +98,18 @@ struct TaskDetailSheet: View {
             .padding(BCSpacing.lg)
         }
         .background(BCColors.background.ignoresSafeArea())
+    }
+
+    private func statBox(label: String, value: String, color: Color) -> some View {
+        VStack(spacing: 2) {
+            Text(label)
+                .font(BCTypography.caption)
+                .foregroundStyle(BCColors.textSecondary)
+            Text(value)
+                .font(BCTypography.title3)
+                .foregroundStyle(color)
+        }
+        .frame(maxWidth: .infinity)
     }
 }
 
@@ -370,7 +367,7 @@ struct TaskInProgressView: View {
             switch stage {
             case .onTheWay:
                 VStack(spacing: BCSpacing.sm) {
-                    BCPrimaryButton(title: "Ik ben aangekomen", icon: "qrcode") {
+                    BCCTAButton(title: "Ik ben aangekomen", icon: "qrcode", iconLeading: true) {
                         stage = .atDoor
                     }
                     cancelTaskButton
@@ -378,14 +375,14 @@ struct TaskInProgressView: View {
                 .padding(BCSpacing.lg)
             case .atDoor:
                 VStack(spacing: BCSpacing.sm) {
-                    BCPrimaryButton(title: "Start check-in", icon: "qrcode.viewfinder") {
+                    BCCTAButton(title: "Inchecken", icon: "qrcode.viewfinder", iconLeading: true) {
                         showCheckIn = true
                     }
                     cancelTaskButton
                 }
                 .padding(BCSpacing.lg)
             case .inProgress:
-                BCPrimaryButton(title: "Taak afronden", icon: "checkmark.circle.fill") {
+                BCCTAButton(title: "Taak afronden", icon: "checkmark", iconLeading: true) {
                     stage = .completing
                 }
                 .padding(BCSpacing.lg)
@@ -394,7 +391,7 @@ struct TaskInProgressView: View {
                     BCSecondaryButton(title: "Terug", icon: "chevron.left") {
                         stage = .inProgress
                     }
-                    BCPrimaryButton(title: "Bevestig", icon: "checkmark") {
+                    BCCTAButton(title: "Bevestig", icon: "checkmark", iconLeading: true) {
                         appState.buddyCompletes(notes: note)
                         stage = .done
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1.8) {

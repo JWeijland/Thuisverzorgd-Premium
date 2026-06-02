@@ -301,6 +301,48 @@ enum MockData {
             t.completedAt = Date().addingTimeInterval(-86400 * 9 + 2700)
             t.completionNote = "Mooi weer, lekker gewandeld langs het Vondelpark."
             return t
+        }(),
+        {
+            var t = ServiceTask(
+                id: UUID(),
+                elderlyName: "Henk",
+                elderlyAddress: "Ferdinand Bolstraat 45",
+                coordinate: CLLocationCoordinate2D(latitude: 52.3534, longitude: 4.8993),
+                category: .walkOutdoors,
+                requiredLevel: .zero,
+                timing: .scheduled(date: Date().addingTimeInterval(-86400 * 3)),
+                note: "Wandeling langs de Amstel.",
+                priceCents: 1300,
+                status: .completed,
+                createdAt: Date().addingTimeInterval(-86400 * 3),
+                assignedBuddyName: "Jan",
+                assignedBuddyRating: 4.6,
+                assignedBuddyEtaMinutes: 0
+            )
+            t.completedAt = Date().addingTimeInterval(-86400 * 3 + 2700)
+            t.completionNote = "Henk genoot van de frisse lucht, rustig tempo aangehouden."
+            return t
+        }(),
+        {
+            var t = ServiceTask(
+                id: UUID(),
+                elderlyName: "Henk",
+                elderlyAddress: "Ferdinand Bolstraat 45",
+                coordinate: CLLocationCoordinate2D(latitude: 52.3534, longitude: 4.8993),
+                category: .groceries,
+                requiredLevel: .zero,
+                timing: .scheduled(date: Date().addingTimeInterval(-86400 * 7)),
+                note: "Weekboodschappen halen.",
+                priceCents: 1500,
+                status: .completed,
+                createdAt: Date().addingTimeInterval(-86400 * 7),
+                assignedBuddyName: "Jan",
+                assignedBuddyRating: 4.4,
+                assignedBuddyEtaMinutes: 0
+            )
+            t.completedAt = Date().addingTimeInterval(-86400 * 7 + 5400)
+            t.completionNote = "Boodschappen gehaald en samen opgeruimd."
+            return t
         }()
     ]
 
@@ -413,13 +455,24 @@ enum MockData {
         Review(id: UUID(), stars: 4, body: "Prima bezoek, kwam wel iets later dan afgesproken.", authorName: "Truus, 76", date: Date().addingTimeInterval(-86400 * 12))
     ]
 
-    static var familyActivity: [ActivityItem] {
-        [
-            ActivityItem(id: UUID(), date: Date().addingTimeInterval(-3600 * 2), icon: "checkmark.circle.fill", color: BCColors.success, title: "Bezoek voltooid", detail: "Aiyla bracht een uur door met Riet. Notitie: Riet was vrolijk."),
-            ActivityItem(id: UUID(), date: Date().addingTimeInterval(-86400 * 2), icon: "bag.fill", color: BCColors.primary, title: "Boodschappen gedaan", detail: "Sophie deed boodschappen bij AH (€ 23,40 contant gegeven)."),
-            ActivityItem(id: UUID(), date: Date().addingTimeInterval(-86400 * 4), icon: "figure.walk", color: BCColors.accent, title: "Wandeling", detail: "Aiyla wandelde 30 min met Riet in het Heemraadspark."),
-            ActivityItem(id: UUID(), date: Date().addingTimeInterval(-86400 * 5), icon: "star.fill", color: BCColors.warning, title: "Beoordeling toegevoegd", detail: "Riet gaf Aiyla 5 sterren."),
-            ActivityItem(id: UUID(), date: Date().addingTimeInterval(-86400 * 8), icon: "pills.fill", color: BCColors.level2, title: "Medicatie-reminder", detail: "Mark was aanwezig bij de avondmedicatie.")
-        ]
+    /// Activiteit per beheerde oudere, zodat de familie-tijdlijn meebeweegt met wie je beheert.
+    static func familyActivity(for firstName: String) -> [ActivityItem] {
+        switch firstName {
+        case "Henk":
+            return [
+                ActivityItem(id: UUID(), date: Date().addingTimeInterval(-86400 * 3), icon: "figure.walk", color: BCColors.accent, title: "Wandeling", detail: "Jan wandelde langs de Amstel met Henk. Notitie: rustig tempo, Henk genoot."),
+                ActivityItem(id: UUID(), date: Date().addingTimeInterval(-86400 * 7), icon: "bag.fill", color: BCColors.primary, title: "Boodschappen gedaan", detail: "Jan haalde de weekboodschappen en ruimde alles samen op."),
+                ActivityItem(id: UUID(), date: Date().addingTimeInterval(-86400 * 9), icon: "pills.fill", color: BCColors.level2, title: "Medicatie-reminder", detail: "Jan herinnerde Henk aan de ochtendmedicatie."),
+                ActivityItem(id: UUID(), date: Date().addingTimeInterval(-86400 * 12), icon: "checkmark.circle.fill", color: BCColors.success, title: "Koppeling gelukt", detail: "Henk is gekoppeld aan uw familie-account.")
+            ]
+        default: // Riet
+            return [
+                ActivityItem(id: UUID(), date: Date().addingTimeInterval(-3600 * 2), icon: "checkmark.circle.fill", color: BCColors.success, title: "Bezoek voltooid", detail: "Aiyla bracht een uur door met Riet. Notitie: Riet was vrolijk."),
+                ActivityItem(id: UUID(), date: Date().addingTimeInterval(-86400 * 2), icon: "bag.fill", color: BCColors.primary, title: "Boodschappen gedaan", detail: "Sophie deed boodschappen bij AH (€ 23,40 contant gegeven)."),
+                ActivityItem(id: UUID(), date: Date().addingTimeInterval(-86400 * 4), icon: "figure.walk", color: BCColors.accent, title: "Wandeling", detail: "Aiyla wandelde 30 min met Riet in het Heemraadspark."),
+                ActivityItem(id: UUID(), date: Date().addingTimeInterval(-86400 * 5), icon: "star.fill", color: BCColors.warning, title: "Beoordeling toegevoegd", detail: "Riet gaf Aiyla 5 sterren."),
+                ActivityItem(id: UUID(), date: Date().addingTimeInterval(-86400 * 8), icon: "pills.fill", color: BCColors.level2, title: "Medicatie-reminder", detail: "Mark was aanwezig bij de avondmedicatie.")
+            ]
+        }
     }
 }

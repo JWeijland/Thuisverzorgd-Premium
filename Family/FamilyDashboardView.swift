@@ -12,23 +12,36 @@ struct FamilyDashboardView: View {
         _showLinking = showLinking
     }
 
+    // Cijfers afgeleid uit de bezoeken van de oudere die je nu beheert,
+    // zodat wisselen van naaste zichtbaar andere data toont.
+    private var elderlyVisits: [ServiceTask] {
+        appState.taskHistory.filter { $0.elderlyName == appState.activeFamilyElderly.firstName }
+    }
+    private var satisfactionText: String {
+        let ratings = elderlyVisits.compactMap { $0.assignedBuddyRating }
+        guard !ratings.isEmpty else { return "—" }
+        let avg = ratings.reduce(0, +) / Double(ratings.count)
+        return String(format: "%.1f", avg).replacingOccurrences(of: ".", with: ",")
+    }
+    private var regularBuddyCount: Int {
+        Set(elderlyVisits.compactMap { $0.assignedBuddyName }).count
+    }
+
     var body: some View {
         VStack(spacing: 0) {
-            BCNavBar(title: "Hallo \(appState.familyUser.firstName)", subtitle: "Familie-overzicht")
+            header
 
             ScrollView {
                 VStack(spacing: BCSpacing.md) {
-                    // Switcher: kies welke oudere je beheert
-                    if appState.familyLinkedElderly.count > 1 {
-                        elderlySwitcher
-                            .padding(.horizontal, BCSpacing.lg)
-                            .padding(.top, BCSpacing.md)
-                    }
+                    // Beheer-switcher: wíé je beheert — altijd bovenaan
+                    elderlySwitcher
+                        .padding(.horizontal, BCSpacing.lg)
+                        .padding(.top, BCSpacing.md)
 
-                    // Linked elderly card
+                    // Naaste-card
                     BCCard {
-                        VStack(alignment: .leading, spacing: BCSpacing.sm) {
-                            HStack {
+                        VStack(alignment: .leading, spacing: BCSpacing.md) {
+                            HStack(spacing: BCSpacing.md) {
                                 ZStack {
                                     Circle().fill(BCColors.primary.opacity(0.12)).frame(width: 56, height: 56)
                                     Text(String(appState.activeFamilyElderly.firstName.prefix(1)))
@@ -39,7 +52,7 @@ struct FamilyDashboardView: View {
                                     Text(appState.activeFamilyElderly.fullName)
                                         .font(BCTypography.headline)
                                         .foregroundStyle(BCColors.textPrimary)
-                                    Text("\(appState.activeFamilyElderly.age) jaar — \(appState.activeFamilyElderly.address)")
+                                    Text("\(appState.activeFamilyElderly.age) jaar · \(appState.activeFamilyElderly.address)")
                                         .font(BCTypography.caption)
                                         .foregroundStyle(BCColors.textSecondary)
                                 }
@@ -58,79 +71,79 @@ struct FamilyDashboardView: View {
                             }
                             Divider()
                             HStack(spacing: BCSpacing.md) {
-                                StatPill(icon: "heart.fill", value: "12", label: "Bezoeken")
-                                StatPill(icon: "star.fill", value: "4.9", label: "Tevreden")
+                                StatPill(icon: "house.fill", value: "\(elderlyVisits.count)", label: "Bezoeken", color: BCColors.primary)
+                                StatPill(icon: "star.fill", value: satisfactionText, label: "Tevreden", color: BCColors.success)
+                                StatPill(icon: "person.2.fill", value: "\(regularBuddyCount)", label: "Vaste buddies", color: BCColors.navy500)
                             }
                         }
                     }
                     .padding(.horizontal, BCSpacing.lg)
-                    .padding(.top, BCSpacing.md)
 
-                    // Unreviewed banner
+                    // Groene hulp-hero
+                    BCHelpHeroCard(
+                        eyebrow: "VOOR \(appState.activeFamilyElderly.firstName.uppercased())",
+                        title: "Hulp aanvragen",
+                        subtitle: "Plan een vertrouwde buddy in voor \(appState.activeFamilyElderly.firstName).",
+                        icon: "hand.raised.fill"
+                    ) {
+                        showRequestFlow = true
+                    }
+                    .padding(.horizontal, BCSpacing.lg)
+
+                    // Nudge: bezoek wacht op beoordeling
                     if appState.familyHasUnreviewedVisits {
                         Button { showRecentVisits = true } label: {
-                            BCCard {
-                                HStack(spacing: BCSpacing.md) {
+                            HStack(spacing: BCSpacing.md) {
+                                ZStack {
+                                    Circle().fill(BCColors.warning.opacity(0.14)).frame(width: 40, height: 40)
                                     Image(systemName: "star.bubble.fill")
-                                        .font(.system(size: 28))
+                                        .font(.system(size: 18, weight: .semibold))
                                         .foregroundStyle(BCColors.warning)
-                                    VStack(alignment: .leading, spacing: 2) {
-                                        Text("Bezoek wacht op beoordeling")
-                                            .font(BCTypography.bodyEmphasized)
-                                            .foregroundStyle(BCColors.textPrimary)
-                                        Text("\(appState.activeFamilyElderly.firstName) heeft nog niet beoordeeld — wil jij het doen?")
-                                            .font(BCTypography.caption)
-                                            .foregroundStyle(BCColors.textSecondary)
-                                    }
-                                    Spacer()
-                                    Image(systemName: "chevron.right")
-                                        .font(.system(size: 13, weight: .semibold))
-                                        .foregroundStyle(BCColors.textTertiary)
                                 }
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("Bezoek wacht op beoordeling")
+                                        .font(BCTypography.bodyEmphasized)
+                                        .foregroundStyle(BCColors.textPrimary)
+                                    Text("\(appState.activeFamilyElderly.firstName) heeft nog niet beoordeeld — wil jij het doen?")
+                                        .font(BCTypography.caption)
+                                        .foregroundStyle(BCColors.textSecondary)
+                                }
+                                Spacer(minLength: BCSpacing.sm)
+                                Circle()
+                                    .fill(BCColors.danger)
+                                    .frame(width: 10, height: 10)
+                                Image(systemName: "chevron.right")
+                                    .font(.system(size: 13, weight: .semibold))
+                                    .foregroundStyle(BCColors.textTertiary)
                             }
-                            .overlay(alignment: .leading) {
-                                UnevenRoundedRectangle(
-                                    topLeadingRadius: BCRadius.lg,
-                                    bottomLeadingRadius: BCRadius.lg,
-                                    bottomTrailingRadius: 0,
-                                    topTrailingRadius: 0,
-                                    style: .continuous
-                                )
-                                .fill(BCColors.warning)
-                                .frame(width: 4)
-                            }
+                            .padding(BCSpacing.md)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(
+                                RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous)
+                                    .fill(BCColors.surface)
+                            )
+                            .bcSoftShadow(.card)
                         }
                         .buttonStyle(.plain)
                         .padding(.horizontal, BCSpacing.lg)
                     }
 
-                    // Quick actions
+                    // Snel regelen
                     BCSectionHeader(title: "Snel regelen")
                         .padding(.horizontal, BCSpacing.lg)
+                        .padding(.top, BCSpacing.xs)
 
-                    VStack(spacing: BCSpacing.sm) {
-                        BCBigTile(
-                            title: "Hulp aanvragen voor \(appState.activeFamilyElderly.firstName)",
-                            subtitle: "Plan een buddy in",
-                            icon: "hand.raised.fill",
-                            color: BCColors.primary
-                        ) {
-                            showRequestFlow = true
-                        }
-                        BCBigTile(
-                            title: "Vergoeding aanvragen via Wmo",
-                            subtitle: "Gemeentelijke financiering voor hulpkosten",
-                            icon: "eurosign.circle.fill",
-                            color: BCColors.success
-                        ) {
-                            showWMOGuide = true
-                        }
+                    LazyVGrid(
+                        columns: [GridItem(.flexible(), spacing: BCSpacing.sm),
+                                  GridItem(.flexible(), spacing: BCSpacing.sm)],
+                        spacing: BCSpacing.sm
+                    ) {
                         ZStack(alignment: .topTrailing) {
-                            BCBigTile(
-                                title: "Bekijk recente bezoeken",
+                            BCQuickTile(
+                                title: "Recente bezoeken",
                                 subtitle: "Wat is er gebeurd",
                                 icon: "list.bullet.rectangle",
-                                color: BCColors.accent
+                                color: BCColors.accentDark
                             ) {
                                 showRecentVisits = true
                             }
@@ -138,15 +151,23 @@ struct FamilyDashboardView: View {
                                 Circle()
                                     .fill(BCColors.danger)
                                     .frame(width: 14, height: 14)
-                                    .overlay(Circle().stroke(BCColors.background, lineWidth: 2))
-                                    .padding(10)
+                                    .overlay(Circle().stroke(BCColors.surface, lineWidth: 2))
+                                    .padding(12)
                             }
                         }
-                        BCBigTile(
+                        BCQuickTile(
+                            title: "Wmo-vergoeding",
+                            subtitle: "Financiering via gemeente",
+                            icon: "eurosign.circle.fill",
+                            color: BCColors.success
+                        ) {
+                            showWMOGuide = true
+                        }
+                        BCQuickTile(
                             title: "Oudere koppelen",
-                            subtitle: "Voeg moeder, vader of een andere oudere toe",
+                            subtitle: "Voeg een naaste toe",
                             icon: "person.badge.plus",
-                            color: BCColors.level1
+                            color: BCColors.navy500
                         ) {
                             showLinking = true
                         }
@@ -172,7 +193,42 @@ struct FamilyDashboardView: View {
         }
     }
 
-    // MARK: - Elderly switcher
+    // MARK: - Navy header
+
+    private var header: some View {
+        ZStack(alignment: .bottom) {
+            LinearGradient(
+                colors: [BCColors.navy900, BCColors.navy700],
+                startPoint: .top, endPoint: .bottom
+            )
+            .ignoresSafeArea(edges: .top)
+
+            HStack(alignment: .center, spacing: BCSpacing.md) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Familie-overzicht")
+                        .font(BCTypography.caption)
+                        .foregroundStyle(.white.opacity(0.8))
+                    Text("Hallo \(appState.familyUser.firstName)")
+                        .font(BCTypography.titleEmphasized)
+                        .foregroundStyle(.white)
+                }
+                Spacer()
+                ZStack {
+                    Circle().fill(.white.opacity(0.16))
+                    Text(String(appState.familyUser.firstName.prefix(1)))
+                        .font(BCTypography.title3)
+                        .foregroundStyle(.white)
+                }
+                .frame(width: 48, height: 48)
+                .accessibilityHidden(true)
+            }
+            .padding(.horizontal, BCSpacing.lg)
+            .padding(.bottom, BCSpacing.md)
+        }
+        .frame(height: 64)
+    }
+
+    // MARK: - Beheer-switcher
 
     private var elderlySwitcher: some View {
         Menu {
@@ -189,28 +245,42 @@ struct FamilyDashboardView: View {
             }
         } label: {
             HStack(spacing: BCSpacing.sm) {
-                Image(systemName: "person.2.fill")
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(BCColors.primary)
-                Text("U beheert: \(appState.activeFamilyElderly.firstName)")
-                    .font(BCTypography.subheadline)
-                    .foregroundStyle(BCColors.textPrimary)
+                ZStack {
+                    Circle().fill(BCColors.primary.opacity(0.12)).frame(width: 32, height: 32)
+                    Image(systemName: "person.2.fill")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(BCColors.primary)
+                }
+                VStack(alignment: .leading, spacing: 0) {
+                    Text("U beheert")
+                        .font(BCTypography.caption)
+                        .foregroundStyle(BCColors.textTertiary)
+                    Text(appState.activeFamilyElderly.firstName)
+                        .font(BCTypography.bodyEmphasized)
+                        .foregroundStyle(BCColors.textPrimary)
+                }
                 Spacer()
-                Image(systemName: "chevron.up.chevron.down")
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(BCColors.textSecondary)
+                if appState.familyLinkedElderly.count > 1 {
+                    HStack(spacing: BCSpacing.xs) {
+                        Text("Wissel")
+                            .font(BCTypography.captionEmphasized)
+                            .foregroundStyle(BCColors.primary)
+                        Image(systemName: "chevron.up.chevron.down")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundStyle(BCColors.primary)
+                    }
+                }
             }
             .padding(.horizontal, BCSpacing.md)
             .padding(.vertical, BCSpacing.sm)
+            .frame(maxWidth: .infinity, alignment: .leading)
             .background(
-                RoundedRectangle(cornerRadius: BCRadius.md, style: .continuous)
+                RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous)
                     .fill(BCColors.surface)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: BCRadius.md, style: .continuous)
-                            .stroke(BCColors.border, lineWidth: 1)
-                    )
             )
+            .bcSoftShadow(.card)
         }
+        .disabled(appState.familyLinkedElderly.count <= 1)
     }
 }
 
@@ -221,6 +291,10 @@ private struct FamilyVisitsSheet: View {
     @Environment(\.dismiss) private var dismiss
     @State private var selectedTask: ServiceTask? = nil
 
+    private var visits: [ServiceTask] {
+        appState.taskHistory.filter { $0.elderlyName == appState.activeFamilyElderly.firstName }
+    }
+
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -229,14 +303,14 @@ private struct FamilyVisitsSheet: View {
                         Text("Recente bezoeken")
                             .font(BCTypography.title3)
                             .foregroundStyle(BCColors.textPrimary)
-                        Text("Tik op een bezoek om een beoordeling te geven")
+                        Text("Bezoeken bij \(appState.activeFamilyElderly.firstName) — tik om te beoordelen")
                             .font(BCTypography.caption)
                             .foregroundStyle(BCColors.textTertiary)
                     }
                     .padding(.horizontal, BCSpacing.lg)
                     .padding(.top, BCSpacing.md)
 
-                    if appState.taskHistory.isEmpty {
+                    if visits.isEmpty {
                         BCCard {
                             Text("Nog geen bezoeken.")
                                 .font(BCTypography.body)
@@ -245,7 +319,7 @@ private struct FamilyVisitsSheet: View {
                         .padding(.horizontal, BCSpacing.lg)
                     } else {
                         VStack(spacing: BCSpacing.sm) {
-                            ForEach(appState.taskHistory) { task in
+                            ForEach(visits) { task in
                                 let rated = appState.taskRatings[task.id]
                                 let needsReview = rated == nil && !appState.skippedReviews.contains(task.id)
                                 Button { selectedTask = task } label: {
@@ -440,15 +514,16 @@ private struct StatPill: View {
     let icon: String
     let value: String
     let label: String
+    var color: Color = BCColors.primary
 
     var body: some View {
         VStack(spacing: 2) {
             Image(systemName: icon)
                 .font(.system(size: 16, weight: .semibold))
-                .foregroundStyle(BCColors.primary)
+                .foregroundStyle(color)
             Text(value)
                 .font(BCTypography.headline)
-                .foregroundStyle(BCColors.textPrimary)
+                .foregroundStyle(color)
             Text(label)
                 .font(BCTypography.caption)
                 .foregroundStyle(BCColors.textSecondary)

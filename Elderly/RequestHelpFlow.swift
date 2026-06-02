@@ -88,7 +88,7 @@ struct RequestHelpFlow: View {
         HStack(spacing: BCSpacing.xs) {
             ForEach(0..<3) { i in
                 Capsule()
-                    .fill(i <= step ? BCColors.primary : BCColors.border)
+                    .fill(i <= step ? BCColors.accent : BCColors.border)
                     .frame(height: 6)
             }
         }
@@ -100,37 +100,42 @@ struct RequestHelpFlow: View {
         } label: {
             HStack(spacing: BCSpacing.md) {
                 ZStack {
-                    Circle()
-                        .fill(BCColors.primary)
-                        .frame(width: 64, height: 64)
+                    RoundedRectangle(cornerRadius: BCRadius.md, style: .continuous)
+                        .fill(BCColors.navy900)
                     Image(systemName: "mic.fill")
-                        .font(.system(size: 28, weight: .bold))
+                        .font(.system(size: largeText ? 34 : 28, weight: .semibold))
                         .foregroundStyle(.white)
                 }
+                .frame(width: et.iconBoxSize, height: et.iconBoxSize)
+
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Spreek het in")
                         .font(et.button)
-                        .foregroundStyle(BCColors.textPrimary)
+                        .foregroundStyle(BCColors.navy900)
                     Text("Tik en vertel rustig wat u nodig heeft")
                         .font(et.caption)
                         .foregroundStyle(BCColors.textSecondary)
                         .multilineTextAlignment(.leading)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
-                Spacer()
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 18, weight: .semibold))
-                    .foregroundStyle(BCColors.primary)
+
+                Spacer(minLength: BCSpacing.sm)
+
+                ZStack {
+                    Circle().fill(BCColors.accent)
+                    Image(systemName: "arrow.right")
+                        .font(.system(size: largeText ? 24 : 20, weight: .bold))
+                        .foregroundStyle(BCColors.navy900)
+                }
+                .frame(width: largeText ? 64 : 56, height: largeText ? 64 : 56)
             }
-            .padding(BCSpacing.md)
-            .frame(maxWidth: .infinity)
+            .padding(largeText ? BCSpacing.lg : BCSpacing.md)
+            .frame(maxWidth: .infinity, alignment: .leading)
             .background(
-                RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous)
-                    .fill(BCColors.primary.opacity(0.08))
+                RoundedRectangle(cornerRadius: BCRadius.xl, style: .continuous)
+                    .fill(BCColors.surface)
             )
-            .overlay(
-                RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous)
-                    .stroke(BCColors.primary.opacity(0.35), lineWidth: 1.5)
-            )
+            .bcSoftShadow(.raised)
         }
         .buttonStyle(.plain)
     }
@@ -168,7 +173,7 @@ struct RequestHelpFlow: View {
                         .font(et.body)
                         .padding(BCSpacing.md)
                         .background(RoundedRectangle(cornerRadius: BCRadius.md, style: .continuous).fill(BCColors.surface))
-                        .overlay(RoundedRectangle(cornerRadius: BCRadius.md, style: .continuous).stroke(BCColors.border, lineWidth: 1))
+                        .bcSoftShadow(.subtle)
                         .padding(.horizontal, BCSpacing.lg)
                         .onChange(of: descriptionText) { _, text in
                             if let match = recognizeCategory(from: text) {
@@ -182,7 +187,7 @@ struct RequestHelpFlow: View {
                             Text("Herkend als: \(match.displayName)")
                                 .font(BCTypography.captionEmphasized)
                         }
-                        .foregroundStyle(BCColors.primary)
+                        .foregroundStyle(BCColors.green700)
                         .padding(.horizontal, BCSpacing.lg)
                         .transition(.opacity.combined(with: .move(edge: .top)))
                     }
@@ -216,15 +221,16 @@ struct RequestHelpFlow: View {
                             .padding(BCSpacing.md)
                             .background(RoundedRectangle(cornerRadius: BCRadius.md, style: .continuous).fill(BCColors.surface))
                             .overlay(RoundedRectangle(cornerRadius: BCRadius.md, style: .continuous).stroke(
-                                otherDescription.isEmpty ? BCColors.border : BCColors.primary, lineWidth: otherDescription.isEmpty ? 1 : 1.5
+                                otherDescription.isEmpty ? Color.clear : BCColors.accent, lineWidth: otherDescription.isEmpty ? 0 : 1.5
                             ))
+                            .bcSoftShadow(.subtle)
                             .padding(.horizontal, BCSpacing.lg)
                         if !otherDescription.isEmpty {
                             let level = recognizeLevel(from: otherDescription)
                             HStack(spacing: BCSpacing.sm) {
                                 Image(systemName: "sparkles")
                                     .font(.system(size: 12, weight: .semibold))
-                                    .foregroundStyle(BCColors.primary)
+                                    .foregroundStyle(BCColors.green700)
                                 Text("Waarschijnlijk niveau:")
                                     .font(BCTypography.caption)
                                     .foregroundStyle(BCColors.textSecondary)
@@ -306,9 +312,10 @@ struct RequestHelpFlow: View {
                     if useCustomDate {
                         DatePicker("", selection: $customDate, in: Date()..., displayedComponents: [.date, .hourAndMinute])
                             .datePickerStyle(.graphical)
-                            .tint(BCColors.primary)
+                            .tint(BCColors.accent)
                             .padding(BCSpacing.md)
                             .background(RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous).fill(BCColors.surface))
+                            .bcSoftShadow(.card)
                             .onChange(of: customDate) { _, d in selectedTiming = .scheduled(date: d) }
                     }
                 }
@@ -329,7 +336,7 @@ struct RequestHelpFlow: View {
                         .font(et.body)
                         .padding(BCSpacing.md)
                         .background(RoundedRectangle(cornerRadius: BCRadius.md, style: .continuous).fill(BCColors.surface))
-                        .overlay(RoundedRectangle(cornerRadius: BCRadius.md, style: .continuous).stroke(BCColors.border, lineWidth: 1))
+                        .bcSoftShadow(.subtle)
                 }
                 .padding(.horizontal, BCSpacing.lg)
             }
@@ -375,9 +382,10 @@ struct RequestHelpFlow: View {
                 if useCustomEndDate {
                     DatePicker("", selection: $recurringEndDate, in: Date()..., displayedComponents: .date)
                         .datePickerStyle(.graphical)
-                        .tint(BCColors.primary)
+                        .tint(BCColors.accent)
                         .padding(BCSpacing.md)
                         .background(RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous).fill(BCColors.surface))
+                        .bcSoftShadow(.card)
                 }
             }
             .padding(.horizontal, BCSpacing.lg)
@@ -444,7 +452,7 @@ struct RequestHelpFlow: View {
                                 .foregroundStyle(BCColors.textSecondary)
                             Text(formattedPrice)
                                 .font(BCTypography.title2)
-                                .foregroundStyle(BCColors.textPrimary)
+                                .foregroundStyle(BCColors.navy900)
                             if isRecurring {
                                 Text("Elke keer apart verrekend via uw tegoed")
                                     .font(BCTypography.caption)
@@ -452,9 +460,13 @@ struct RequestHelpFlow: View {
                             }
                         }
                         Spacer()
-                        Image(systemName: isRecurring ? "repeat" : "creditcard.fill")
-                            .font(.system(size: 28, weight: .semibold))
-                            .foregroundStyle(BCColors.primary)
+                        ZStack {
+                            Circle().fill(BCColors.accent.opacity(0.15))
+                            Image(systemName: isRecurring ? "repeat" : "creditcard.fill")
+                                .font(.system(size: 24, weight: .semibold))
+                                .foregroundStyle(BCColors.green700)
+                        }
+                        .frame(width: 56, height: 56)
                     }
                 }
                 .padding(.horizontal, BCSpacing.lg)
@@ -483,9 +495,9 @@ struct RequestHelpFlow: View {
                         step -= 1
                     }
                 }
-                BCPrimaryButton(
+                BCCTAButton(
                     title: step == 2 ? "Bevestigen" : "Volgende",
-                    icon: step == 2 ? "checkmark" : "chevron.right",
+                    icon: step == 2 ? "checkmark" : "arrow.right",
                     fullWidth: true
                 ) {
                     next()
@@ -587,11 +599,14 @@ private struct CategoryTile: View {
             if largeText {
                 // Large: horizontal layout for 1-column rows
                 HStack(spacing: BCSpacing.md) {
-                    Image(systemName: category.icon)
-                        .font(.system(size: 34, weight: .semibold))
-                        .foregroundStyle(isSelected ? .white : BCColors.primary)
-                        .frame(width: 68, height: 68)
-                        .background(Circle().fill(isSelected ? BCColors.primary : BCColors.primary.opacity(0.10)))
+                    ZStack {
+                        RoundedRectangle(cornerRadius: BCRadius.md, style: .continuous)
+                            .fill(isSelected ? BCColors.navy900 : BCColors.navy900.opacity(0.08))
+                        Image(systemName: category.icon)
+                            .font(.system(size: 34, weight: .semibold))
+                            .foregroundStyle(isSelected ? .white : BCColors.navy700)
+                    }
+                    .frame(width: 68, height: 68)
                     Text(category.displayName)
                         .font(et.button)
                         .foregroundStyle(BCColors.textPrimary)
@@ -600,21 +615,25 @@ private struct CategoryTile: View {
                     if isSelected {
                         Image(systemName: "checkmark.circle.fill")
                             .font(.system(size: 24))
-                            .foregroundStyle(BCColors.primary)
+                            .foregroundStyle(BCColors.navy700)
                     }
                 }
                 .padding(BCSpacing.md)
                 .frame(maxWidth: .infinity)
                 .background(RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous).fill(BCColors.surface))
-                .overlay(RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous).stroke(isSelected ? BCColors.primary : BCColors.border, lineWidth: isSelected ? 2 : 1))
+                .overlay(RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous).stroke(isSelected ? BCColors.navy700 : Color.clear, lineWidth: 2))
+                .bcSoftShadow(.card)
             } else {
                 // Normal: vertical layout for 2-column grid
                 VStack(spacing: BCSpacing.xs) {
-                    Image(systemName: category.icon)
-                        .font(.system(size: 28, weight: .semibold))
-                        .foregroundStyle(isSelected ? .white : BCColors.primary)
-                        .frame(width: 56, height: 56)
-                        .background(Circle().fill(isSelected ? BCColors.primary : BCColors.primary.opacity(0.10)))
+                    ZStack {
+                        RoundedRectangle(cornerRadius: BCRadius.md, style: .continuous)
+                            .fill(isSelected ? BCColors.navy900 : BCColors.navy900.opacity(0.08))
+                        Image(systemName: category.icon)
+                            .font(.system(size: 28, weight: .semibold))
+                            .foregroundStyle(isSelected ? .white : BCColors.navy700)
+                    }
+                    .frame(width: 56, height: 56)
                     Text(category.displayName)
                         .font(BCTypography.bodyEmphasized)
                         .foregroundStyle(BCColors.textPrimary)
@@ -623,7 +642,8 @@ private struct CategoryTile: View {
                 .padding(BCSpacing.md)
                 .frame(maxWidth: .infinity, minHeight: 130)
                 .background(RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous).fill(BCColors.surface))
-                .overlay(RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous).stroke(isSelected ? BCColors.primary : BCColors.border, lineWidth: isSelected ? 2 : 1))
+                .overlay(RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous).stroke(isSelected ? BCColors.navy700 : Color.clear, lineWidth: 2))
+                .bcSoftShadow(.card)
             }
         }
         .buttonStyle(.plain)
@@ -643,11 +663,14 @@ private struct TimingTile: View {
     var body: some View {
         Button(action: action) {
             HStack(spacing: BCSpacing.md) {
-                Image(systemName: icon)
-                    .font(.system(size: largeText ? 28 : 22, weight: .semibold))
-                    .foregroundStyle(isSelected ? .white : BCColors.primary)
-                    .frame(width: largeText ? 60 : 48, height: largeText ? 60 : 48)
-                    .background(Circle().fill(isSelected ? BCColors.primary : BCColors.primary.opacity(0.10)))
+                ZStack {
+                    RoundedRectangle(cornerRadius: BCRadius.md, style: .continuous)
+                        .fill(isSelected ? BCColors.navy900 : BCColors.navy900.opacity(0.08))
+                    Image(systemName: icon)
+                        .font(.system(size: largeText ? 28 : 22, weight: .semibold))
+                        .foregroundStyle(isSelected ? .white : BCColors.navy700)
+                }
+                .frame(width: largeText ? 60 : 48, height: largeText ? 60 : 48)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
                         .font(et.body)
@@ -662,13 +685,14 @@ private struct TimingTile: View {
                 if isSelected {
                     Image(systemName: "checkmark.circle.fill")
                         .font(.system(size: largeText ? 28 : 22, weight: .semibold))
-                        .foregroundStyle(BCColors.primary)
+                        .foregroundStyle(BCColors.navy700)
                 }
             }
             .padding(largeText ? BCSpacing.lg : BCSpacing.md)
             .frame(maxWidth: .infinity, minHeight: largeText ? 88 : 72)
             .background(RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous).fill(BCColors.surface))
-            .overlay(RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous).stroke(isSelected ? BCColors.primary : BCColors.border, lineWidth: isSelected ? 2 : 1))
+            .overlay(RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous).stroke(isSelected ? BCColors.navy700 : Color.clear, lineWidth: 2))
+            .bcSoftShadow(.card)
         }
         .buttonStyle(.plain)
     }

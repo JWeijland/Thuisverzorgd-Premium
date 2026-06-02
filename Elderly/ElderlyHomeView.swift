@@ -9,53 +9,56 @@ struct ElderlyHomeView: View {
     @State private var selectedHistoryTask: ServiceTask? = nil
     @State private var showWMOGuide = false
     @State private var showQRCode = false
+    @State private var messageSent = false
 
     private var et: BCElderlyType { BCElderlyType(large: largeText) }
 
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             VStack(spacing: 0) {
-                BCNavBar(title: "Hallo \(appState.elderlyUser.firstName)", subtitle: "Thuisverzorgd")
+                greetingHeader
 
                 ScrollView {
                     VStack(spacing: BCSpacing.lg) {
                         if let active = appState.activeTaskForElderly {
-                            ActiveTaskBanner(task: active)
+                            ActiveTaskBanner(task: active, onCall: callBuddy, onMessage: sendMessage)
                                 .padding(.horizontal, BCSpacing.lg)
                                 .padding(.top, BCSpacing.md)
                         }
 
-                        VStack(alignment: .leading, spacing: largeText ? BCSpacing.lg : BCSpacing.md) {
-                            Text("Waar kan ik u mee helpen?")
+                        // Belangrijkste actie — wit & rustig (variant C)
+                        BCHelpHeroCard(
+                            title: appState.activeTaskForElderly == nil ? "Hulp vragen" : "Nieuwe hulp vragen",
+                            subtitle: "Een vertrouwde buddy uit de buurt komt u helpen."
+                        ) {
+                            showRequestFlow = true
+                        }
+                        .padding(.horizontal, BCSpacing.lg)
+                        .padding(.top, BCSpacing.md)
+
+                        // Ook handig
+                        VStack(alignment: .leading, spacing: BCSpacing.sm) {
+                            Text("Ook handig")
                                 .font(et.heading)
                                 .foregroundStyle(BCColors.textPrimary)
                                 .padding(.horizontal, BCSpacing.lg)
 
-                            VStack(spacing: largeText ? BCSpacing.md : BCSpacing.sm) {
-                                BCBigTile(
-                                    title: "Hulp vragen",
-                                    subtitle: largeText ? nil : "Iemand komt u zo helpen",
-                                    icon: "hand.raised.fill",
-                                    color: BCColors.primary
-                                ) {
-                                    showRequestFlow = true
-                                }
-
-                                BCBigTile(
+                            HStack(alignment: .top, spacing: BCSpacing.md) {
+                                BCQuickTile(
                                     title: "Vergoeding aanvragen",
-                                    subtitle: largeText ? nil : "Laat hulpkosten vergoeden via de Wmo",
+                                    subtitle: "Via de Wmo — stap voor stap",
                                     icon: "eurosign.circle.fill",
                                     color: BCColors.success
                                 ) {
                                     showWMOGuide = true
                                 }
-
-                                if !largeText {
-                                    BCBigTile(
-                                        title: "Bezoek aan de deur",
-                                        subtitle: "Toon QR-code voor de buddy",
+                                // QR is alleen zinvol als er een buddy onderweg is naar de deur.
+                                if appState.activeTaskForElderly != nil {
+                                    BCQuickTile(
+                                        title: "QR voor de deur",
+                                        subtitle: "Toon dit aan de buddy",
                                         icon: "qrcode",
-                                        color: BCColors.level1
+                                        color: BCColors.navy500
                                     ) {
                                         showQRCode = true
                                     }
@@ -63,7 +66,6 @@ struct ElderlyHomeView: View {
                             }
                             .padding(.horizontal, BCSpacing.lg)
                         }
-                        .padding(.top, BCSpacing.md)
 
                         upcomingSection
 
@@ -79,6 +81,11 @@ struct ElderlyHomeView: View {
                 .padding(.bottom, BCSpacing.lg)
         }
         .background(BCColors.background.ignoresSafeArea())
+        .alert("Bericht verstuurd", isPresented: $messageSent) {
+            Button("Oké") { }
+        } message: {
+            Text("We laten uw buddy weten dat u een bericht heeft gestuurd.")
+        }
         .sheet(isPresented: $showRequestFlow) {
             RequestHelpFlow()
         }
@@ -107,6 +114,61 @@ struct ElderlyHomeView: View {
                 }
             }
         }
+    }
+
+    // MARK: - Greeting header
+
+    private var greeting: String {
+        switch Calendar.current.component(.hour, from: Date()) {
+        case 5..<12:  return "Goedemorgen"
+        case 12..<18: return "Goedemiddag"
+        default:      return "Goedenavond"
+        }
+    }
+
+    private var greetingHeader: some View {
+        ZStack(alignment: .bottom) {
+            LinearGradient(
+                colors: [BCColors.navy900, BCColors.navy700],
+                startPoint: .top, endPoint: .bottom
+            )
+            .ignoresSafeArea(edges: .top)
+
+            HStack(spacing: BCSpacing.md) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(greeting + ",")
+                        .font(BCTypography.body)
+                        .foregroundStyle(.white.opacity(0.85))
+                    Text(appState.elderlyUser.firstName)
+                        .font(BCTypography.titleEmphasized)
+                        .foregroundStyle(.white)
+                }
+                Spacer()
+                ZStack {
+                    Circle().fill(.white)
+                    Text(String(appState.elderlyUser.firstName.prefix(1)))
+                        .font(BCTypography.title3)
+                        .foregroundStyle(BCColors.navy700)
+                }
+                .frame(width: 48, height: 48)
+                .accessibilityHidden(true)
+            }
+            .padding(.horizontal, BCSpacing.lg)
+            .padding(.bottom, BCSpacing.md)
+        }
+        .frame(height: 76)
+    }
+
+    private func callBuddy() {
+        let digits = Config.supportPhoneNumber.filter { $0.isNumber || $0 == "+" }
+        if let url = URL(string: "tel://\(digits)"), UIApplication.shared.canOpenURL(url) {
+            UIApplication.shared.open(url)
+        }
+    }
+
+    private func sendMessage() {
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        messageSent = true
     }
 
     private var upcomingSection: some View {
@@ -192,7 +254,7 @@ struct ElderlyHomeView: View {
                                         topTrailingRadius: 0,
                                         style: .continuous
                                     )
-                                    .fill(BCColors.primary)
+                                    .fill(BCColors.accent)
                                     .frame(width: 4)
                                 }
                             }
@@ -229,43 +291,116 @@ struct ElderlyHomeView: View {
 
 struct ActiveTaskBanner: View {
     let task: ServiceTask
+    var onCall: () -> Void = {}
+    var onMessage: () -> Void = {}
 
     var body: some View {
         BCCard {
-            VStack(alignment: .leading, spacing: BCSpacing.sm) {
+            VStack(alignment: .leading, spacing: BCSpacing.md) {
                 HStack {
-                    BCStatusPill(label: task.status.label, color: task.status.color)
+                    BCStatusPill(
+                        label: task.status == .accepted ? "Onderweg naar u" : task.status.label,
+                        color: task.status == .accepted ? BCColors.success : task.status.color,
+                        showDot: true
+                    )
                     Spacer()
                     if let eta = task.assignedBuddyEtaMinutes {
-                        Label("\(eta) min", systemImage: "clock.fill")
-                            .font(BCTypography.captionEmphasized)
-                            .foregroundStyle(BCColors.textSecondary)
+                        HStack(spacing: 4) {
+                            Image(systemName: "clock.fill")
+                            Text("\(eta) min")
+                        }
+                        .font(BCTypography.captionEmphasized)
+                        .foregroundStyle(BCColors.textSecondary)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 5)
+                        .background(Capsule().fill(BCColors.surfaceMuted))
                     }
                 }
-                Text(task.category.displayName)
-                    .font(BCTypography.elderlyHeading)
-                    .foregroundStyle(BCColors.textPrimary)
+
                 if let buddy = task.assignedBuddyName {
                     HStack(spacing: BCSpacing.sm) {
-                        Image(systemName: "person.crop.circle.fill")
-                            .font(.system(size: 28))
-                            .foregroundStyle(BCColors.primary)
+                        ZStack {
+                            if let img = buddyAvatarImage {
+                                Image(uiImage: img)
+                                    .resizable()
+                                    .scaledToFill()
+                            } else {
+                                LinearGradient(
+                                    colors: [BCColors.navy700, BCColors.navy500],
+                                    startPoint: .topLeading, endPoint: .bottomTrailing
+                                )
+                                Image(systemName: "person.fill")
+                                    .font(.system(size: 24, weight: .semibold))
+                                    .foregroundStyle(.white.opacity(0.95))
+                            }
+                        }
+                        .frame(width: 52, height: 52)
+                        .clipShape(Circle())
+                        .overlay(Circle().stroke(.white, lineWidth: 2))
+                        .bcSoftShadow(.subtle)
                         VStack(alignment: .leading, spacing: 2) {
                             Text("\(buddy) komt naar u toe")
                                 .font(BCTypography.headline)
                                 .foregroundStyle(BCColors.textPrimary)
-                            if let r = task.assignedBuddyRating {
-                                BCRatingStars(value: r)
+                            HStack(spacing: 4) {
+                                Text(task.category.displayName)
+                                if let r = task.assignedBuddyRating {
+                                    Text("· ★ \(String(format: "%.1f", r))")
+                                }
                             }
+                            .font(BCTypography.caption)
+                            .foregroundStyle(BCColors.textSecondary)
                         }
+                        Spacer(minLength: 0)
+                    }
+
+                    BCProgressBar(value: 0.55, color: BCColors.accent)
+
+                    HStack(spacing: BCSpacing.sm) {
+                        actionButton("Bellen", icon: "phone.fill", filled: true, action: onCall)
+                        actionButton("Bericht", icon: "message.fill", filled: false, action: onMessage)
                     }
                 } else {
+                    Text(task.category.displayName)
+                        .font(BCTypography.elderlyHeading)
+                        .foregroundStyle(BCColors.textPrimary)
                     Text("We zoeken een buddy voor u…")
                         .font(BCTypography.body)
                         .foregroundStyle(BCColors.textSecondary)
                 }
             }
         }
+    }
+
+    /// Toont automatisch een echte foto zodra je een afbeelding met de buddynaam
+    /// (bv. "Sanne" of "buddy-sanne") aan Assets.xcassets toevoegt; anders een nette avatar.
+    private var buddyAvatarImage: UIImage? {
+        guard let name = task.assignedBuddyName else { return nil }
+        return UIImage(named: name) ?? UIImage(named: "buddy-\(name.lowercased())")
+    }
+
+    private func actionButton(_ title: String, icon: String, filled: Bool, action: @escaping () -> Void) -> some View {
+        Button {
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            action()
+        } label: {
+            HStack(spacing: BCSpacing.xs) {
+                Image(systemName: icon).font(.system(size: 16, weight: .semibold))
+                Text(title).font(BCTypography.bodyEmphasized)
+            }
+            .foregroundStyle(filled ? .white : BCColors.primary)
+            .frame(maxWidth: .infinity)
+            .frame(height: 52)
+            .background(
+                RoundedRectangle(cornerRadius: BCRadius.md, style: .continuous)
+                    .fill(filled ? BCColors.primary : BCColors.surface)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: BCRadius.md, style: .continuous)
+                    .stroke(BCColors.primary.opacity(filled ? 0 : 0.4), lineWidth: 1.5)
+            )
+        }
+        .buttonStyle(.plain)
     }
 }
 

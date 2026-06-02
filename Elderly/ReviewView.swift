@@ -82,7 +82,7 @@ struct ReviewView: View {
             VStack(spacing: BCSpacing.sm) {
                 Divider()
 
-                BCPrimaryButton(
+                BCCTAButton(
                     title: "Verstuur beoordeling",
                     icon: "star.fill"
                 ) {

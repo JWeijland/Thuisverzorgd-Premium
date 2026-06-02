@@ -83,15 +83,24 @@ struct LoginView: View {
 
     private var pageHeader: some View {
         ZStack(alignment: .bottom) {
-            BCColors.primary.ignoresSafeArea(edges: .top)
+            LinearGradient(
+                colors: [BCColors.navy900, BCColors.navy700],
+                startPoint: .top, endPoint: .bottom
+            )
+            .ignoresSafeArea(edges: .top)
             VStack(spacing: BCSpacing.sm) {
                 HStack(spacing: BCSpacing.sm) {
-                    Image(systemName: "heart.text.square.fill")
-                        .font(.system(size: 28, weight: .semibold))
-                        .foregroundStyle(BCColors.accent)
-                    Text("Thuisverzorgd")
+                    ZStack {
+                        RoundedRectangle(cornerRadius: BCRadius.sm, style: .continuous)
+                            .fill(.white.opacity(0.12))
+                            .frame(width: 38, height: 38)
+                        Image(systemName: "house.fill")
+                            .font(.system(size: 20, weight: .semibold))
+                            .foregroundStyle(BCColors.accent)
+                    }
+                    (Text("Thuis").foregroundStyle(.white)
+                     + Text("verzorgd").foregroundStyle(BCColors.accent))
                         .font(BCTypography.titleEmphasized)
-                        .foregroundStyle(.white)
                 }
                 .padding(.top, BCSpacing.xl)
                 Text("Hulp om de hoek, met een hart erbij.")
@@ -191,7 +200,7 @@ struct LoginView: View {
                     HStack(spacing: BCSpacing.md) {
                         Image(systemName: selectedRole == role ? "largecircle.fill.circle" : "circle")
                             .font(.system(size: 20))
-                            .foregroundStyle(selectedRole == role ? BCColors.primary : BCColors.textTertiary)
+                            .foregroundStyle(selectedRole == role ? BCColors.green600 : BCColors.textTertiary)
                         VStack(alignment: .leading, spacing: 2) {
                             Text(role.displayName)
                                 .font(BCTypography.subheadline)
@@ -208,11 +217,11 @@ struct LoginView: View {
                     .padding(.vertical, BCSpacing.sm)
                     .background(
                         RoundedRectangle(cornerRadius: BCRadius.md, style: .continuous)
-                            .fill(selectedRole == role ? BCColors.primary.opacity(0.06) : BCColors.surface)
+                            .fill(selectedRole == role ? BCColors.accent.opacity(0.10) : BCColors.surface)
                             .overlay(
                                 RoundedRectangle(cornerRadius: BCRadius.md, style: .continuous)
                                     .stroke(
-                                        selectedRole == role ? BCColors.primary : BCColors.border,
+                                        selectedRole == role ? BCColors.green600 : BCColors.border,
                                         lineWidth: selectedRole == role ? 1.5 : 1
                                     )
                             )
@@ -234,9 +243,10 @@ struct LoginView: View {
             .frame(maxWidth: .infinity)
             .frame(height: 56)
             .background(
-                RoundedRectangle(cornerRadius: BCRadius.md, style: .continuous)
+                RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous)
                     .fill(BCColors.primary)
             )
+            .bcSoftShadow(.subtle)
     }
 
     private var registerFormValid: Bool {
@@ -392,15 +402,12 @@ private struct AuthField: View {
             .textInputAutocapitalization(autocapitalization)
             .autocorrectionDisabled()
             .padding(.horizontal, BCSpacing.md)
-            .padding(.vertical, 13)
+            .padding(.vertical, 15)
             .background(
                 RoundedRectangle(cornerRadius: BCRadius.md, style: .continuous)
                     .fill(BCColors.surface)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: BCRadius.md, style: .continuous)
-                            .stroke(BCColors.border, lineWidth: 1)
-                    )
             )
+            .bcSoftShadow(.subtle)
         }
     }
 }

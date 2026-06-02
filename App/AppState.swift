@@ -30,7 +30,7 @@ final class AppState {
     // MARK: - Familie — gekoppelde ouderen
     // Eén familielid kan meerdere ouderen beheren (bijv. moeder én vader).
     // Meerdere familieleden kunnen dezelfde oudere koppelen via dezelfde code.
-    var familyLinkedElderly: [ElderlyUser] = [MockData.omaRiet]
+    var familyLinkedElderly: [ElderlyUser] = [MockData.omaRiet, MockData.opaHenk]
     var activeFamilyElderlyIndex: Int = 0
 
     /// De oudere die het familielid nu beheert.
@@ -173,8 +173,9 @@ final class AppState {
     }
 
     var familyHasUnreviewedVisits: Bool {
-        taskHistory.contains { task in
-            taskRatings[task.id] == nil && !skippedReviews.contains(task.id)
+        let name = activeFamilyElderly.firstName
+        return taskHistory.contains { task in
+            task.elderlyName == name && taskRatings[task.id] == nil && !skippedReviews.contains(task.id)
         }
     }
 

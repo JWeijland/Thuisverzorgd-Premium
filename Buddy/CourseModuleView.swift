@@ -78,7 +78,7 @@ private struct VideoModuleView: View {
             }
 
             Divider()
-            BCPrimaryButton(title: "Markeer als bekeken", icon: "checkmark.circle.fill", action: onComplete)
+            BCCTAButton(title: "Markeer als bekeken", icon: "checkmark", iconLeading: true, action: onComplete)
                 .padding(.horizontal, BCSpacing.lg)
                 .padding(.bottom, BCSpacing.md)
         }
@@ -138,7 +138,7 @@ private struct ReadingModuleView: View {
             }
 
             Divider()
-            BCPrimaryButton(title: "Klaar met lezen", icon: "checkmark.circle.fill", action: onComplete)
+            BCCTAButton(title: "Klaar met lezen", icon: "checkmark", iconLeading: true, action: onComplete)
                 .padding(.horizontal, BCSpacing.lg)
                 .padding(.bottom, BCSpacing.md)
         }
@@ -259,7 +259,7 @@ private struct QuizModuleView: View {
             Divider()
 
             if confirmedAnswer == nil {
-                BCPrimaryButton(title: "Bevestig antwoord", icon: "checkmark") {
+                BCCTAButton(title: "Bevestig antwoord", icon: "checkmark", iconLeading: true) {
                     if selectedAnswer != nil { confirmedAnswer = selectedAnswer }
                 }
                 .opacity(selectedAnswer != nil ? 1.0 : 0.4)
@@ -267,7 +267,7 @@ private struct QuizModuleView: View {
                 .padding(.horizontal, BCSpacing.lg)
                 .padding(.bottom, BCSpacing.md)
             } else {
-                BCPrimaryButton(
+                BCCTAButton(
                     title: currentIndex < questions.count - 1 ? "Volgende vraag" : "Bekijk resultaat",
                     icon: currentIndex < questions.count - 1 ? "chevron.right" : "checkmark.seal"
                 ) {
@@ -314,7 +314,7 @@ private struct QuizModuleView: View {
 
             VStack(spacing: BCSpacing.sm) {
                 if passed {
-                    BCPrimaryButton(title: "Certificaat ophalen", icon: "rosette", action: onPass)
+                    BCCTAButton(title: "Certificaat ophalen", icon: "rosette", iconLeading: true, action: onPass)
                         .padding(.horizontal, BCSpacing.lg)
                 } else {
                     BCPrimaryButton(title: "Opnieuw proberen", icon: "arrow.counterclockwise") {

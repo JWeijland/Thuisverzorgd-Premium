@@ -85,9 +85,11 @@ struct AdminPhoneRequestView: View {
                 }
             }
             .padding(BCSpacing.md)
-            .background(BCColors.surface)
-            .clipShape(RoundedRectangle(cornerRadius: BCRadius.md))
-            .overlay(RoundedRectangle(cornerRadius: BCRadius.md).stroke(BCColors.border, lineWidth: 1))
+            .background(
+                RoundedRectangle(cornerRadius: BCRadius.md, style: .continuous)
+                    .fill(BCColors.surface)
+            )
+            .bcSoftShadow(.subtle)
             .padding(.horizontal, BCSpacing.lg)
             .padding(.top, BCSpacing.md)
             .padding(.bottom, BCSpacing.sm)
@@ -98,16 +100,11 @@ struct AdminPhoneRequestView: View {
                 VStack(spacing: BCSpacing.sm) {
                     if searchResults.isEmpty {
                         BCCard {
-                            VStack(spacing: BCSpacing.sm) {
-                                Image(systemName: "person.fill.questionmark")
-                                    .font(.system(size: 32))
-                                    .foregroundStyle(BCColors.textTertiary)
-                                Text("Geen ouderen gevonden")
-                                    .font(BCTypography.body)
-                                    .foregroundStyle(BCColors.textSecondary)
-                            }
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, BCSpacing.md)
+                            BCEmptyState(
+                                icon: "person.fill.questionmark",
+                                title: "Geen ouderen gevonden",
+                                message: "Pas de zoekterm aan om iemand te vinden."
+                            )
                         }
                         .padding(.horizontal, BCSpacing.lg)
                     } else {

@@ -7,6 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FADE00000000000000000001 /* Montserrat-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FACE00000000000000000001 /* Montserrat-Regular.ttf */; };
+		FADE00000000000000000002 /* Montserrat-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FACE00000000000000000002 /* Montserrat-Medium.ttf */; };
+		FADE00000000000000000003 /* Montserrat-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FACE00000000000000000003 /* Montserrat-SemiBold.ttf */; };
+		FADE00000000000000000004 /* Montserrat-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FACE00000000000000000004 /* Montserrat-Bold.ttf */; };
+		FADE00000000000000000005 /* Montserrat-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FACE00000000000000000005 /* Montserrat-ExtraBold.ttf */; };
+		FADE00000000000000000006 /* OpenSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FACE00000000000000000006 /* OpenSans-Regular.ttf */; };
+		FADE00000000000000000007 /* OpenSans-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FACE00000000000000000007 /* OpenSans-SemiBold.ttf */; };
+		FADE00000000000000000008 /* OpenSans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FACE00000000000000000008 /* OpenSans-Bold.ttf */; };
 		D30284292FA7CAB9008387AB /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = D30283D12FA7C932008387AB /* Supabase */; };
 		D37409CF2FB229AB003448A5 /* RoleSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D374099C2FB229AB003448A5 /* RoleSelectionView.swift */; };
 		D37409D02FB229AB003448A5 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D374099A2FB229AB003448A5 /* LoginView.swift */; };
@@ -67,6 +75,15 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		FACE00000000000000000001 /* Montserrat-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-Regular.ttf"; sourceTree = "<group>"; };
+		FACE00000000000000000002 /* Montserrat-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-Medium.ttf"; sourceTree = "<group>"; };
+		FACE00000000000000000003 /* Montserrat-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-SemiBold.ttf"; sourceTree = "<group>"; };
+		FACE00000000000000000004 /* Montserrat-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-Bold.ttf"; sourceTree = "<group>"; };
+		FACE00000000000000000005 /* Montserrat-ExtraBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-ExtraBold.ttf"; sourceTree = "<group>"; };
+		FACE00000000000000000006 /* OpenSans-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "OpenSans-Regular.ttf"; sourceTree = "<group>"; };
+		FACE00000000000000000007 /* OpenSans-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "OpenSans-SemiBold.ttf"; sourceTree = "<group>"; };
+		FACE00000000000000000008 /* OpenSans-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "OpenSans-Bold.ttf"; sourceTree = "<group>"; };
+		FAB10000000000000000FACE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info.plist"; sourceTree = "<group>"; };
 		D30283182FA68640008387AB /* Buddy Care.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Buddy Care.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D37409942FB229AB003448A5 /* AdminBillingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminBillingView.swift; sourceTree = "<group>"; };
 		D37409952FB229AB003448A5 /* AdminMembershipsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminMembershipsView.swift; sourceTree = "<group>"; };
@@ -139,6 +156,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		FA600000000000000000FACE /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				FACE00000000000000000001 /* Montserrat-Regular.ttf */,
+				FACE00000000000000000002 /* Montserrat-Medium.ttf */,
+				FACE00000000000000000003 /* Montserrat-SemiBold.ttf */,
+				FACE00000000000000000004 /* Montserrat-Bold.ttf */,
+				FACE00000000000000000005 /* Montserrat-ExtraBold.ttf */,
+				FACE00000000000000000006 /* OpenSans-Regular.ttf */,
+				FACE00000000000000000007 /* OpenSans-SemiBold.ttf */,
+				FACE00000000000000000008 /* OpenSans-Bold.ttf */,
+			);
+			path = Fonts;
+			sourceTree = "<group>";
+		};
 		D302830F2FA68640008387AB = {
 			isa = PBXGroup;
 			children = (
@@ -155,6 +187,8 @@
 				D37409C52FB229AB003448A5 /* Models */,
 				D37409CB2FB229AB003448A5 /* Services */,
 				D37409CE2FB229AB003448A5 /* Shared */,
+				FA600000000000000000FACE /* Fonts */,
+				FAB10000000000000000FACE /* Info.plist */,
 				D30283192FA68640008387AB /* Products */,
 			);
 			sourceTree = "<group>";
@@ -349,6 +383,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				D3740A002FB229AB003448A5 /* Assets.xcassets in Resources */,
+				FADE00000000000000000001 /* Montserrat-Regular.ttf in Resources */,
+				FADE00000000000000000002 /* Montserrat-Medium.ttf in Resources */,
+				FADE00000000000000000003 /* Montserrat-SemiBold.ttf in Resources */,
+				FADE00000000000000000004 /* Montserrat-Bold.ttf in Resources */,
+				FADE00000000000000000005 /* Montserrat-ExtraBold.ttf in Resources */,
+				FADE00000000000000000006 /* OpenSans-Regular.ttf in Resources */,
+				FADE00000000000000000007 /* OpenSans-SemiBold.ttf in Resources */,
+				FADE00000000000000000008 /* OpenSans-Bold.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -552,6 +594,7 @@
 				DEVELOPMENT_TEAM = 5QFB2FHYYQ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Thuisverzorgd;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Thuisverzorgd gebruikt de camera voor de selfie-check en het scannen van de QR-code bij inchecken.";
@@ -592,6 +635,7 @@
 				DEVELOPMENT_TEAM = 5QFB2FHYYQ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Thuisverzorgd;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Thuisverzorgd gebruikt de camera voor de selfie-check en het scannen van de QR-code bij inchecken.";

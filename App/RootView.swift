@@ -63,7 +63,7 @@ struct RootView: View {
                     Circle()
                         .fill(BCColors.accent.opacity(0.18))
                         .frame(width: 96, height: 96)
-                    Image(systemName: "heart.text.square.fill")
+                    Image(systemName: "house.fill")
                         .font(.system(size: 52, weight: .semibold))
                         .foregroundStyle(BCColors.accent)
                 }

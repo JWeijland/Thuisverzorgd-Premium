@@ -52,7 +52,7 @@ struct CordaanBuddyOnboardingFlow: View {
         HStack(spacing: BCSpacing.xs) {
             ForEach(0..<4) { i in
                 Capsule()
-                    .fill(i <= step ? BCColors.primary : BCColors.border)
+                    .fill(i <= step ? BCColors.accent : BCColors.border)
                     .frame(height: 4)
                     .animation(.easeInOut(duration: 0.3), value: step)
             }
@@ -173,11 +173,11 @@ struct CordaanBuddyOnboardingFlow: View {
                             } label: {
                                 Text(day)
                                     .font(BCTypography.captionEmphasized)
-                                    .foregroundStyle(selected ? .white : BCColors.textPrimary)
+                                    .foregroundStyle(selected ? BCColors.navy900 : BCColors.textPrimary)
                                     .frame(maxWidth: .infinity, minHeight: 36)
                                     .background(
                                         RoundedRectangle(cornerRadius: BCRadius.sm)
-                                            .fill(selected ? BCColors.primary : BCColors.surfaceMuted)
+                                            .fill(selected ? BCColors.accent : BCColors.surfaceMuted)
                                     )
                             }
                             .buttonStyle(.plain)
@@ -222,7 +222,7 @@ struct CordaanBuddyOnboardingFlow: View {
                 HStack(spacing: BCSpacing.md) {
                     Image(systemName: agreedToRules ? "checkmark.square.fill" : "square")
                         .font(.system(size: 22, weight: .semibold))
-                        .foregroundStyle(agreedToRules ? BCColors.primary : BCColors.textTertiary)
+                        .foregroundStyle(agreedToRules ? BCColors.accentDark : BCColors.textTertiary)
                     Text("Ik ga akkoord met de huisregels van Thuisverzorgd")
                         .font(BCTypography.body)
                         .foregroundStyle(BCColors.textPrimary)
@@ -234,9 +234,10 @@ struct CordaanBuddyOnboardingFlow: View {
                         .fill(BCColors.surface)
                         .overlay(
                             RoundedRectangle(cornerRadius: BCRadius.lg)
-                                .stroke(agreedToRules ? BCColors.primary : BCColors.border, lineWidth: 1.5)
+                                .stroke(agreedToRules ? BCColors.accent : Color.clear, lineWidth: 2)
                         )
                 )
+                .bcSoftShadow(.card)
             }
             .buttonStyle(.plain)
         }
@@ -249,38 +250,22 @@ struct CordaanBuddyOnboardingFlow: View {
             Divider()
             HStack(spacing: BCSpacing.md) {
                 if step > 0 {
-                    Button {
+                    BCSecondaryButton(title: "Terug", icon: "chevron.left") {
                         withAnimation { step -= 1 }
-                    } label: {
-                        Text("Terug")
-                            .font(BCTypography.bodyEmphasized)
-                            .foregroundStyle(BCColors.primary)
-                            .frame(maxWidth: .infinity, minHeight: 52)
-                            .background(
-                                RoundedRectangle(cornerRadius: BCRadius.lg)
-                                    .stroke(BCColors.primary, lineWidth: 1.5)
-                            )
                     }
-                    .buttonStyle(.plain)
                 }
 
-                Button {
+                BCCTAButton(
+                    title: step < 3 ? "Volgende" : "Klaar — ga aan de slag!",
+                    icon: step < 3 ? "chevron.right" : "checkmark"
+                ) {
                     if step < 3 {
                         withAnimation { step += 1 }
                     } else {
                         finishOnboarding()
                     }
-                } label: {
-                    Text(step < 3 ? "Volgende" : "Klaar — ga aan de slag!")
-                        .font(BCTypography.bodyEmphasized)
-                        .foregroundStyle(nextEnabled ? .white : BCColors.textTertiary)
-                        .frame(maxWidth: .infinity, minHeight: 52)
-                        .background(
-                            RoundedRectangle(cornerRadius: BCRadius.lg)
-                                .fill(nextEnabled ? BCColors.primary : BCColors.border)
-                        )
                 }
-                .buttonStyle(.plain)
+                .opacity(nextEnabled ? 1.0 : 0.4)
                 .disabled(!nextEnabled)
             }
             .padding(.horizontal, BCSpacing.lg)
