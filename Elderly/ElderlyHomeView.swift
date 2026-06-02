@@ -10,6 +10,7 @@ struct ElderlyHomeView: View {
     @State private var showWMOGuide = false
     @State private var showQRCode = false
     @State private var messageSent = false
+    @State private var qrFlow: QRFlowKind? = nil
 
     private var et: BCElderlyType { BCElderlyType(large: largeText) }
 
@@ -20,10 +21,16 @@ struct ElderlyHomeView: View {
 
                 ScrollView {
                     VStack(spacing: BCSpacing.lg) {
-                        if let active = appState.activeTaskForElderly {
-                            ActiveTaskBanner(task: active, onCall: callBuddy, onMessage: sendMessage)
-                                .padding(.horizontal, BCSpacing.lg)
-                                .padding(.top, BCSpacing.md)
+                        if let active = appState.activeTaskForElderly, active.status != .completed {
+                            ActiveTaskBanner(
+                                task: active,
+                                onCall: callBuddy,
+                                onMessage: sendMessage,
+                                onStartVisit: { qrFlow = .checkIn },
+                                onFinishVisit: { qrFlow = .checkOut }
+                            )
+                            .padding(.horizontal, BCSpacing.lg)
+                            .padding(.top, BCSpacing.md)
                         }
 
                         // Belangrijkste actie — wit & rustig (variant C)
@@ -95,6 +102,14 @@ struct ElderlyHomeView: View {
         .sheet(isPresented: $showQRCode) {
             ElderlyQRCodeSheet()
         }
+        .sheet(item: $qrFlow) { kind in
+            CheckInOutQRSheet(kind: kind, buddyName: appState.activeTaskForElderly?.assignedBuddyName) {
+                switch kind {
+                case .checkIn:  appState.elderlyConfirmsCheckIn()
+                case .checkOut: appState.elderlyConfirmsCheckOut()
+                }
+            }
+        }
         .sheet(item: $selectedHistoryTask) { task in
             PastVisitSheet(task: task)
         }
@@ -139,9 +154,12 @@ struct ElderlyHomeView: View {
                     Text(greeting + ",")
                         .font(BCTypography.body)
                         .foregroundStyle(.white.opacity(0.85))
+                        .lineLimit(1)
                     Text(appState.elderlyUser.firstName)
                         .font(BCTypography.titleEmphasized)
                         .foregroundStyle(.white)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.6)
                 }
                 Spacer()
                 ZStack {
@@ -293,6 +311,10 @@ struct ActiveTaskBanner: View {
     let task: ServiceTask
     var onCall: () -> Void = {}
     var onMessage: () -> Void = {}
+    var onStartVisit: () -> Void = {}
+    var onFinishVisit: () -> Void = {}
+
+    private var isInProgress: Bool { task.status == .inProgress }
 
     var body: some View {
         BCCard {
@@ -339,7 +361,7 @@ struct ActiveTaskBanner: View {
                         .overlay(Circle().stroke(.white, lineWidth: 2))
                         .bcSoftShadow(.subtle)
                         VStack(alignment: .leading, spacing: 2) {
-                            Text("\(buddy) komt naar u toe")
+                            Text(isInProgress ? "\(buddy) is bij u" : "\(buddy) komt naar u toe")
                                 .font(BCTypography.headline)
                                 .foregroundStyle(BCColors.textPrimary)
                             HStack(spacing: 4) {
@@ -354,11 +376,18 @@ struct ActiveTaskBanner: View {
                         Spacer(minLength: 0)
                     }
 
-                    BCProgressBar(value: 0.55, color: BCColors.accent)
+                    BCProgressBar(value: isInProgress ? 1.0 : 0.55, color: BCColors.accent)
 
-                    HStack(spacing: BCSpacing.sm) {
-                        actionButton("Bellen", icon: "phone.fill", filled: true, action: onCall)
-                        actionButton("Bericht", icon: "message.fill", filled: false, action: onMessage)
+                    if isInProgress {
+                        // Bezoek is bezig → afronden via QR
+                        ctaButton("Bezoek afronden", icon: "checkmark.seal.fill", action: onFinishVisit)
+                    } else {
+                        HStack(spacing: BCSpacing.sm) {
+                            actionButton("Bellen", icon: "phone.fill", filled: true, action: onCall)
+                            actionButton("Bericht", icon: "message.fill", filled: false, action: onMessage)
+                        }
+                        // Buddy is er → bezoek starten via QR
+                        ctaButton("Bezoek starten — QR tonen", icon: "qrcode", action: onStartVisit)
                     }
                 } else {
                     Text(task.category.displayName)
@@ -377,6 +406,26 @@ struct ActiveTaskBanner: View {
     private var buddyAvatarImage: UIImage? {
         guard let name = task.assignedBuddyName else { return nil }
         return UIImage(named: name) ?? UIImage(named: "buddy-\(name.lowercased())")
+    }
+
+    private func ctaButton(_ title: String, icon: String, action: @escaping () -> Void) -> some View {
+        Button {
+            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+            action()
+        } label: {
+            HStack(spacing: BCSpacing.xs) {
+                Image(systemName: icon).font(.system(size: 16, weight: .bold))
+                Text(title).font(BCTypography.bodyEmphasized)
+            }
+            .foregroundStyle(BCColors.navy900)
+            .frame(maxWidth: .infinity)
+            .frame(height: 52)
+            .background(
+                RoundedRectangle(cornerRadius: BCRadius.md, style: .continuous)
+                    .fill(BCColors.accent)
+            )
+        }
+        .buttonStyle(.plain)
     }
 
     private func actionButton(_ title: String, icon: String, filled: Bool, action: @escaping () -> Void) -> some View {
@@ -702,6 +751,93 @@ private struct ElderlyQRCodeSheet: View {
         guard let cgImage = context.createCGImage(scaled, from: scaled.extent) else { return nil }
         return UIImage(cgImage: cgImage)
     }
+}
+
+// MARK: - Check-in / uitcheck QR-flow (demo)
+
+enum QRFlowKind: Identifiable {
+    case checkIn, checkOut
+    var id: Int { self == .checkIn ? 0 : 1 }
+}
+
+private struct CheckInOutQRSheet: View {
+    let kind: QRFlowKind
+    let buddyName: String?
+    let onConfirm: () -> Void
+    @Environment(\.dismiss) private var dismiss
+
+    private var title: String { kind == .checkIn ? "Bezoek starten" : "Bezoek afronden" }
+    private var instruction: String {
+        let name = buddyName ?? "de buddy"
+        return kind == .checkIn
+            ? "Laat \(name) deze QR-code scannen om het bezoek te starten."
+            : "Laat \(name) deze QR-code scannen om uit te checken en het bezoek af te ronden."
+    }
+    private var skipLabel: String {
+        kind == .checkIn ? "Demo: buddy heeft gescand" : "Demo: buddy heeft uitgecheckt"
+    }
+    private var payload: String {
+        kind == .checkIn
+            ? "thuisverzorgd://checkin/\(UUID().uuidString)"
+            : "thuisverzorgd://checkout/\(UUID().uuidString)"
+    }
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: BCSpacing.lg) {
+                Spacer()
+                VStack(spacing: BCSpacing.sm) {
+                    Text(title)
+                        .font(BCTypography.title3)
+                        .foregroundStyle(BCColors.textPrimary)
+                    Text(instruction)
+                        .font(BCTypography.body)
+                        .foregroundStyle(BCColors.textSecondary)
+                        .multilineTextAlignment(.center)
+                }
+                .padding(.horizontal, BCSpacing.lg)
+
+                if let qr = bcMakeQRImage(payload: payload) {
+                    Image(uiImage: qr)
+                        .interpolation(.none)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 240, height: 240)
+                        .padding(BCSpacing.lg)
+                        .background(RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous).fill(.white))
+                        .shadow(color: .black.opacity(0.08), radius: 12, x: 0, y: 4)
+                }
+
+                Spacer()
+
+                BCCTAButton(title: skipLabel, icon: "checkmark", iconLeading: true) {
+                    onConfirm()
+                    dismiss()
+                }
+                .padding(.horizontal, BCSpacing.lg)
+                .padding(.bottom, BCSpacing.lg)
+            }
+            .background(BCColors.background.ignoresSafeArea())
+            .navigationTitle(kind == .checkIn ? "Inchecken" : "Uitchecken")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Sluiten") { dismiss() }.tint(BCColors.primary)
+                }
+            }
+        }
+    }
+}
+
+private func bcMakeQRImage(payload: String) -> UIImage? {
+    guard let filter = CIFilter(name: "CIQRCodeGenerator") else { return nil }
+    filter.setValue(Data(payload.utf8), forKey: "inputMessage")
+    filter.setValue("M", forKey: "inputCorrectionLevel")
+    guard let ciImage = filter.outputImage else { return nil }
+    let scaled = ciImage.transformed(by: CGAffineTransform(scaleX: 12, y: 12))
+    let context = CIContext()
+    guard let cgImage = context.createCGImage(scaled, from: scaled.extent) else { return nil }
+    return UIImage(cgImage: cgImage)
 }
 
 private let relativeFormatter: RelativeDateTimeFormatter = {

@@ -495,6 +495,28 @@ final class AppState {
         showToast(text: "Bedankt voor uw beoordeling!", icon: "star.fill")
     }
 
+    /// Demo: de oudere bevestigt de check-in (QR gescand of overgeslagen) → het bezoek start.
+    func elderlyConfirmsCheckIn() {
+        guard var task = activeTaskForElderly else { return }
+        task.status = .inProgress
+        if let idx = openTasks.firstIndex(where: { $0.id == task.id }) { openTasks[idx] = task }
+        activeTaskForElderly = task
+        if activeTaskForBuddy?.id == task.id { activeTaskForBuddy = task }
+        showToast(text: "Bezoek gestart", icon: "checkmark.circle.fill")
+    }
+
+    /// Demo: de oudere bevestigt de uitcheck (QR gescand of overgeslagen) → het bezoek wordt voltooid.
+    func elderlyConfirmsCheckOut() {
+        guard var task = activeTaskForElderly else { return }
+        task.status = .completed
+        task.completedAt = Date()
+        if task.completionNote == nil { task.completionNote = "Bezoek afgerond." }
+        if let idx = openTasks.firstIndex(where: { $0.id == task.id }) { openTasks.remove(at: idx) }
+        taskHistory.insert(task, at: 0)
+        activeTaskForBuddy = nil
+        activeTaskForElderly = task   // status .completed → cliëntscherm toont de beoordeling
+    }
+
     // MARK: - Organisatie methoden
 
     func submitMembershipRequest(organization: Organization, proofNote: String) {

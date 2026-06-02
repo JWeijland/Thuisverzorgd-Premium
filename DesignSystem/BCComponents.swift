@@ -371,6 +371,8 @@ struct BCStatusPill: View {
             Text(label)
                 .font(BCTypography.captionEmphasized)
                 .foregroundStyle(color)
+                .lineLimit(1)
+                .fixedSize(horizontal: true, vertical: false)
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 5)
@@ -653,12 +655,15 @@ struct BCNavBar: View {
                         Text(subtitle)
                             .font(BCTypography.caption)
                             .foregroundStyle(.white.opacity(0.8))
+                            .lineLimit(1)
                     }
                     Text(title)
                         .font(BCTypography.titleEmphasized)
                         .foregroundStyle(.white)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.6)
                 }
-                Spacer()
+                Spacer(minLength: BCSpacing.sm)
                 Image(systemName: "house.fill")
                     .font(.system(size: 20, weight: .semibold))
                     .foregroundStyle(BCColors.accent)

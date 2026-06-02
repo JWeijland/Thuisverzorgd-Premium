@@ -77,12 +77,15 @@ struct BuddyMapView: View {
         HStack(spacing: BCSpacing.sm) {
             HStack(spacing: BCSpacing.xs) {
                 Image(systemName: "house.fill")
+                    .font(.system(size: 15, weight: .semibold))
                     .foregroundStyle(BCColors.accent)
                 Text("Thuisverzorgd")
-                    .font(BCTypography.bodyEmphasized)
+                    .font(BCFont.heading(15, .bold))
                     .foregroundStyle(BCColors.navy900)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.6)
             }
-            Spacer()
+            Spacer(minLength: BCSpacing.xs)
             availabilityPill
             BCStatusPill(label: "\(visibleTasks.count) open", color: BCColors.primary)
         }
@@ -105,6 +108,8 @@ struct BuddyMapView: View {
                 Text(appState.isAvailableNow ? "Beschikbaar" : "Uit")
                     .font(BCTypography.captionEmphasized)
                     .foregroundStyle(appState.isAvailableNow ? BCColors.navy900 : BCColors.textSecondary)
+                    .lineLimit(1)
+                    .fixedSize(horizontal: true, vertical: false)
             }
             .padding(.horizontal, BCSpacing.md)
             .padding(.vertical, 7)
@@ -154,8 +159,8 @@ struct BuddyMapView: View {
         HStack(spacing: BCSpacing.xs) {
             // "Alle" toont alles; de niveau-chips zijn cumulatief ("t/m").
             filterChip(label: "Alle", isOn: maxLevelFilter >= 4) { maxLevelFilter = 4 }
-            ForEach([1, 2, 3], id: \.self) { lvl in
-                filterChip(label: "t/m Niv. \(lvl)", isOn: maxLevelFilter == lvl) { maxLevelFilter = lvl }
+            ForEach([0, 1, 2, 3], id: \.self) { lvl in
+                filterChip(label: "t/m \(lvl)", isOn: maxLevelFilter == lvl) { maxLevelFilter = lvl }
             }
         }
         .padding(BCSpacing.xs)

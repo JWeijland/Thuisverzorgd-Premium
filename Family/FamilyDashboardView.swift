@@ -208,9 +208,12 @@ struct FamilyDashboardView: View {
                     Text("Familie-overzicht")
                         .font(BCTypography.caption)
                         .foregroundStyle(.white.opacity(0.8))
+                        .lineLimit(1)
                     Text("Hallo \(appState.familyUser.firstName)")
                         .font(BCTypography.titleEmphasized)
                         .foregroundStyle(.white)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.6)
                 }
                 Spacer()
                 ZStack {
