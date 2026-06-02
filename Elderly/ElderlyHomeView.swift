@@ -27,7 +27,12 @@ struct ElderlyHomeView: View {
                                 onCall: callBuddy,
                                 onMessage: sendMessage,
                                 onStartVisit: { qrFlow = .checkIn },
-                                onFinishVisit: { qrFlow = .checkOut }
+                                onFinishVisit: { qrFlow = .checkOut },
+                                onSimulateAccept: {
+                                    if let a = appState.activeTaskForElderly {
+                                        appState.simulateBuddyAccepts(taskID: a.id)
+                                    }
+                                }
                             )
                             // ServiceTask vergelijkt alleen op id; deze id dwingt een
                             // verse hertekening af zodra status of buddy verandert.
@@ -318,6 +323,7 @@ struct ActiveTaskBanner: View {
     var onMessage: () -> Void = {}
     var onStartVisit: () -> Void = {}
     var onFinishVisit: () -> Void = {}
+    var onSimulateAccept: () -> Void = {}
 
     private var isInProgress: Bool { task.status == .inProgress }
 
@@ -395,12 +401,23 @@ struct ActiveTaskBanner: View {
                         ctaButton("Bezoek starten — QR tonen", icon: "qrcode", action: onStartVisit)
                     }
                 } else {
-                    Text(task.category.displayName)
-                        .font(BCTypography.elderlyHeading)
-                        .foregroundStyle(BCColors.textPrimary)
+                    HStack(spacing: BCSpacing.sm) {
+                        ProgressView()
+                        Text(task.category.displayName)
+                            .font(BCTypography.elderlyHeading)
+                            .foregroundStyle(BCColors.textPrimary)
+                    }
                     Text("We zoeken een buddy voor u…")
                         .font(BCTypography.body)
                         .foregroundStyle(BCColors.textSecondary)
+                    // Demo: tik om direct een buddy toe te wijzen (zonder op de 5s te wachten).
+                    Button(action: onSimulateAccept) {
+                        Text("Demo: buddy nu toewijzen")
+                            .font(BCTypography.captionEmphasized)
+                            .foregroundStyle(BCColors.primary)
+                            .padding(.vertical, BCSpacing.xs)
+                    }
+                    .buttonStyle(.plain)
                 }
             }
         }
