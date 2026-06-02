@@ -543,13 +543,8 @@ struct RequestHelpFlow: View {
                                  recurringSchedule: recurringSchedule, levelOverride: levelOverride)
         }
         dismiss()
-        // Demo: na 5 seconden neemt een buddy de aanvraag aan → cliëntscherm toont
-        // "Onderweg naar u" met de buddy en de voortgangsbalk.
-        if let task = appState.activeTaskForElderly {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
-                appState.simulateBuddyAccepts(taskID: task.id)
-            }
-        }
+        // De auto-acceptatie na 5s wordt nu in AppState.requestHelp geregeld,
+        // zodat hij betrouwbaar draait ook nadat dit scherm gesloten is.
     }
 }
 

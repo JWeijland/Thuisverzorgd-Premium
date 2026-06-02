@@ -325,6 +325,16 @@ final class AppState {
         let matches = matchingService.rankBuddies(for: task, from: allBuddies, cordaanBuddyIDs: cordaanBuddyIDs)
         lastMatches = matches
         matchingService.notifyMatchedBuddies(matches: matches, task: task)
+
+        // Demo: na 5 seconden neemt een buddy de aanvraag aan → "Onderweg naar u".
+        scheduleDemoAccept(taskID: task.id)
+    }
+
+    /// Demo-helper: laat na 5s automatisch een buddy de aanvraag aannemen.
+    private func scheduleDemoAccept(taskID: UUID) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) { [weak self] in
+            self?.simulateBuddyAccepts(taskID: taskID)
+        }
     }
 
     func requestHelpOnBehalf(
@@ -360,6 +370,9 @@ final class AppState {
         let matches = matchingService.rankBuddies(for: task, from: allBuddies, cordaanBuddyIDs: cordaanBuddyIDs)
         lastMatches = matches
         matchingService.notifyMatchedBuddies(matches: matches, task: task)
+
+        // Demo: na 5 seconden neemt een buddy de aanvraag aan → "Onderweg naar u".
+        scheduleDemoAccept(taskID: task.id)
     }
 
     func simulateBuddyAccepts(taskID: UUID) {

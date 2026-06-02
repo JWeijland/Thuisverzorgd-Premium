@@ -29,8 +29,13 @@ struct ElderlyHomeView: View {
                                 onStartVisit: { qrFlow = .checkIn },
                                 onFinishVisit: { qrFlow = .checkOut }
                             )
+                            // ServiceTask vergelijkt alleen op id; deze id dwingt een
+                            // verse hertekening af zodra status of buddy verandert.
+                            .id("\(active.id)-\(active.status.rawValue)-\(active.assignedBuddyName ?? "none")")
                             .padding(.horizontal, BCSpacing.lg)
                             .padding(.top, BCSpacing.md)
+                            .animation(.easeInOut(duration: 0.25), value: active.status)
+                            .animation(.easeInOut(duration: 0.25), value: active.assignedBuddyName)
                         }
 
                         // Belangrijkste actie — wit & rustig (variant C)
