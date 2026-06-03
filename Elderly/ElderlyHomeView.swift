@@ -11,6 +11,7 @@ struct ElderlyHomeView: View {
     @State private var showQRCode = false
     @State private var messageSent = false
     @State private var qrFlow: QRFlowKind? = nil
+    @State private var demoTick = 0   // forceert hertekening na demo-acties
 
     private var et: BCElderlyType { BCElderlyType(large: largeText) }
 
@@ -32,11 +33,12 @@ struct ElderlyHomeView: View {
                                     if let a = appState.activeTaskForElderly {
                                         appState.simulateBuddyAccepts(taskID: a.id)
                                     }
+                                    demoTick += 1   // lokale state-wijziging → gegarandeerde hertekening
                                 }
                             )
                             // ServiceTask vergelijkt alleen op id; deze id dwingt een
                             // verse hertekening af zodra status of buddy verandert.
-                            .id("\(active.id)-\(active.status.rawValue)-\(active.assignedBuddyName ?? "none")")
+                            .id("\(active.id)-\(active.status.rawValue)-\(active.assignedBuddyName ?? "none")-\(demoTick)")
                             .padding(.horizontal, BCSpacing.lg)
                             .padding(.top, BCSpacing.md)
                             .animation(.easeInOut(duration: 0.25), value: active.status)
@@ -410,14 +412,8 @@ struct ActiveTaskBanner: View {
                     Text("We zoeken een buddy voor u…")
                         .font(BCTypography.body)
                         .foregroundStyle(BCColors.textSecondary)
-                    // Demo: tik om direct een buddy toe te wijzen (zonder op de 5s te wachten).
-                    Button(action: onSimulateAccept) {
-                        Text("Demo: buddy nu toewijzen")
-                            .font(BCTypography.captionEmphasized)
-                            .foregroundStyle(BCColors.primary)
-                            .padding(.vertical, BCSpacing.xs)
-                    }
-                    .buttonStyle(.plain)
+                    // Demo: tik om direct een buddy toe te wijzen → "Onderweg naar u".
+                    ctaButton("Demo: buddy is onderweg", icon: "person.fill.checkmark", action: onSimulateAccept)
                 }
             }
         }
