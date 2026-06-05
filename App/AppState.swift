@@ -490,9 +490,9 @@ enum UserRole: String, CaseIterable, Identifiable {
     var subtitle: String {
         switch self {
         case .elderly: return "Vraag hulp aan een buddy in de buurt"
-        case .buddy:   return "Verdien geld met zorgtaken bij jou in de buurt"
+        case .buddy:   return "Verdien bij met klusjes en gezelschap in de buurt"
         case .family:  return "Regel hulp voor je vader, moeder of opa/oma"
-        case .admin:   return "Beheer aanvragen en facturatie"
+        case .admin:   return "Beheer buddies en aanvragen"
         }
     }
 

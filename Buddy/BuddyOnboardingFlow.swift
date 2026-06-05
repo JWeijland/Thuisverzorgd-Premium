@@ -110,7 +110,7 @@ struct BuddyOnboardingFlow: View {
                     Text("Welkom bij Thuisverzorgd")
                         .font(BCTypography.title)
                         .foregroundStyle(BCColors.textPrimary)
-                    Text("Verdien geld met zorgtaken bij jou in de buurt — op jouw momenten, als zelfstandige.")
+                    Text("Verdien bij door mensen in de buurt te helpen met klusjes, gezelschap en vervoer — op jouw momenten, als zelfstandige.")
                         .font(BCTypography.body)
                         .foregroundStyle(BCColors.textSecondary)
                 }
@@ -132,18 +132,18 @@ struct BuddyOnboardingFlow: View {
                         detail: "Geen loondienst — jij bent de baas"
                     )
                     OnboardingFeatureRow(
-                        icon: "graduationcap.fill", color: BCColors.primary,
-                        title: "Bouw certificaten op",
-                        detail: "Erkende e-learning modules per niveau"
+                        icon: "star.fill", color: BCColors.primary,
+                        title: "Bouw je reputatie op",
+                        detail: "Verzamel reviews en vaste klanten"
                     )
                 }
 
                 BCCard {
                     VStack(alignment: .leading, spacing: BCSpacing.xs) {
-                        Label("Juridisch", systemImage: "exclamationmark.triangle.fill")
+                        Label("Goed om te weten", systemImage: "info.circle.fill")
                             .font(BCTypography.captionEmphasized)
                             .foregroundStyle(BCColors.warning)
-                        Text("Voorbehouden handelingen (Wet BIG art. 36) zoals injecteren mogen nooit worden uitgevoerd door niet-BIG-geregistreerde personen. Thuisverzorgd biedt deze taken niet aan.")
+                        Text("Een Buddy helpt bij het dagelijks leven en welzijn. Een Buddy is geen zorgverlener en levert geen medische handelingen.")
                             .font(BCTypography.caption)
                             .foregroundStyle(BCColors.textSecondary)
                     }
@@ -740,7 +740,7 @@ struct BuddyOnboardingFlow: View {
                             .foregroundStyle(BCColors.textPrimary)
                         RuleRow(number: "1", text: "Behandel elke oudere met respect en geduld.")
                         RuleRow(number: "2", text: "Wees altijd op tijd. Geef minimaal 2 uur van tevoren aan als je niet kunt.")
-                        RuleRow(number: "3", text: "Voer alleen taken uit die overeenkomen met je niveau.")
+                        RuleRow(number: "3", text: "Voer alleen klusjes uit die je veilig en verantwoord kunt doen. Geen medische handelingen.")
                         RuleRow(number: "4", text: "Meld incidenten direct via de app.")
                         RuleRow(number: "5", text: "Neem nooit geld of waardevolle bezittingen van een cliënt aan.")
                     }

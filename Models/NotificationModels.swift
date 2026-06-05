@@ -11,8 +11,6 @@ enum BuddieNotification {
     case kycApproved
     case kycRejected
     case payoutSent(amountEuros: Double)
-    case courseExamAvailable(level: Int)
-    case certificateExpiringSoon(level: Int)
     case familyReviewReminder(elderlyName: String)
 
     var title: String {
@@ -37,10 +35,6 @@ enum BuddieNotification {
             return "Verificatie niet gelukt — neem contact op."
         case .payoutSent(let amount):
             return String(format: "€ %.2f is onderweg naar uw rekening.", amount).replacingOccurrences(of: ".", with: ",")
-        case .courseExamAvailable(let level):
-            return "Niveau \(level) examen is klaar voor u."
-        case .certificateExpiringSoon(let level):
-            return "Uw Level \(level) certificaat verloopt over \(Config.certificateExpiryWarningDays) dagen."
         case .familyReviewReminder(let name):
             return "\(name) heeft haar bezoek nog niet beoordeeld — wil jij even een beoordeling achterlaten?"
         }
@@ -58,8 +52,6 @@ enum BuddieNotification {
         case .kycApproved: return "checkmark.shield.fill"
         case .kycRejected: return "xmark.shield.fill"
         case .payoutSent: return "eurosign.circle.fill"
-        case .courseExamAvailable: return "graduationcap.fill"
-        case .certificateExpiringSoon: return "clock.badge.exclamationmark"
         case .familyReviewReminder: return "star.bubble.fill"
         }
     }
