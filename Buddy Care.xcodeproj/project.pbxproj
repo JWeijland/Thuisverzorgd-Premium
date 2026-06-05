@@ -555,7 +555,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = Thuisverzorgd;
+				INFOPLIST_KEY_CFBundleDisplayName = "Thuisverzorgd Premium";
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Thuisverzorgd gebruikt de camera voor de selfie-check en het scannen van de QR-code bij inchecken.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Thuisverzorgd controleert of je op de juiste locatie bent bij het inchecken.";
@@ -572,7 +572,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.JelleWeijland.Buddie-Care";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.JelleWeijland.Thuisverzorgd-Premium";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -596,7 +596,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = Thuisverzorgd;
+				INFOPLIST_KEY_CFBundleDisplayName = "Thuisverzorgd Premium";
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Thuisverzorgd gebruikt de camera voor de selfie-check en het scannen van de QR-code bij inchecken.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Thuisverzorgd controleert of je op de juiste locatie bent bij het inchecken.";
@@ -613,7 +613,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.JelleWeijland.Buddie-Care";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.JelleWeijland.Thuisverzorgd-Premium";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
