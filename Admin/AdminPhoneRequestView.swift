@@ -473,7 +473,6 @@ private struct AdminCategoryRow: View {
                         .lineLimit(1)
                 }
                 Spacer()
-                BCLevelBadge(level: category.minimumLevel)
                 if isSelected {
                     Image(systemName: "checkmark.circle.fill")
                         .foregroundStyle(BCColors.primary)

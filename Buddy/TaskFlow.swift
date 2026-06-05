@@ -20,10 +20,6 @@ struct TaskDetailSheet: View {
     let task: ServiceTask
     let onAccept: () -> Void
 
-    private var canAccept: Bool {
-        appState.effectiveBuddyLevel.rawValue >= task.requiredLevel.rawValue
-    }
-
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: BCSpacing.md) {
@@ -32,7 +28,7 @@ struct TaskDetailSheet: View {
                         .font(.system(size: 28, weight: .semibold))
                         .foregroundStyle(.white)
                         .frame(width: 56, height: 56)
-                        .background(Circle().fill(task.requiredLevel.color))
+                        .background(Circle().fill(BCColors.primary))
                     VStack(alignment: .leading, spacing: 2) {
                         Text(task.category.displayName)
                             .font(BCTypography.title3)
@@ -54,7 +50,7 @@ struct TaskDetailSheet: View {
                     HStack(spacing: BCSpacing.sm) {
                         statBox(label: "Afstand", value: "± 1,4 km", color: BCColors.textPrimary)
                         Divider().frame(height: 40)
-                        statBox(label: "Niveau", value: "Niv. \(task.requiredLevel.rawValue)", color: task.requiredLevel.color)
+                        statBox(label: "Dienst", value: task.category.displayName, color: BCColors.primary)
                         Divider().frame(height: 40)
                         statBox(label: "Verdienste", value: task.priceFormatted, color: BCColors.green600)
                     }
@@ -73,20 +69,8 @@ struct TaskDetailSheet: View {
                     }
                 }
 
-                if canAccept {
-                    BCCTAButton(title: "Taak aannemen", icon: "checkmark", iconLeading: true) {
-                        onAccept()
-                    }
-                } else {
-                    VStack(spacing: BCSpacing.xs) {
-                        BCPrimaryButton(title: "Niveau te laag", icon: "lock.fill") { }
-                            .opacity(0.45)
-                            .disabled(true)
-                        Text("Deze taak vereist \(task.requiredLevel.title). Voltooi eerst de bijbehorende cursussen.")
-                            .font(BCTypography.caption)
-                            .foregroundStyle(BCColors.textTertiary)
-                            .multilineTextAlignment(.center)
-                    }
+                BCCTAButton(title: "Klus aannemen", icon: "checkmark", iconLeading: true) {
+                    onAccept()
                 }
 
                 BCSecondaryButton(title: "Naar route bekijken", icon: "map.fill") {
@@ -328,7 +312,7 @@ struct TaskInProgressView: View {
                     .font(.system(size: 22, weight: .semibold))
                     .foregroundStyle(.white)
                     .frame(width: 44, height: 44)
-                    .background(Circle().fill(task.requiredLevel.color))
+                    .background(Circle().fill(BCColors.primary))
                 VStack(alignment: .leading, spacing: 2) {
                     Text(task.category.displayName)
                         .font(BCTypography.headline)
@@ -348,7 +332,7 @@ struct TaskInProgressView: View {
                                         span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
         return Map(initialPosition: .region(region)) {
             Marker(task.elderlyName, coordinate: task.coordinate)
-                .tint(task.requiredLevel.color)
+                .tint(BCColors.primary)
         }
         .frame(height: 200)
         .clipShape(RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous))

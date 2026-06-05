@@ -126,12 +126,9 @@ private struct BuddyRow: View {
                     }
                 }
                 BCRatingStars(value: buddy.ratingAverage)
-                HStack(spacing: BCSpacing.xs) {
-                    BCLevelBadge(level: buddy.level)
-                    Text("\(buddy.totalTasks) bezoeken")
-                        .font(et.caption)
-                        .foregroundStyle(BCColors.textTertiary)
-                }
+                Text("\(buddy.totalTasks) bezoeken")
+                    .font(et.caption)
+                    .foregroundStyle(BCColors.textTertiary)
             }
             Spacer()
             let heartSize: CGFloat = largeText ? 56 : 44

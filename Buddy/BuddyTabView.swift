@@ -14,10 +14,6 @@ struct BuddyTabView: View {
                 .tag(1)
                 .tabItem { Label("Wallet", systemImage: "wallet.pass.fill") }
 
-            CoursesView()
-                .tag(2)
-                .tabItem { Label("Cursussen", systemImage: "graduationcap.fill") }
-
             BuddyProfileView()
                 .tag(3)
                 .tabItem { Label("Profiel", systemImage: "person.crop.circle") }
@@ -28,14 +24,6 @@ struct BuddyTabView: View {
             set: { if !$0 { appState.isOnboardingComplete = true } }
         )) {
             BuddyOnboardingFlow()
-        }
-        .sheet(isPresented: Binding(
-            get: { appState.newlyUnlockedLevel != nil },
-            set: { if !$0 { appState.dismissLevelUnlock() } }
-        )) {
-            if let level = appState.newlyUnlockedLevel {
-                LevelUnlockedPreferencesSheet(level: level)
-            }
         }
     }
 }

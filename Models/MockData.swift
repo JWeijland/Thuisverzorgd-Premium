@@ -39,15 +39,10 @@ enum MockData {
         firstName: "Aiyla",
         lastName: "Demir",
         avatarSystemName: "person.crop.circle.fill",
-        level: .one,
-        certifications: [
-            Certification(id: UUID(), level: .zero, issuedAt: Date().addingTimeInterval(-86400 * 90), expiresAt: Date().addingTimeInterval(86400 * 365 * 2)),
-            Certification(id: UUID(), level: .one, issuedAt: Date().addingTimeInterval(-86400 * 30), expiresAt: Date().addingTimeInterval(86400 * 365 * 2))
-        ],
         ratingAverage: 4.9,
         totalTasks: 47,
-        bio: "Hallo! Ik ben Aiyla, 21 jaar en HBO-V student in Amsterdam. Ik help graag met gezelschap en lichte zorgtaken.",
-        study: "HBO-V — jaar 2, Hogeschool van Amsterdam",
+        bio: "Hallo! Ik ben Aiyla, 21 jaar en student in Amsterdam. Ik help graag met gezelschap, boodschappen en een wandeling.",
+        study: "Student — Hogeschool van Amsterdam",
         kycVerified: true,
         vogValid: true,
         vogExpiresAt: Date().addingTimeInterval(86400 * 365 * 3),
@@ -59,13 +54,9 @@ enum MockData {
             .companionship: 12,
             .groceries: 8,
             .walkOutdoors: 5,
-            .lightCleaning: 4,
-            .bedHelp: 3
+            .lightCleaning: 4
         ],
-        servicePreferences: [
-            .zero: ["Gezelschap", "Boodschappen", "Wandelen", "Lichte huishouding", "Voorlezen", "Spelletjes"],
-            .one:  ["Opstaan / naar bed", "Aankleden", "Maaltijdbereiding"]
-        ]
+        offeredServices: ["Gezelschap", "Boodschappen", "Wandelen", "Lichte huishouding", "Voorlezen", "Spelletjes", "Samen koken"]
     )
 
     static let buddyMark = BuddyUser(
@@ -73,11 +64,9 @@ enum MockData {
         firstName: "Mark",
         lastName: "Janssen",
         avatarSystemName: "person.crop.circle.fill",
-        level: .two,
-        certifications: [],
         ratingAverage: 4.7,
         totalTasks: 112,
-        bio: "Ervaren buddy met zorgachtergrond. Beschikbaar in de avonden.",
+        bio: "Ervaren buddy, handig en sociaal. Beschikbaar in de avonden.",
         study: "Sociale Studies — afgerond",
         kycVerified: true,
         vogValid: true,
@@ -87,17 +76,12 @@ enum MockData {
         coordinate: CLLocationCoordinate2D(latitude: 52.3580, longitude: 4.9000),
         maxDistanceKm: 15,
         completedTasksByCategory: [
-            .bedHelp: 28,
             .mealPrep: 22,
             .medicationReminder: 18,
             .companionship: 15,
             .appointment: 10
         ],
-        servicePreferences: [
-            .zero: ["Gezelschap", "Begeleiding afspraak", "Medicatieherinnering"],
-            .one:  ["Opstaan / naar bed", "Aankleden", "Toiletbegeleiding", "Maaltijdbereiding", "Transfers"],
-            .two:  ["Volledig wassen", "Medicatietoezicht", "Volledige ADL"]
-        ]
+        offeredServices: ["Gezelschap", "Begeleiding afspraak", "Vervoer", "Medicatieherinnering", "Samen koken", "Klusjes thuis"]
     )
 
     static let buddySophie = BuddyUser(
@@ -105,12 +89,10 @@ enum MockData {
         firstName: "Sophie",
         lastName: "de Wit",
         avatarSystemName: "person.crop.circle.fill",
-        level: .zero,
-        certifications: [],
         ratingAverage: 4.6,
         totalTasks: 8,
-        bio: "Geneeskundestudent, hou van koffie drinken en kletsen.",
-        study: "Geneeskunde — jaar 1, Amsterdam UMC",
+        bio: "Student, hou van koffie drinken en kletsen.",
+        study: "Student — Amsterdam",
         kycVerified: true,
         vogValid: true,
         vogExpiresAt: Date().addingTimeInterval(86400 * 365 * 3),
@@ -123,9 +105,7 @@ enum MockData {
             .lightCleaning: 2,
             .groceries: 2
         ],
-        servicePreferences: [
-            .zero: ["Gezelschap", "Voorlezen", "Lichte huishouding", "Boodschappen", "Spelletjes"]
-        ]
+        offeredServices: ["Gezelschap", "Voorlezen", "Lichte huishouding", "Boodschappen", "Spelletjes"]
     )
 
     static var allBuddies: [BuddyUser] { [buddyAiyla, buddyMark, buddySophie] }
@@ -146,7 +126,6 @@ enum MockData {
             elderlyAddress: "Elandsgracht 86",
             coordinate: CLLocationCoordinate2D(latitude: 52.3717, longitude: 4.8836),
             category: .companionship,
-            requiredLevel: .zero,
             timing: .now,
             note: "Een uurtje koffie en kletsen, ze voelt zich wat alleen vandaag.",
             priceCents: 1300,
@@ -162,7 +141,6 @@ enum MockData {
             elderlyAddress: "Ferdinand Bolstraat 45",
             coordinate: CLLocationCoordinate2D(latitude: 52.3534, longitude: 4.8993),
             category: .groceries,
-            requiredLevel: .zero,
             timing: .today(hour: 16),
             note: "Boodschappenlijstje ligt op de keukentafel.",
             priceCents: 1500,
@@ -178,7 +156,6 @@ enum MockData {
             elderlyAddress: "Keizersgracht 210",
             coordinate: CLLocationCoordinate2D(latitude: 52.3729, longitude: 4.8851),
             category: .mealPrep,
-            requiredLevel: .one,
             timing: .today(hour: 18),
             note: "Maaltijd opwarmen en samen eten.",
             priceCents: 1800,
@@ -194,7 +171,6 @@ enum MockData {
             elderlyAddress: "Weesperzijde 112",
             coordinate: CLLocationCoordinate2D(latitude: 52.3558, longitude: 4.9195),
             category: .walkOutdoors,
-            requiredLevel: .zero,
             timing: .now,
             note: "Een kort rondje langs het park, ongeveer 30 minuten.",
             priceCents: 1300,
@@ -210,7 +186,6 @@ enum MockData {
             elderlyAddress: "Minervalaan 78",
             coordinate: CLLocationCoordinate2D(latitude: 52.3453, longitude: 4.8732),
             category: .lightCleaning,
-            requiredLevel: .zero,
             timing: .scheduled(date: Date().addingTimeInterval(86400)),
             note: "Stofzuigen en de afwas wegzetten.",
             priceCents: 1500,
@@ -226,7 +201,6 @@ enum MockData {
             elderlyAddress: "Middenweg 44",
             coordinate: CLLocationCoordinate2D(latitude: 52.3532, longitude: 4.9272),
             category: .medicationReminder,
-            requiredLevel: .two,
             timing: .today(hour: 20),
             note: "Toezicht houden bij avondmedicatie volgens schema.",
             priceCents: 2200,
@@ -242,7 +216,6 @@ enum MockData {
             elderlyAddress: "Bilderdijkstraat 159",
             coordinate: CLLocationCoordinate2D(latitude: 52.3676, longitude: 4.8716),
             category: .companionship,
-            requiredLevel: .zero,
             timing: .now,
             note: "Even gezelschap, samen de krant doornemen.",
             priceCents: 1300,
@@ -258,7 +231,6 @@ enum MockData {
             elderlyAddress: "Czaar Peterstraat 22",
             coordinate: CLLocationCoordinate2D(latitude: 52.3711, longitude: 4.9241),
             category: .groceries,
-            requiredLevel: .zero,
             timing: .now,
             note: "Kleine boodschappen bij de buurtsuper.",
             priceCents: 1200,
@@ -274,7 +246,6 @@ enum MockData {
             elderlyAddress: "Van Woustraat 88",
             coordinate: CLLocationCoordinate2D(latitude: 52.3556, longitude: 4.8967),
             category: .appointment,
-            requiredLevel: .one,
             timing: .today(hour: 14),
             note: "Begeleiding naar de huisarts en weer terug.",
             priceCents: 1900,
@@ -290,7 +261,6 @@ enum MockData {
             elderlyAddress: "Javastraat 130",
             coordinate: CLLocationCoordinate2D(latitude: 52.3631, longitude: 4.9335),
             category: .walkOutdoors,
-            requiredLevel: .zero,
             timing: .now,
             note: "Een frisse neus halen in het Oosterpark.",
             priceCents: 1300,
@@ -306,7 +276,6 @@ enum MockData {
             elderlyAddress: "Admiraal de Ruijterweg 200",
             coordinate: CLLocationCoordinate2D(latitude: 52.3784, longitude: 4.8589),
             category: .lightCleaning,
-            requiredLevel: .zero,
             timing: .today(hour: 11),
             note: "Wat opruimen en bed verschonen.",
             priceCents: 1500,
@@ -322,7 +291,6 @@ enum MockData {
             elderlyAddress: "Plantage Middenlaan 14",
             coordinate: CLLocationCoordinate2D(latitude: 52.3669, longitude: 4.9089),
             category: .mealPrep,
-            requiredLevel: .one,
             timing: .today(hour: 17),
             note: "Samen koken en de maaltijd klaarzetten.",
             priceCents: 1800,
@@ -338,7 +306,6 @@ enum MockData {
             elderlyAddress: "Haarlemmerdijk 102",
             coordinate: CLLocationCoordinate2D(latitude: 52.3852, longitude: 4.8898),
             category: .bedHelp,
-            requiredLevel: .two,
             timing: .today(hour: 21),
             note: "Hulp bij het naar bed gaan en steunkousen uit.",
             priceCents: 2400,
@@ -358,7 +325,6 @@ enum MockData {
                 elderlyAddress: "Elandsgracht 86",
                 coordinate: CLLocationCoordinate2D(latitude: 52.3717, longitude: 4.8836),
                 category: .companionship,
-                requiredLevel: .zero,
                 timing: .scheduled(date: Date().addingTimeInterval(-86400 * 2)),
                 note: "Koffie drinken en samen kruiswoordpuzzel.",
                 priceCents: 1300,
@@ -379,7 +345,6 @@ enum MockData {
                 elderlyAddress: "Elandsgracht 86",
                 coordinate: CLLocationCoordinate2D(latitude: 52.3717, longitude: 4.8836),
                 category: .groceries,
-                requiredLevel: .zero,
                 timing: .scheduled(date: Date().addingTimeInterval(-86400 * 5)),
                 note: "Boodschappenlijstje van AH halen.",
                 priceCents: 1500,
@@ -400,7 +365,6 @@ enum MockData {
                 elderlyAddress: "Elandsgracht 86",
                 coordinate: CLLocationCoordinate2D(latitude: 52.3717, longitude: 4.8836),
                 category: .walkOutdoors,
-                requiredLevel: .zero,
                 timing: .scheduled(date: Date().addingTimeInterval(-86400 * 9)),
                 note: "Een ommetje langs het park.",
                 priceCents: 1300,
@@ -421,7 +385,6 @@ enum MockData {
                 elderlyAddress: "Ferdinand Bolstraat 45",
                 coordinate: CLLocationCoordinate2D(latitude: 52.3534, longitude: 4.8993),
                 category: .walkOutdoors,
-                requiredLevel: .zero,
                 timing: .scheduled(date: Date().addingTimeInterval(-86400 * 3)),
                 note: "Wandeling langs de Amstel.",
                 priceCents: 1300,
@@ -442,7 +405,6 @@ enum MockData {
                 elderlyAddress: "Ferdinand Bolstraat 45",
                 coordinate: CLLocationCoordinate2D(latitude: 52.3534, longitude: 4.8993),
                 category: .groceries,
-                requiredLevel: .zero,
                 timing: .scheduled(date: Date().addingTimeInterval(-86400 * 7)),
                 note: "Weekboodschappen halen.",
                 priceCents: 1500,
@@ -457,8 +419,6 @@ enum MockData {
             return t
         }()
     ]
-
-    static let courses: [Course] = CourseContent.allCourses
 
     static let earnings: [EarningEntry] = [
         EarningEntry(id: UUID(), date: Date().addingTimeInterval(-86400), elderlyName: "Riet", category: .companionship, amountCents: 1040),

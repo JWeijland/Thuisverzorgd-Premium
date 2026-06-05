@@ -496,7 +496,6 @@ private struct PastVisitSheet: View {
                             .foregroundStyle(BCColors.textPrimary)
                         if let b = buddy {
                             HStack(spacing: BCSpacing.sm) {
-                                BCLevelBadge(level: b.level)
                                 BCRatingStars(value: b.ratingAverage)
                                 Text("\(b.totalTasks) bezoeken")
                                     .font(BCTypography.caption)

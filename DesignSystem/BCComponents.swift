@@ -339,25 +339,6 @@ struct BCCard<Content: View>: View {
 
 // MARK: - Badges
 
-struct BCLevelBadge: View {
-    let level: ServiceLevel
-
-    var body: some View {
-        HStack(spacing: 4) {
-            Image(systemName: "shield.lefthalf.filled")
-                .font(.system(size: 11, weight: .semibold))
-            Text("Niveau \(level.rawValue)")
-                .font(BCTypography.captionEmphasized)
-        }
-        .foregroundStyle(.white)
-        .padding(.horizontal, 10)
-        .padding(.vertical, 5)
-        .background(
-            Capsule(style: .continuous).fill(level.color)
-        )
-    }
-}
-
 struct BCStatusPill: View {
     let label: String
     let color: Color

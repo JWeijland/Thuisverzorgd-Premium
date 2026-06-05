@@ -36,11 +36,9 @@
 		D37409E12FB229AB003448A5 /* EarningsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37409AA2FB229AB003448A5 /* EarningsView.swift */; };
 		D37409E22FB229AB003448A5 /* CheckInFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37409A62FB229AB003448A5 /* CheckInFlow.swift */; };
 		D37409E32FB229AB003448A5 /* ElderlyTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37409B42FB229AB003448A5 /* ElderlyTabView.swift */; };
-		D37409E42FB229AB003448A5 /* CoursesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37409A92FB229AB003448A5 /* CoursesView.swift */; };
 		D37409E52FB229AB003448A5 /* AdminBillingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37409942FB229AB003448A5 /* AdminBillingView.swift */; };
 		D37409E62FB229AB003448A5 /* FamilyDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37409BC2FB229AB003448A5 /* FamilyDashboardView.swift */; };
 		D37409E72FB229AB003448A5 /* ElderlyProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37409B32FB229AB003448A5 /* ElderlyProfileView.swift */; };
-		D37409E82FB229AB003448A5 /* CertificateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37409A52FB229AB003448A5 /* CertificateView.swift */; };
 		D37409E92FB229AB003448A5 /* AdminTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37409962FB229AB003448A5 /* AdminTabView.swift */; };
 		D37409EA2FB229AB003448A5 /* BuddyMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37409A12FB229AB003448A5 /* BuddyMapView.swift */; };
 		D37409EB2FB229AB003448A5 /* PaymentOverviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37409B62FB229AB003448A5 /* PaymentOverviewView.swift */; };
@@ -49,7 +47,6 @@
 		D37409EE2FB229AB003448A5 /* BCColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37409AE2FB229AB003448A5 /* BCColors.swift */; };
 		D37409EF2FB229AB003448A5 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37409AD2FB229AB003448A5 /* ContentView.swift */; };
 		D37409F02FB229AB003448A5 /* TaskFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37409AB2FB229AB003448A5 /* TaskFlow.swift */; };
-		D37409F12FB229AB003448A5 /* CourseModuleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37409A82FB229AB003448A5 /* CourseModuleView.swift */; };
 		D37409F42FB229AB003448A5 /* Buddie_CareApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37409A02FB229AB003448A5 /* Buddie_CareApp.swift */; };
 		D37409F52FB229AB003448A5 /* ActivityTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37409BB2FB229AB003448A5 /* ActivityTimelineView.swift */; };
 		D37409F62FB229AB003448A5 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37409C62FB229AB003448A5 /* AuthService.swift */; };
@@ -60,14 +57,11 @@
 		D37409FB2FB229AB003448A5 /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37409CC2FB229AB003448A5 /* SplashView.swift */; };
 		D37409FC2FB229AB003448A5 /* FamilyLinkingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37409BD2FB229AB003448A5 /* FamilyLinkingView.swift */; };
 		D37409FD2FB229AB003448A5 /* ElderlyHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37409B22FB229AB003448A5 /* ElderlyHomeView.swift */; };
-		D37409FE2FB229AB003448A5 /* CourseContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37409C12FB229AB003448A5 /* CourseContent.swift */; };
 		D37409FF2FB229AB003448A5 /* MyBuddiesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37409B52FB229AB003448A5 /* MyBuddiesView.swift */; };
 		D3740A002FB229AB003448A5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D374099F2FB229AB003448A5 /* Assets.xcassets */; };
 		AA01ABCD2FC100000000B001 /* SpeechService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA01ABCD2FC100000000A001 /* SpeechService.swift */; };
 		AA02ABCD2FC100000000B002 /* MatchingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA02ABCD2FC100000000A002 /* MatchingService.swift */; };
 		AA03ABCD2FC100000000B003 /* VoiceTaskInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA03ABCD2FC100000000A003 /* VoiceTaskInputView.swift */; };
-		AA04ABCD2FC100000000B004 /* BuddyPreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA04ABCD2FC100000000A004 /* BuddyPreferencesView.swift */; };
-		AA05ABCD2FC100000000B005 /* LevelUnlockedPreferencesSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA05ABCD2FC100000000A005 /* LevelUnlockedPreferencesSheet.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -95,10 +89,7 @@
 		D37409A22FB229AB003448A5 /* BuddyOnboardingFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuddyOnboardingFlow.swift; sourceTree = "<group>"; };
 		D37409A32FB229AB003448A5 /* BuddyProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuddyProfileView.swift; sourceTree = "<group>"; };
 		D37409A42FB229AB003448A5 /* BuddyTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuddyTabView.swift; sourceTree = "<group>"; };
-		D37409A52FB229AB003448A5 /* CertificateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CertificateView.swift; sourceTree = "<group>"; };
 		D37409A62FB229AB003448A5 /* CheckInFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckInFlow.swift; sourceTree = "<group>"; };
-		D37409A82FB229AB003448A5 /* CourseModuleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CourseModuleView.swift; sourceTree = "<group>"; };
-		D37409A92FB229AB003448A5 /* CoursesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoursesView.swift; sourceTree = "<group>"; };
 		D37409AA2FB229AB003448A5 /* EarningsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EarningsView.swift; sourceTree = "<group>"; };
 		D37409AB2FB229AB003448A5 /* TaskFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskFlow.swift; sourceTree = "<group>"; };
 		D37409AD2FB229AB003448A5 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -118,7 +109,6 @@
 		D37409BD2FB229AB003448A5 /* FamilyLinkingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyLinkingView.swift; sourceTree = "<group>"; };
 		D37409BE2FB229AB003448A5 /* FamilyProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyProfileView.swift; sourceTree = "<group>"; };
 		D37409BF2FB229AB003448A5 /* FamilyTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyTabView.swift; sourceTree = "<group>"; };
-		D37409C12FB229AB003448A5 /* CourseContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CourseContent.swift; sourceTree = "<group>"; };
 		D37409C22FB229AB003448A5 /* MockData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockData.swift; sourceTree = "<group>"; };
 		D37409C32FB229AB003448A5 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		D37409C42FB229AB003448A5 /* NotificationModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationModels.swift; sourceTree = "<group>"; };
@@ -132,8 +122,6 @@
 		AA01ABCD2FC100000000A001 /* SpeechService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechService.swift; sourceTree = "<group>"; };
 		AA02ABCD2FC100000000A002 /* MatchingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchingService.swift; sourceTree = "<group>"; };
 		AA03ABCD2FC100000000A003 /* VoiceTaskInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceTaskInputView.swift; sourceTree = "<group>"; };
-		AA04ABCD2FC100000000A004 /* BuddyPreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuddyPreferencesView.swift; sourceTree = "<group>"; };
-		AA05ABCD2FC100000000A005 /* LevelUnlockedPreferencesSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelUnlockedPreferencesSheet.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -220,15 +208,10 @@
 			children = (
 				D37409A12FB229AB003448A5 /* BuddyMapView.swift */,
 				D37409A22FB229AB003448A5 /* BuddyOnboardingFlow.swift */,
-				AA04ABCD2FC100000000A004 /* BuddyPreferencesView.swift */,
 				D37409A32FB229AB003448A5 /* BuddyProfileView.swift */,
 				D37409A42FB229AB003448A5 /* BuddyTabView.swift */,
-				D37409A52FB229AB003448A5 /* CertificateView.swift */,
 				D37409A62FB229AB003448A5 /* CheckInFlow.swift */,
-				D37409A82FB229AB003448A5 /* CourseModuleView.swift */,
-				D37409A92FB229AB003448A5 /* CoursesView.swift */,
 				D37409AA2FB229AB003448A5 /* EarningsView.swift */,
-				AA05ABCD2FC100000000A005 /* LevelUnlockedPreferencesSheet.swift */,
 				D37409AB2FB229AB003448A5 /* TaskFlow.swift */,
 			);
 			path = Buddy;
@@ -275,7 +258,6 @@
 		D37409C52FB229AB003448A5 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				D37409C12FB229AB003448A5 /* CourseContent.swift */,
 				D37409C22FB229AB003448A5 /* MockData.swift */,
 				D37409C32FB229AB003448A5 /* Models.swift */,
 				D37409C42FB229AB003448A5 /* NotificationModels.swift */,
@@ -408,11 +390,9 @@
 				D37409E12FB229AB003448A5 /* EarningsView.swift in Sources */,
 				D37409E22FB229AB003448A5 /* CheckInFlow.swift in Sources */,
 				D37409E32FB229AB003448A5 /* ElderlyTabView.swift in Sources */,
-				D37409E42FB229AB003448A5 /* CoursesView.swift in Sources */,
 				D37409E52FB229AB003448A5 /* AdminBillingView.swift in Sources */,
 				D37409E62FB229AB003448A5 /* FamilyDashboardView.swift in Sources */,
 				D37409E72FB229AB003448A5 /* ElderlyProfileView.swift in Sources */,
-				D37409E82FB229AB003448A5 /* CertificateView.swift in Sources */,
 				D37409E92FB229AB003448A5 /* AdminTabView.swift in Sources */,
 				D3740A032FB23079003448A5 /* AdminPhoneRequestView.swift in Sources */,
 				D37409EA2FB229AB003448A5 /* BuddyMapView.swift in Sources */,
@@ -422,7 +402,6 @@
 				D37409EE2FB229AB003448A5 /* BCColors.swift in Sources */,
 				D37409EF2FB229AB003448A5 /* ContentView.swift in Sources */,
 				D37409F02FB229AB003448A5 /* TaskFlow.swift in Sources */,
-				D37409F12FB229AB003448A5 /* CourseModuleView.swift in Sources */,
 				D37409F42FB229AB003448A5 /* Buddie_CareApp.swift in Sources */,
 				D37409F52FB229AB003448A5 /* ActivityTimelineView.swift in Sources */,
 				D37409F62FB229AB003448A5 /* AuthService.swift in Sources */,
@@ -433,13 +412,10 @@
 				D37409FB2FB229AB003448A5 /* SplashView.swift in Sources */,
 				D37409FC2FB229AB003448A5 /* FamilyLinkingView.swift in Sources */,
 				D37409FD2FB229AB003448A5 /* ElderlyHomeView.swift in Sources */,
-				D37409FE2FB229AB003448A5 /* CourseContent.swift in Sources */,
 				D37409FF2FB229AB003448A5 /* MyBuddiesView.swift in Sources */,
 				AA01ABCD2FC100000000B001 /* SpeechService.swift in Sources */,
 				AA02ABCD2FC100000000B002 /* MatchingService.swift in Sources */,
 				AA03ABCD2FC100000000B003 /* VoiceTaskInputView.swift in Sources */,
-				AA04ABCD2FC100000000B004 /* BuddyPreferencesView.swift in Sources */,
-				AA05ABCD2FC100000000B005 /* LevelUnlockedPreferencesSheet.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

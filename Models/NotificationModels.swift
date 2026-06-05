@@ -1,7 +1,7 @@
 import Foundation
 
 enum BuddieNotification {
-    case newTaskInArea(elderlyName: String, distanceKm: Double, level: Int, priceEuros: Double)
+    case newTaskInArea(elderlyName: String, distanceKm: Double, priceEuros: Double)
     case priorityFavorite(elderlyName: String)
     case taskAccepted(buddyName: String, etaMinutes: Int)
     case taskReassigned(elderlyName: String)
@@ -17,8 +17,8 @@ enum BuddieNotification {
 
     var title: String {
         switch self {
-        case .newTaskInArea(let name, let dist, let level, let price):
-            return "\(name) zoekt hulp — \(String(format: "%.1f", dist)) km, Level \(level), €\(Int(price))"
+        case .newTaskInArea(let name, let dist, let price):
+            return "\(name) zoekt hulp — \(String(format: "%.1f", dist)) km, €\(Int(price))"
         case .priorityFavorite(let name):
             return "\(name) vraagt hulp! Jij hebt 5 min voorrang."
         case .taskAccepted(let buddy, let eta):

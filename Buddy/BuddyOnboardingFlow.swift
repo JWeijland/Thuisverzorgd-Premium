@@ -598,178 +598,54 @@ struct BuddyOnboardingFlow: View {
         let subtitle: String
     }
 
-    private struct ServiceGroup {
-        let level: Int
-        let title: String
-        let unlockInfo: String?
-        let color: Color
-        let options: [ServiceOption]
-    }
-
-    private let serviceGroups: [ServiceGroup] = [
-        ServiceGroup(
-            level: 0,
-            title: "Niveau 0 — Basis Buddy",
-            unlockInfo: nil,
-            color: BCColors.primary,
-            options: [
-                ServiceOption(icon: "person.2.fill",         name: "Gezelschap",             subtitle: "Gesprek en aanwezigheid"),
-                ServiceOption(icon: "figure.walk",           name: "Wandelen",               subtitle: "Buiten begeleiden"),
-                ServiceOption(icon: "cart.fill",             name: "Boodschappen",           subtitle: "Inkopen doen of begeleiden"),
-                ServiceOption(icon: "sparkles",              name: "Lichte huishouding",     subtitle: "Opruimen en schoonmaken"),
-                ServiceOption(icon: "fork.knife",            name: "Maaltijd opwarmen",      subtitle: "Eenvoudig eten klaarzetten"),
-                ServiceOption(icon: "car.fill",              name: "Begeleiding afspraak",   subtitle: "Meegaan naar arts of specialist"),
-                ServiceOption(icon: "bell.fill",             name: "Medicatieherinnering",   subtitle: "Erop wijzen dat medicatie genomen moet worden"),
-                ServiceOption(icon: "iphone",                name: "Digitale hulp",          subtitle: "Helpen met telefoon, tablet of computer"),
-                ServiceOption(icon: "doc.text.fill",         name: "Administratie",          subtitle: "Post sorteren en formulieren invullen"),
-                ServiceOption(icon: "leaf.fill",             name: "Tuinieren",              subtitle: "Tuin bijhouden en planten verzorgen"),
-                ServiceOption(icon: "pawprint.fill",         name: "Huisdieren",             subtitle: "Hond uitlaten of dier verzorgen"),
-                ServiceOption(icon: "dice.fill",             name: "Spelletjes",             subtitle: "Gezelschapsspellen en kaarten"),
-                ServiceOption(icon: "shoppingbag.fill",      name: "Klusjes thuis",          subtitle: "Kleine reparaties en ophanging"),
-                ServiceOption(icon: "book.fill",             name: "Voorlezen",              subtitle: "Boeken, krant of brieven voorlezen"),
-            ]
-        ),
-        ServiceGroup(
-            level: 1,
-            title: "Niveau 1 — Buddy+",
-            unlockInfo: "Beschikbaar na interne training (gratis via de app)",
-            color: Color.orange,
-            options: [
-                ServiceOption(icon: "arrow.up.circle.fill",  name: "Opstaan / naar bed",     subtitle: "Begeleiden bij het opstaan of naar bed gaan"),
-                ServiceOption(icon: "tshirt.fill",           name: "Aankleden",              subtitle: "Helpen bij het aan- en uitkleden"),
-                ServiceOption(icon: "figure.walk.motion",    name: "Toiletbegeleiding",      subtitle: "Begeleiden naar en op het toilet"),
-                ServiceOption(icon: "figure.stand",          name: "Transfers",              subtitle: "Veilig van stoel naar bed of rolstoel"),
-                ServiceOption(icon: "figure.seated.seatbelt",name: "Rolstoelbegeleiding",   subtitle: "Rijden met en begeleiden in rolstoel"),
-                ServiceOption(icon: "fork.knife.circle.fill",name: "Maaltijdbereiding",      subtitle: "Complete warme maaltijden bereiden"),
-                ServiceOption(icon: "drop.fill",             name: "Vocht en voeding",       subtitle: "Ondersteunen bij eten en drinken"),
-            ]
-        ),
-        ServiceGroup(
-            level: 2,
-            title: "Niveau 2 — Zorgondersteuning",
-            unlockInfo: "Vereist MBO-deelcertificaat of erkend diploma",
-            color: Color.purple,
-            options: [
-                ServiceOption(icon: "shower.fill",           name: "Volledig wassen",        subtitle: "Douchen en wassen bij bed of stoel"),
-                ServiceOption(icon: "bandage.fill",          name: "Steunkousen",            subtitle: "Aantrekken en uittrekken van steunkousen"),
-                ServiceOption(icon: "pills.fill",            name: "Medicatietoezicht",      subtitle: "Toezicht houden op medicatie-inname"),
-                ServiceOption(icon: "cross.case.fill",       name: "Volledige ADL",          subtitle: "Complete dagelijkse lichaamsverzorging"),
-                ServiceOption(icon: "waveform.path.ecg",     name: "Vitale meting",          subtitle: "Bloeddruk en saturatie meten"),
-            ]
-        ),
-        ServiceGroup(
-            level: 3,
-            title: "Niveau 3 — Helpende",
-            unlockInfo: "Vereist MBO niveau 2 diploma Helpende Zorg & Welzijn",
-            color: Color.red,
-            options: [
-                ServiceOption(icon: "syringe.fill",          name: "Medicatie toedienen",    subtitle: "Zelf medicijnen verstrekken en documenteren"),
-                ServiceOption(icon: "staroflife.fill",       name: "Stomazorg",              subtitle: "Verzorging en wisseling van stoma"),
-                ServiceOption(icon: "cross.fill",            name: "Wondverzorging",         subtitle: "Verbanden wisselen en wonden reinigen"),
-                ServiceOption(icon: "drop.degreesign.fill",  name: "Katheter aanleggen",     subtitle: "Inbrengen en beheer van katheter"),
-                ServiceOption(icon: "heart.text.square.fill",name: "Insuline injecties",     subtitle: "Subcutane injecties toedienen"),
-            ]
-        ),
-    ]
-
     private var servicesStep: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: BCSpacing.lg) {
-                StepHeader(title: "Diensten", subtitle: "Kies minimaal 3 taken op jouw startniveau (Basis Buddy). Hogere niveaus ontgrendel je later via cursussen.")
+                StepHeader(title: "Diensten", subtitle: "Kies minimaal 3 diensten die je wilt aanbieden. Je kunt dit later altijd aanpassen.")
 
-                ForEach(serviceGroups, id: \.level) { group in
-                    VStack(alignment: .leading, spacing: BCSpacing.sm) {
-                        HStack(spacing: BCSpacing.sm) {
-                            RoundedRectangle(cornerRadius: 2, style: .continuous)
-                                .fill(group.color)
-                                .frame(width: 4, height: 18)
-                            Text(group.title)
-                                .font(BCTypography.headline)
-                                .foregroundStyle(BCColors.textPrimary)
-                        }
+                VStack(spacing: BCSpacing.xs) {
+                    ForEach(BuddyServiceCatalog.allItems, id: \.name) { opt in
+                        let selected = selectedServices.contains(opt.name)
+                        Button {
+                            if selected { selectedServices.remove(opt.name) }
+                            else { selectedServices.insert(opt.name) }
+                        } label: {
+                            HStack(spacing: BCSpacing.md) {
+                                Image(systemName: opt.icon)
+                                    .font(.system(size: 17, weight: .semibold))
+                                    .foregroundStyle(selected ? .white : BCColors.primary)
+                                    .frame(width: 38, height: 38)
+                                    .background(Circle().fill(selected ? BCColors.primary : BCColors.primary.opacity(0.10)))
 
-                        if let info = group.unlockInfo {
-                            HStack(spacing: BCSpacing.xs) {
-                                Image(systemName: "lock.fill")
-                                    .font(.system(size: 11, weight: .semibold))
-                                    .foregroundStyle(group.color)
-                                Text(info)
-                                    .font(BCTypography.caption)
-                                    .foregroundStyle(BCColors.textSecondary)
-                            }
-                            .padding(.horizontal, BCSpacing.sm)
-                            .padding(.vertical, 6)
-                            .background(
-                                RoundedRectangle(cornerRadius: BCRadius.sm, style: .continuous)
-                                    .fill(group.color.opacity(0.08))
-                            )
-                        }
-
-                        VStack(spacing: BCSpacing.xs) {
-                            ForEach(group.options, id: \.name) { opt in
-                                let isLocked = group.level > 0
-                                let selected = selectedServices.contains(opt.name)
-                                Button {
-                                    guard !isLocked else { return }
-                                    if selected { selectedServices.remove(opt.name) }
-                                    else { selectedServices.insert(opt.name) }
-                                } label: {
-                                    HStack(spacing: BCSpacing.md) {
-                                        Image(systemName: opt.icon)
-                                            .font(.system(size: 17, weight: .semibold))
-                                            .foregroundStyle(isLocked ? BCColors.textTertiary : (selected ? .white : group.color))
-                                            .frame(width: 38, height: 38)
-                                            .background(Circle().fill(
-                                                isLocked ? BCColors.surfaceMuted :
-                                                (selected ? group.color : group.color.opacity(0.10))
-                                            ))
-
-                                        VStack(alignment: .leading, spacing: 1) {
-                                            Text(opt.name)
-                                                .font(BCTypography.subheadline)
-                                                .fontWeight(.semibold)
-                                                .foregroundStyle(isLocked ? BCColors.textTertiary : BCColors.textPrimary)
-                                            Text(opt.subtitle)
-                                                .font(BCTypography.caption)
-                                                .foregroundStyle(isLocked ? BCColors.textTertiary.opacity(0.6) : BCColors.textSecondary)
-                                        }
-
-                                        Spacer()
-
-                                        if isLocked {
-                                            Image(systemName: "lock.fill")
-                                                .font(.system(size: 13, weight: .semibold))
-                                                .foregroundStyle(group.color.opacity(0.5))
-                                        } else if selected {
-                                            Image(systemName: "checkmark.circle.fill")
-                                                .font(.system(size: 20))
-                                                .foregroundStyle(group.color)
-                                        } else {
-                                            Image(systemName: "circle")
-                                                .font(.system(size: 20))
-                                                .foregroundStyle(BCColors.textTertiary.opacity(0.5))
-                                        }
-                                    }
-                                    .padding(.horizontal, BCSpacing.md)
-                                    .padding(.vertical, BCSpacing.sm)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: BCRadius.md, style: .continuous)
-                                            .fill(isLocked ? BCColors.surfaceMuted.opacity(0.5) : BCColors.surface)
-                                    )
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: BCRadius.md, style: .continuous)
-                                            .stroke(
-                                                selected ? group.color : Color.clear,
-                                                lineWidth: selected ? 2 : 0
-                                            )
-                                    )
-                                    .bcSoftShadow(isLocked ? .subtle : .card)
-                                    .opacity(isLocked ? 0.65 : 1)
+                                VStack(alignment: .leading, spacing: 1) {
+                                    Text(opt.name)
+                                        .font(BCTypography.subheadline)
+                                        .fontWeight(.semibold)
+                                        .foregroundStyle(BCColors.textPrimary)
+                                    Text(opt.subtitle)
+                                        .font(BCTypography.caption)
+                                        .foregroundStyle(BCColors.textSecondary)
                                 }
-                                .buttonStyle(.plain)
-                                .disabled(isLocked)
+
+                                Spacer()
+
+                                Image(systemName: selected ? "checkmark.circle.fill" : "circle")
+                                    .font(.system(size: 20))
+                                    .foregroundStyle(selected ? BCColors.primary : BCColors.textTertiary.opacity(0.5))
                             }
+                            .padding(.horizontal, BCSpacing.md)
+                            .padding(.vertical, BCSpacing.sm)
+                            .background(
+                                RoundedRectangle(cornerRadius: BCRadius.md, style: .continuous)
+                                    .fill(BCColors.surface)
+                            )
+                            .overlay(
+                                RoundedRectangle(cornerRadius: BCRadius.md, style: .continuous)
+                                    .stroke(selected ? BCColors.primary : Color.clear, lineWidth: selected ? 2 : 0)
+                            )
+                            .bcSoftShadow(.card)
                         }
+                        .buttonStyle(.plain)
                     }
                 }
             }
@@ -1016,7 +892,7 @@ struct BuddyOnboardingFlow: View {
             Spacer()
 
             BCCTAButton(title: "Ga aan de slag (prototype)", icon: "arrow.right") {
-                appState.setBuddyPreferences(level: .zero, services: selectedServices)
+                appState.setBuddyServices(selectedServices)
                 appState.isOnboardingComplete = true
             }
             .padding(.horizontal, BCSpacing.lg)

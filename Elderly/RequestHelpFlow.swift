@@ -225,24 +225,6 @@ struct RequestHelpFlow: View {
                             ))
                             .bcSoftShadow(.subtle)
                             .padding(.horizontal, BCSpacing.lg)
-                        if !otherDescription.isEmpty {
-                            let level = recognizeLevel(from: otherDescription)
-                            HStack(spacing: BCSpacing.sm) {
-                                Image(systemName: "sparkles")
-                                    .font(.system(size: 12, weight: .semibold))
-                                    .foregroundStyle(BCColors.green700)
-                                Text("Waarschijnlijk niveau:")
-                                    .font(BCTypography.caption)
-                                    .foregroundStyle(BCColors.textSecondary)
-                                BCLevelBadge(level: level)
-                                Text("— \(level.summary.components(separatedBy: ",").first ?? level.title)")
-                                    .font(BCTypography.caption)
-                                    .foregroundStyle(BCColors.textTertiary)
-                                    .lineLimit(1)
-                            }
-                            .padding(.horizontal, BCSpacing.lg)
-                            .transition(.opacity.combined(with: .move(edge: .top)))
-                        }
                     }
                     .animation(.easeInOut(duration: 0.2), value: otherDescription)
                 } else if let cat = selectedCategory {
@@ -253,7 +235,6 @@ struct RequestHelpFlow: View {
                                     .font(BCTypography.headline)
                                     .foregroundStyle(BCColors.textPrimary)
                                 Spacer()
-                                BCLevelBadge(level: cat.minimumLevel)
                             }
                             Text(cat.description)
                                 .font(BCTypography.body)
@@ -533,14 +514,12 @@ struct RequestHelpFlow: View {
         let finalNote = cat == .other && !otherDescription.isEmpty
             ? (otherDescription + (note.isEmpty ? "" : "\n\(note)"))
             : note
-        let levelOverride = cat == .other ? recognizeLevel(from: otherDescription) : nil
         if let elderly = onBehalfOf {
             appState.requestHelpOnBehalf(for: elderly, category: cat, timing: timing,
-                                         note: finalNote, recurringSchedule: recurringSchedule,
-                                         levelOverride: levelOverride)
+                                         note: finalNote, recurringSchedule: recurringSchedule)
         } else {
             appState.requestHelp(category: cat, timing: timing, note: finalNote,
-                                 recurringSchedule: recurringSchedule, levelOverride: levelOverride)
+                                 recurringSchedule: recurringSchedule)
         }
         dismiss()
         // De auto-acceptatie na 5s wordt nu in AppState.requestHelp geregeld,
@@ -549,19 +528,6 @@ struct RequestHelpFlow: View {
 }
 
 // MARK: - Smart recognition
-
-private func recognizeLevel(from text: String) -> ServiceLevel {
-    let t = text.lowercased()
-    let level3 = ["stoma", "katheter", "wond", "injectie", "insuline spuit", "big-", "verpleeg", "adl volledige", "helpende plus"]
-    let level2 = ["douchen", "wassen intiem", "schaamstreek", "steunkousen", "medicatie toedienen", "medicijnen geven",
-                  "volledige verzorging", "persoonlijke verzorging", "scheren", "intieme"]
-    let level1 = ["opstaan", "toilet", "aankleden", "uitkleden", "naar bed helpen", "bed helpen",
-                  "maaltijd bereiden", "eten geven", "lopen helpen", "rollator", "rolstoel", "mobiliteit"]
-    if level3.contains(where: { t.contains($0) }) { return .three }
-    if level2.contains(where: { t.contains($0) }) { return .two }
-    if level1.contains(where: { t.contains($0) }) { return .one }
-    return .zero
-}
 
 private func recognizeCategory(from text: String) -> TaskCategory? {
     guard text.count > 3 else { return nil }

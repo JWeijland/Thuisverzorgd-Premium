@@ -10,12 +10,11 @@ struct BuddyMapView: View {
         ))
     )
     @State private var selectedTask: ServiceTask? = nil
-    @State private var maxLevelFilter: Int = 4   // standaard: alle niveaus tonen
     @State private var showActiveTask = false
 
     var visibleTasks: [ServiceTask] {
         guard appState.isAvailableNow else { return [] }
-        return appState.openTasks.filter { $0.requiredLevel.rawValue <= maxLevelFilter }
+        return appState.openTasks
     }
 
     var body: some View {
@@ -42,7 +41,6 @@ struct BuddyMapView: View {
 
             VStack(spacing: BCSpacing.sm) {
                 topBar
-                filterStrip
                 if !appState.isAvailableNow {
                     offlineBanner
                 }
@@ -150,32 +148,6 @@ struct BuddyMapView: View {
         .bcSoftShadow(.raised)
     }
 
-    private var filterStrip: some View {
-        HStack(spacing: BCSpacing.xs) {
-            // "Alle" toont alles; de niveau-chips zijn cumulatief ("t/m").
-            filterChip(label: "Alle", isOn: maxLevelFilter >= 4) { maxLevelFilter = 4 }
-            ForEach([0, 1, 2, 3], id: \.self) { lvl in
-                filterChip(label: "t/m \(lvl)", isOn: maxLevelFilter == lvl) { maxLevelFilter = lvl }
-            }
-        }
-        .padding(BCSpacing.xs)
-        .background(
-            Capsule().fill(BCColors.background.opacity(0.95))
-        )
-    }
-
-    private func filterChip(label: String, isOn: Bool, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Text(label)
-                .font(BCTypography.captionEmphasized)
-                .foregroundStyle(isOn ? .white : BCColors.textPrimary)
-                .padding(.horizontal, BCSpacing.sm)
-                .padding(.vertical, BCSpacing.sm)
-                .background(Capsule().fill(isOn ? BCColors.primary : BCColors.surface))
-                .overlay(Capsule().stroke(BCColors.border, lineWidth: isOn ? 0 : 1))
-        }
-        .buttonStyle(.plain)
-    }
 }
 
 private struct MapPin: View {
@@ -186,7 +158,7 @@ private struct MapPin: View {
         VStack(spacing: 0) {
             ZStack {
                 Circle()
-                    .fill(task.requiredLevel.color)
+                    .fill(BCColors.primary)
                     .frame(width: isSelected ? 52 : 44, height: isSelected ? 52 : 44)
                     .shadow(color: .black.opacity(0.25), radius: 6, x: 0, y: 3)
                 Image(systemName: task.category.icon)
@@ -194,7 +166,7 @@ private struct MapPin: View {
                     .foregroundStyle(.white)
             }
             Triangle()
-                .fill(task.requiredLevel.color)
+                .fill(BCColors.primary)
                 .frame(width: 12, height: 8)
         }
     }

@@ -34,15 +34,11 @@ struct MatchingService {
             // 1. Moet beschikbaar zijn
             guard buddy.isAvailableNow else { return nil }
 
-            // 2. Moet voldoende niveau hebben
-            guard buddy.level.rawValue >= task.requiredLevel.rawValue else { return nil }
-
-            // 3. Voorkeuren-filter — buddy moet deze dienst aanbieden
-            let allBuddyPreferences = buddy.servicePreferences.values.reduce(into: Set<String>()) { $0.formUnion($1) }
-            let overlap = allBuddyPreferences.intersection(allowedServiceNames)
+            // 2. Diensten-filter — buddy moet deze dienst aanbieden
+            let overlap = buddy.offeredServices.intersection(allowedServiceNames)
             guard !overlap.isEmpty else { return nil }
 
-            // 4. Afstand-filter (eigen maxDistanceKm van de buddy)
+            // 3. Afstand-filter (eigen maxDistanceKm van de buddy)
             let buddyLoc = CLLocation(latitude: buddy.coordinate.latitude, longitude: buddy.coordinate.longitude)
             let distance = targetLoc.distance(from: buddyLoc)
             let maxMeters = Double(buddy.maxDistanceKm) * 1000.0
@@ -80,7 +76,6 @@ struct MatchingService {
             push.send(notification: .newTaskInArea(
                 elderlyName: task.elderlyName,
                 distanceKm: distKm,
-                level: task.requiredLevel.rawValue,
                 priceEuros: Double(task.priceCents) / 100.0
             ))
         }

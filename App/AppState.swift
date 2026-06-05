@@ -78,11 +78,6 @@ final class AppState {
     /// Laatste matches voor activeTaskForElderly — zodat UI kan tonen wie wordt benaderd
     var lastMatches: [MatchingService.Match] = []
 
-    /// Level-up trigger: zodra dit niet-nil wordt verschijnt de voorkeuren-sheet automatisch.
-    var newlyUnlockedLevel: ServiceLevel? = nil
-    /// Houdt bij welke niveaus al gevierd zijn, voorkomt herhaalde prompts.
-    private var celebratedLevels: Set<ServiceLevel> = []
-
     // UI state
     var showSOS: Bool = false
     var toastMessage: ToastMessage? = nil
@@ -96,30 +91,6 @@ final class AppState {
 
     // Facturatie (display-only — geen echte betaling in MVP)
     var serviceRecords: [ServiceRecord] = MockData.sampleServiceRecords
-
-    // Diploma
-    var diplomaStatus: DiplomaStatus = .none
-
-    var effectiveBuddyLevel: ServiceLevel {
-        guard case .verified = diplomaStatus else { return buddyUser.level }
-        let kort = CourseContent.course_basisWelkom_kort
-        let done = completedModules[kort.id] ?? []
-        return done.count >= kort.modules.count ? .three : .zero
-    }
-
-    var shortCourseComplete: Bool {
-        let kort = CourseContent.course_basisWelkom_kort
-        let done = completedModules[kort.id] ?? []
-        return done.count >= kort.modules.count
-    }
-
-    func submitDiploma(type: String) {
-        diplomaStatus = .pending(type: type)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3) { [weak self] in
-            self?.diplomaStatus = .verified(type: type)
-            self?.showToast(text: "Diploma geverifieerd! Voltooi de verkorte Basis Buddy cursus.", icon: "checkmark.shield.fill")
-        }
-    }
 
     // Elderly — favorites & ratings
     var favoriteBuddyNames: Set<String> = ["Aiyla", "Mark"]
@@ -156,57 +127,14 @@ final class AppState {
         }
     }
 
-    // Course progress: courseId → set of completed moduleIds
-    var completedModules: [UUID: Set<UUID>] = [:]
-
     private let taskService = TaskService()
 
-    func debugCompleteLevel(_ level: ServiceLevel) {
-        for course in MockData.courses where course.level == level {
-            for module in course.modules {
-                completedModules[course.id, default: []].insert(module.id)
-            }
-        }
-    }
-
-    func recordModuleComplete(courseId: UUID, moduleId: UUID) {
-        completedModules[courseId, default: []].insert(moduleId)
-        if !isDemoMode, let userId = realUserId {
-            Task {
-                try? await taskService.markModuleComplete(
-                    buddyId: userId,
-                    courseId: courseId.uuidString,
-                    moduleId: moduleId.uuidString
-                )
-            }
-        }
-        checkForLevelUnlock(after: courseId)
-    }
-
-    /// Detecteert of voltooien van deze cursus een nieuw niveau ontgrendelt.
-    /// Triggert dan de voorkeuren-sheet via `newlyUnlockedLevel`.
-    private func checkForLevelUnlock(after courseId: UUID) {
-        guard let course = MockData.courses.first(where: { $0.id == courseId }) else { return }
-        let allModuleIds = Set(course.modules.map { $0.id })
-        let done = completedModules[courseId] ?? []
-        guard !allModuleIds.isEmpty, allModuleIds.isSubset(of: done) else { return }
-
-        let unlockedLevel = course.level
-        guard !celebratedLevels.contains(unlockedLevel) else { return }
-        celebratedLevels.insert(unlockedLevel)
-        newlyUnlockedLevel = unlockedLevel
-    }
-
-    /// Update buddy-voorkeuren voor een niveau. Persists naar zowel buddyUser als allBuddies.
-    func setBuddyPreferences(level: ServiceLevel, services: Set<String>) {
-        buddyUser.servicePreferences[level] = services
+    /// Update de diensten die de buddy aanbiedt. Persists naar buddyUser én allBuddies.
+    func setBuddyServices(_ services: Set<String>) {
+        buddyUser.offeredServices = services
         if let idx = allBuddies.firstIndex(where: { $0.id == buddyUser.id }) {
-            allBuddies[idx].servicePreferences[level] = services
+            allBuddies[idx].offeredServices = services
         }
-    }
-
-    func dismissLevelUnlock() {
-        newlyUnlockedLevel = nil
     }
 
     // MARK: - Initialization (called on app start)
@@ -270,14 +198,13 @@ final class AppState {
     // MARK: - Task actions
 
     func requestHelp(category: TaskCategory, timing: TaskTiming, note: String,
-                     recurringSchedule: RecurringSchedule? = nil, levelOverride: ServiceLevel? = nil) {
+                     recurringSchedule: RecurringSchedule? = nil) {
         var task = ServiceTask(
             id: UUID(),
             elderlyName: elderlyUser.firstName,
             elderlyAddress: elderlyUser.address,
             coordinate: elderlyUser.coordinate,
             category: category,
-            requiredLevel: levelOverride ?? category.minimumLevel,
             timing: timing,
             note: note,
             priceCents: category.suggestedPriceCents,
@@ -302,8 +229,7 @@ final class AppState {
         category: TaskCategory,
         timing: TaskTiming,
         note: String,
-        recurringSchedule: RecurringSchedule? = nil,
-        levelOverride: ServiceLevel? = nil
+        recurringSchedule: RecurringSchedule? = nil
     ) {
         var task = ServiceTask(
             id: UUID(),
@@ -311,7 +237,6 @@ final class AppState {
             elderlyAddress: elderly.address,
             coordinate: elderly.coordinate,
             category: category,
-            requiredLevel: levelOverride ?? category.minimumLevel,
             timing: timing,
             note: note,
             priceCents: category.suggestedPriceCents,
@@ -541,19 +466,6 @@ final class AppState {
             if self?.toastMessage?.text == text {
                 self?.toastMessage = nil
             }
-        }
-    }
-}
-
-enum DiplomaStatus: Equatable {
-    case none
-    case pending(type: String)
-    case verified(type: String)
-
-    var diplomaType: String? {
-        switch self {
-        case .pending(let t), .verified(let t): return t
-        case .none: return nil
         }
     }
 }
