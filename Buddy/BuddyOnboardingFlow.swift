@@ -16,11 +16,11 @@ struct BuddyOnboardingFlow: View {
     @State private var photoConfirmed: Bool = false
     @State private var locationGranted: Bool = false
 
-    // Step 3 — ID
-    @State private var idSubmitted: Bool = false
-
-    // Step 4 — VOG
+    // Step 3 — VOG
     @State private var vogSubmitted: Bool = false
+
+    // Step 4 — intake conversation
+    @State private var intakeScheduled: Bool = false
 
     // Step 5 — ZZP
     @State private var isZzper: Bool? = nil
@@ -31,10 +31,7 @@ struct BuddyOnboardingFlow: View {
     @State private var iban: String = ""
     @State private var ibanHolderName: String = ""
 
-    // Step 7 — insurance
-    @State private var hasInsurance: Bool? = nil
-
-    // Step 8 — availability
+    // Step 7 — availability
     @State private var availability: [String: Set<String>] = [:]
     @State private var maxDistanceKm: Int = 10
 
@@ -48,7 +45,7 @@ struct BuddyOnboardingFlow: View {
     @State private var agreedToHouseRules: Bool = false
     @State private var agreedToZzpContract: Bool = false
 
-    private let totalSteps = 14
+    private let totalSteps = 13
 
     var body: some View {
         NavigationStack {
@@ -60,23 +57,22 @@ struct BuddyOnboardingFlow: View {
                     case 0:  introStep
                     case 1:  accountStep
                     case 2:  profileStep
-                    case 3:  idStep
-                    case 4:  vogStep
+                    case 3:  vogStep
+                    case 4:  intakeStep
                     case 5:  zzpStep
                     case 6:  bankStep
-                    case 7:  insuranceStep
-                    case 8:  availabilityStep
-                    case 9:  servicesStep
-                    case 10: rateStep
-                    case 11: contractStep
-                    case 12: reviewStep
-                    case 13: activationStep
+                    case 7:  availabilityStep
+                    case 8:  servicesStep
+                    case 9:  rateStep
+                    case 10: contractStep
+                    case 11: reviewStep
+                    case 12: activationStep
                     default: EmptyView()
                     }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-                if step < 13 {
+                if step < 12 {
                     VStack(spacing: 0) {
                         Divider()
                         BCOnboardingPhoneFooter()
@@ -157,7 +153,7 @@ struct BuddyOnboardingFlow: View {
                     HStack(spacing: BCSpacing.sm) {
                         Image(systemName: "timer")
                             .foregroundStyle(BCColors.primary)
-                        Text("De aanmelding duurt ca. 8 minuten. Houd je ID-bewijs en IBAN bij de hand.")
+                        Text("De aanmelding duurt ca. 8 minuten. Houd je IBAN bij de hand.")
                             .font(BCTypography.caption)
                             .foregroundStyle(BCColors.textSecondary)
                     }
@@ -301,51 +297,44 @@ struct BuddyOnboardingFlow: View {
         }
     }
 
-    // MARK: - Step 3: ID verification
+    // MARK: - Step 4: Intake conversation
 
-    private var idStep: some View {
+    private var intakeStep: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: BCSpacing.md) {
-                StepHeader(title: "Identiteitsverificatie", subtitle: "Wij verifiëren je identiteit om de veiligheid van ouderen te garanderen.")
+                StepHeader(title: "Kennismakingsgesprek", subtitle: "We doen een kort intakegesprek (telefonisch, ca. 10 minuten) zodat we elkaar even spreken voor je begint.")
 
-                if idSubmitted {
+                BCCard {
+                    VStack(alignment: .leading, spacing: BCSpacing.xs) {
+                        Label("Wat bespreken we?", systemImage: "bubble.left.and.bubble.right.fill")
+                            .font(BCTypography.captionEmphasized)
+                            .foregroundStyle(BCColors.textSecondary)
+                        Text("We lopen samen je profiel en de huisregels door en beantwoorden je vragen. Geen test — gewoon even kennismaken.")
+                            .font(BCTypography.caption)
+                            .foregroundStyle(BCColors.textTertiary)
+                    }
+                }
+
+                if intakeScheduled {
                     BCCard {
                         HStack(spacing: BCSpacing.sm) {
-                            Image(systemName: "checkmark.shield.fill")
+                            Image(systemName: "checkmark.circle.fill")
                                 .font(.system(size: 24))
                                 .foregroundStyle(BCColors.success)
                             VStack(alignment: .leading, spacing: 2) {
-                                Text("ID ontvangen ✓")
+                                Text("Intakegesprek ingepland ✓")
                                     .font(BCTypography.bodyEmphasized)
                                     .foregroundStyle(BCColors.success)
-                                Text("Wij verifiëren binnen 24 uur.")
+                                Text("Je ontvangt een bevestiging met datum en tijd.")
                                     .font(BCTypography.caption)
                                     .foregroundStyle(BCColors.textSecondary)
                             }
                         }
                     }
                 } else {
-                    VStack(spacing: BCSpacing.sm) {
-                        IDUploadBox(
-                            icon: "rectangle.and.hand.point.up.left.fill",
-                            title: "Identiteitsbewijs",
-                            subtitle: "Paspoort, ID-kaart of rijbewijs"
-                        )
-                        IDUploadBox(
-                            icon: "person.fill.viewfinder",
-                            title: "Selfie",
-                            subtitle: "Maak een selfie om je identiteit te bevestigen"
-                        )
+                    BCPrimaryButton(title: "Plan intakegesprek", icon: "calendar.badge.plus") {
+                        intakeScheduled = true
                     }
-
-                    BCPrimaryButton(title: "Upload en verifieer", icon: "arrow.up.doc.fill") {
-                        idSubmitted = true
-                    }
-
-                    Text("Je identiteitsgegevens worden verwerkt conform de AVG.")
-                        .font(BCTypography.caption)
-                        .foregroundStyle(BCColors.textTertiary)
-                        .multilineTextAlignment(.center)
                 }
             }
             .padding(.horizontal, BCSpacing.lg)
@@ -354,7 +343,7 @@ struct BuddyOnboardingFlow: View {
         }
     }
 
-    // MARK: - Step 4: VOG
+    // MARK: - Step 3: VOG
 
     private var vogStep: some View {
         ScrollView {
@@ -524,74 +513,7 @@ struct BuddyOnboardingFlow: View {
         }
     }
 
-    // MARK: - Step 7: Insurance
-
-    private var insuranceStep: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: BCSpacing.md) {
-                StepHeader(
-                    title: "Aansprakelijkheidsverzekering",
-                    subtitle: "Als zzp'er ben je zelf verantwoordelijk voor een beroepsaansprakelijkheidsverzekering."
-                )
-
-                HStack(spacing: BCSpacing.sm) {
-                    ChoiceButton(
-                        label: "Ja, ik ben verzekerd",
-                        icon: "checkmark.shield.fill",
-                        selected: hasInsurance == true
-                    ) { hasInsurance = true }
-
-                    ChoiceButton(
-                        label: "Nee, nog niet",
-                        icon: "xmark.circle.fill",
-                        selected: hasInsurance == false
-                    ) { hasInsurance = false }
-                }
-
-                if hasInsurance == true {
-                    BCCard {
-                        HStack(spacing: BCSpacing.sm) {
-                            Image(systemName: "checkmark.shield.fill")
-                                .font(.system(size: 24))
-                                .foregroundStyle(BCColors.success)
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text("Goed geregeld ✓")
-                                    .font(BCTypography.bodyEmphasized)
-                                    .foregroundStyle(BCColors.success)
-                                Text("Je bent gedekt voor eventuele claims tijdens je taken.")
-                                    .font(BCTypography.caption)
-                                    .foregroundStyle(BCColors.textSecondary)
-                            }
-                        }
-                    }
-                    .transition(.opacity.combined(with: .move(edge: .top)))
-                }
-
-                if hasInsurance == false {
-                    BCCard {
-                        VStack(alignment: .leading, spacing: BCSpacing.sm) {
-                            Label("Nog geen verzekering?", systemImage: "exclamationmark.shield.fill")
-                                .font(BCTypography.headline)
-                                .foregroundStyle(BCColors.warning)
-                            Text("Wij werken aan een collectieve verzekering voor buddies. Zodra dit beschikbaar is, word je hierover geïnformeerd.")
-                                .font(BCTypography.body)
-                                .foregroundStyle(BCColors.textSecondary)
-                            Text("Je kunt alvast doorgaan met aanmelden.")
-                                .font(BCTypography.caption)
-                                .foregroundStyle(BCColors.textTertiary)
-                        }
-                    }
-                    .transition(.opacity.combined(with: .move(edge: .top)))
-                }
-            }
-            .padding(.horizontal, BCSpacing.lg)
-            .padding(.top, BCSpacing.lg)
-            .padding(.bottom, BCSpacing.xl)
-            .animation(.easeInOut(duration: 0.2), value: hasInsurance)
-        }
-    }
-
-    // MARK: - Step 8: Availability
+    // MARK: - Step 7: Availability
 
     private let days = ["Ma", "Di", "Wo", "Do", "Vr", "Za", "Zo"]
     private let slots = ["Ochtend", "Middag", "Avond"]
@@ -994,14 +916,14 @@ struct BuddyOnboardingFlow: View {
 
                 VStack(spacing: BCSpacing.sm) {
                     ReviewCheckRow(
-                        icon: "person.text.rectangle.fill",
-                        label: "Identiteitsverificatie",
-                        status: idSubmitted ? .done : .pending
-                    )
-                    ReviewCheckRow(
                         icon: "checkmark.shield.fill",
                         label: "Verklaring Omtrent Gedrag (VOG)",
                         status: vogSubmitted ? .done : .pending
+                    )
+                    ReviewCheckRow(
+                        icon: "bubble.left.and.bubble.right.fill",
+                        label: "Kennismakingsgesprek",
+                        status: intakeScheduled ? .done : .pending
                     )
                     ReviewCheckRow(
                         icon: "building.2.fill",
@@ -1143,8 +1065,8 @@ struct BuddyOnboardingFlow: View {
                     }
                 }
                 BCCTAButton(
-                    title: step == 12 ? "Aanvraag indienen" : "Volgende",
-                    icon: step == 12 ? "checkmark" : "chevron.right"
+                    title: step == 11 ? "Aanvraag indienen" : "Volgende",
+                    icon: step == 11 ? "checkmark" : "chevron.right"
                 ) {
                     step += 1
                 }
@@ -1160,11 +1082,11 @@ struct BuddyOnboardingFlow: View {
         switch step {
         case 1:  return !firstName.isEmpty && !lastName.isEmpty && !email.isEmpty && !phone.isEmpty
         case 2:  return !postcode.isEmpty || locationGranted
+        case 4:  return intakeScheduled
         case 5:  return isZzper != nil && (isZzper == false || !kvkNumber.isEmpty)
         case 6:  return !iban.isEmpty && !ibanHolderName.isEmpty
-        case 7:  return hasInsurance != nil
-        case 9:  return selectedServices.count >= 3
-        case 11: return agreedToHouseRules && agreedToZzpContract
+        case 8:  return selectedServices.count >= 3
+        case 10: return agreedToHouseRules && agreedToZzpContract
         default: return true
         }
     }
