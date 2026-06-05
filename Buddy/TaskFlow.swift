@@ -199,20 +199,18 @@ struct TaskInProgressView: View {
             taskHeader
             BCCard {
                 VStack(spacing: BCSpacing.md) {
-                    Image(systemName: "qrcode.viewfinder")
+                    Image(systemName: "location.fill.viewfinder")
                         .font(.system(size: 64, weight: .light))
                         .foregroundStyle(BCColors.primary)
                     Text("Klaar om in te checken?")
                         .font(BCTypography.title3)
                         .foregroundStyle(BCColors.textPrimary)
-                    Text("Maak een selfie, scan de QR-code op de telefoon van \(task.elderlyName) en bevestig je locatie.")
+                    Text("Bevestig dat je bij \(task.elderlyName) bent aangekomen om het bezoek te starten.")
                         .font(BCTypography.body)
                         .foregroundStyle(BCColors.textSecondary)
                         .multilineTextAlignment(.center)
                     VStack(alignment: .leading, spacing: BCSpacing.xs) {
-                        CheckInStepLabel(icon: "faceid", text: "Selfie (elk bezoek)")
-                        CheckInStepLabel(icon: "qrcode.viewfinder", text: "QR-code scannen")
-                        CheckInStepLabel(icon: "location.fill", text: "GPS-locatie bevestigen")
+                        CheckInStepLabel(icon: "location.fill", text: "Aankomst bevestigen")
                     }
                 }
                 .frame(maxWidth: .infinity)

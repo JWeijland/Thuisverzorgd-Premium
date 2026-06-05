@@ -14,33 +14,6 @@ struct MockPaymentService: PaymentService {
     }
 }
 
-// MARK: - KYC
-
-enum KYCResult { case pending, approved, rejected }
-
-protocol KYCService {
-    func submitIDVerification(userID: UUID) async -> KYCResult
-}
-
-// TODO[real-integration]: Replace with Onfido/Veriff SDK
-struct MockKYCService: KYCService {
-    func submitIDVerification(userID: UUID) async -> KYCResult {
-        try? await Task.sleep(nanoseconds: 2_000_000_000)
-        return .pending
-    }
-}
-
-// MARK: - Camera
-
-protocol CameraService {
-    func getStreamURL(deviceID: String) -> URL?
-}
-
-// TODO[real-integration]: Replace with Ring/Aqara RTSP or WebRTC stream
-struct MockCameraService: CameraService {
-    func getStreamURL(deviceID: String) -> URL? { nil }
-}
-
 // MARK: - SMS
 
 protocol SMSService {

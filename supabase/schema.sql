@@ -1,5 +1,5 @@
 -- ============================================================
--- Buddy Care — Supabase Database Schema
+-- Thuisverzorgd — Supabase Database Schema
 -- Plak dit in Supabase → SQL Editor → New query → Run
 -- ============================================================
 
@@ -51,15 +51,16 @@ CREATE TABLE elderly_profiles (
 
 CREATE TABLE buddy_profiles (
     id                      UUID PRIMARY KEY REFERENCES profiles(id) ON DELETE CASCADE,
-    level                   INTEGER DEFAULT 0 CHECK (level BETWEEN 0 AND 4),
     bio                     TEXT DEFAULT '',
     study                   TEXT DEFAULT '',
     avatar_system_name      TEXT DEFAULT 'person.crop.circle.fill',
     rating_average          DOUBLE PRECISION DEFAULT 0.0,
     total_tasks             INTEGER DEFAULT 0,
-    kyc_verified            BOOLEAN DEFAULT FALSE,
+    offered_services        TEXT[] DEFAULT '{}',
+    kvk_number              TEXT,
     vog_valid               BOOLEAN DEFAULT FALSE,
     vog_expires_at          TIMESTAMPTZ,
+    intake_done             BOOLEAN DEFAULT FALSE,
     iban_last4              TEXT DEFAULT '****',
     is_available_now        BOOLEAN DEFAULT FALSE,
     is_onboarding_complete  BOOLEAN DEFAULT FALSE
@@ -104,7 +105,6 @@ CREATE TABLE tasks (
     elderly_id           UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
     assigned_buddy_id    UUID REFERENCES profiles(id) ON DELETE SET NULL,
     category             task_category NOT NULL,
-    required_level       INTEGER DEFAULT 0,
     timing_type          task_timing_type DEFAULT 'now',
     scheduled_at         TIMESTAMPTZ,
     note                 TEXT DEFAULT '',
@@ -113,17 +113,10 @@ CREATE TABLE tasks (
     created_at           TIMESTAMPTZ DEFAULT NOW(),
     accepted_at          TIMESTAMPTZ,
     arrived_at           TIMESTAMPTZ,
-    check_in_selfie_url  TEXT,
     completed_at         TIMESTAMPTZ,
     completion_note      TEXT,
     buddy_eta_minutes    INTEGER
 );
-
--- Storage bucket voor check-in selfies (aanmaken in Supabase dashboard)
--- Bucket naam: check-in-selfies
--- Toegang: private (alleen via service role of signed URLs)
--- RLS policy: buddy kan alleen eigen selfies uploaden (path begint met taskId/buddyId_)
--- Maximale bestandsgrootte: 2MB (JPEG gecomprimeerd op 0.75)
 
 -- ============================================================
 -- BEOORDELINGEN
@@ -137,29 +130,6 @@ CREATE TABLE reviews (
     stars        INTEGER NOT NULL CHECK (stars BETWEEN 1 AND 5),
     body         TEXT DEFAULT '',
     created_at   TIMESTAMPTZ DEFAULT NOW()
-);
-
--- ============================================================
--- CERTIFICATEN & CURSUSVOORTGANG
--- ============================================================
-
-CREATE TABLE certifications (
-    id         UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    buddy_id   UUID REFERENCES profiles(id) ON DELETE CASCADE,
-    level      INTEGER NOT NULL,
-    issued_at  TIMESTAMPTZ DEFAULT NOW(),
-    expires_at TIMESTAMPTZ DEFAULT NOW() + INTERVAL '2 years'
-);
-
--- Elke afgeronde module wordt hier opgeslagen
--- course_id en module_id komen overeen met de UUID strings in de iOS app
-CREATE TABLE course_progress (
-    id           UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    buddy_id     UUID REFERENCES profiles(id) ON DELETE CASCADE,
-    course_id    TEXT NOT NULL,
-    module_id    TEXT NOT NULL,
-    completed_at TIMESTAMPTZ DEFAULT NOW(),
-    UNIQUE(buddy_id, course_id, module_id)
 );
 
 -- ============================================================
@@ -195,11 +165,9 @@ CREATE TABLE sos_events (
 CREATE INDEX idx_tasks_status           ON tasks(status);
 CREATE INDEX idx_tasks_elderly_id       ON tasks(elderly_id);
 CREATE INDEX idx_tasks_buddy_id         ON tasks(assigned_buddy_id);
-CREATE INDEX idx_tasks_required_level   ON tasks(required_level);
 CREATE INDEX idx_tasks_created_at       ON tasks(created_at DESC);
 CREATE INDEX idx_buddy_available        ON buddy_profiles(is_available_now);
 CREATE INDEX idx_earnings_buddy_id      ON earnings(buddy_id);
-CREATE INDEX idx_course_progress_buddy  ON course_progress(buddy_id);
 CREATE INDEX idx_family_links_family    ON family_elderly_links(family_id);
 CREATE INDEX idx_family_links_elderly   ON family_elderly_links(elderly_id);
 CREATE INDEX idx_linking_codes_elderly  ON linking_codes(elderly_id);
@@ -296,8 +264,6 @@ ALTER TABLE family_elderly_links  ENABLE ROW LEVEL SECURITY;
 ALTER TABLE linking_codes         ENABLE ROW LEVEL SECURITY;
 ALTER TABLE tasks                 ENABLE ROW LEVEL SECURITY;
 ALTER TABLE reviews               ENABLE ROW LEVEL SECURITY;
-ALTER TABLE certifications        ENABLE ROW LEVEL SECURITY;
-ALTER TABLE course_progress       ENABLE ROW LEVEL SECURITY;
 ALTER TABLE earnings              ENABLE ROW LEVEL SECURITY;
 ALTER TABLE sos_events            ENABLE ROW LEVEL SECURITY;
 
@@ -343,13 +309,6 @@ CREATE POLICY "Eigen verdiensten" ON earnings FOR SELECT USING (buddy_id = auth.
 -- Reviews: iedereen kan beoordelingen lezen (voor buddy profiel)
 CREATE POLICY "Reviews zijn publiek leesbaar" ON reviews FOR SELECT USING (TRUE);
 CREATE POLICY "Elderly kan review plaatsen" ON reviews FOR INSERT WITH CHECK (reviewer_id = auth.uid());
-
--- Cursusvoortgang: eigen voortgang
-CREATE POLICY "Eigen cursusvoortgang" ON course_progress FOR ALL USING (buddy_id = auth.uid());
-
--- Certificaten: eigen certificaten + publiek leesbaar
-CREATE POLICY "Certificaten zijn publiek leesbaar" ON certifications FOR SELECT USING (TRUE);
-CREATE POLICY "Systeem kan certificaten aanmaken" ON certifications FOR INSERT WITH CHECK (buddy_id = auth.uid());
 
 -- SOS: eigen elderly + gekoppelde familie
 CREATE POLICY "SOS events voor betrokkenen" ON sos_events FOR SELECT USING (

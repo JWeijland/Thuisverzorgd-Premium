@@ -592,12 +592,6 @@ struct BuddyOnboardingFlow: View {
 
     // MARK: - Step 9: Services
 
-    private struct ServiceOption {
-        let icon: String
-        let name: String
-        let subtitle: String
-    }
-
     private var servicesStep: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: BCSpacing.lg) {

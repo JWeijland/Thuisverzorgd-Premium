@@ -17,11 +17,11 @@ struct PaymentOverviewView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            BCNavBar(title: "Betalingen", subtitle: "Uw zorgkosten overzicht")
+            BCNavBar(title: "Betalingen", subtitle: "Overzicht van de kosten")
 
             ScrollView {
                 VStack(spacing: BCSpacing.md) {
-                    paymentTypeBanner
+                    paymentNotice
 
                     summaryCard
 
@@ -67,7 +67,7 @@ struct PaymentOverviewView: View {
 
     // MARK: - Betaling (display-only)
 
-    private var paymentTypeBanner: some View {
+    private var paymentNotice: some View {
         BCCard {
             HStack(spacing: BCSpacing.md) {
                 Image(systemName: "creditcard.fill")

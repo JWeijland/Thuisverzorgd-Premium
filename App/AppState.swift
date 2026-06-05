@@ -418,35 +418,6 @@ final class AppState {
     }
 
 
-    func finalizeMonth(_ month: String) {
-        for i in serviceRecords.indices where serviceRecords[i].month == month {
-            serviceRecords[i].isFinalized = true
-        }
-        showToast(text: "Maand \(month) afgesloten", icon: "checkmark.seal.fill")
-    }
-
-    func csvExport(month: String? = nil) -> String {
-        let records = month.map { m in serviceRecords.filter { $0.month == m } } ?? serviceRecords
-        var rows = ["Maand,Buddy,Ouder,Categorie,Uren,Uurtarief buddy,Uurtarief klant,Buddy verdienste,Klant bedrag,Winst,Definitief"]
-        for r in records {
-            let cols = [
-                r.month,
-                r.buddyName,
-                r.elderlyName,
-                r.taskCategory.displayName,
-                String(format: "%.2f", r.hours),
-                String(format: "%.2f", Double(r.buddyHourlyRateCents) / 100),
-                String(format: "%.2f", Double(r.clientHourlyRateCents) / 100),
-                String(format: "%.2f", Double(r.buddyEarningsCents) / 100),
-                String(format: "%.2f", Double(r.clientChargeCents) / 100),
-                String(format: "%.2f", Double(r.profitCents) / 100),
-                r.isFinalized ? "Ja" : "Nee"
-            ]
-            rows.append(cols.joined(separator: ","))
-        }
-        return rows.joined(separator: "\n")
-    }
-
     // MARK: - SOS
 
     func triggerSOS() {

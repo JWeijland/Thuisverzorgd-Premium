@@ -243,9 +243,7 @@ struct CheckInRecord {
     let latitude: Double?
     let longitude: Double?
     let qrPayload: String
-    let hasSelfie: Bool
     let distanceMeters: Double?
-    var selfieStorageUrl: String? = nil
 
     var timestampFormatted: String {
         let f = DateFormatter()
@@ -296,7 +294,6 @@ struct BuddyUser: Identifiable, Hashable {
     let totalTasks: Int
     let bio: String
     let study: String
-    let kycVerified: Bool
     let vogValid: Bool
     let vogExpiresAt: Date
     var ibanLast4: String = "****"

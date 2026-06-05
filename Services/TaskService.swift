@@ -5,12 +5,11 @@ final class TaskService {
 
     // MARK: - Open taken ophalen (buddy kaart)
 
-    func fetchOpenTasks(maxLevel: Int) async throws -> [DBTask] {
+    func fetchOpenTasks() async throws -> [DBTask] {
         try await supabase
             .from("tasks")
             .select()
             .eq("status", value: "open")
-            .lte("required_level", value: maxLevel)
             .order("created_at", ascending: false)
             .execute()
             .value
@@ -33,7 +32,6 @@ final class TaskService {
     func createTask(
         elderlyId: UUID,
         category: String,
-        requiredLevel: Int,
         timingType: String,
         scheduledAt: Date? = nil,
         note: String,
@@ -42,7 +40,6 @@ final class TaskService {
         struct Insert: Encodable {
             let elderlyId: UUID
             let category: String
-            let requiredLevel: Int
             let timingType: String
             let scheduledAt: Date?
             let note: String
@@ -50,7 +47,6 @@ final class TaskService {
             enum CodingKeys: String, CodingKey {
                 case elderlyId = "elderly_id"
                 case category
-                case requiredLevel = "required_level"
                 case timingType    = "timing_type"
                 case scheduledAt   = "scheduled_at"
                 case note
@@ -63,7 +59,6 @@ final class TaskService {
             .insert(Insert(
                 elderlyId: elderlyId,
                 category: category,
-                requiredLevel: requiredLevel,
                 timingType: timingType,
                 scheduledAt: scheduledAt,
                 note: note,
@@ -103,37 +98,21 @@ final class TaskService {
             .execute()
     }
 
-    // MARK: - Selfie upload bij check-in
-
-    func uploadCheckInSelfie(imageData: Data, taskId: UUID, buddyId: UUID) async throws -> String {
-        let timestamp = Int(Date().timeIntervalSince1970)
-        let path = "\(taskId.uuidString)/\(buddyId.uuidString)_\(timestamp).jpg"
-        try await supabase.storage
-            .from("check-in-selfies")
-            .upload(path, data: imageData, options: FileOptions(contentType: "image/jpeg"))
-        let publicUrl = try supabase.storage
-            .from("check-in-selfies")
-            .getPublicURL(path: path)
-        return publicUrl.absoluteString
-    }
-
     // MARK: - Buddy aankomst
 
-    func markArrived(taskId: UUID, selfieUrl: String? = nil) async throws {
+    func markArrived(taskId: UUID) async throws {
         struct Update: Encodable {
             let status: String
             let arrivedAt: Date
-            let checkInSelfieUrl: String?
             enum CodingKeys: String, CodingKey {
                 case status
-                case arrivedAt        = "arrived_at"
-                case checkInSelfieUrl = "check_in_selfie_url"
+                case arrivedAt = "arrived_at"
             }
         }
 
         try await supabase
             .from("tasks")
-            .update(Update(status: "arrived", arrivedAt: Date(), checkInSelfieUrl: selfieUrl))
+            .update(Update(status: "arrived", arrivedAt: Date()))
             .eq("id", value: taskId.uuidString)
             .execute()
     }
@@ -238,39 +217,6 @@ final class TaskService {
                 body: body
             ))
             .execute()
-    }
-
-    // MARK: - Cursusvoortgang opslaan
-
-    func markModuleComplete(buddyId: UUID, courseId: String, moduleId: String) async throws {
-        struct Insert: Encodable {
-            let buddyId: UUID
-            let courseId: String
-            let moduleId: String
-            enum CodingKeys: String, CodingKey {
-                case buddyId  = "buddy_id"
-                case courseId = "course_id"
-                case moduleId = "module_id"
-            }
-        }
-
-        // ignoreDuplicates zodat dubbel aanroepen geen error geeft
-        try await supabase
-            .from("course_progress")
-            .upsert(
-                Insert(buddyId: buddyId, courseId: courseId, moduleId: moduleId),
-                onConflict: "buddy_id,course_id,module_id"
-            )
-            .execute()
-    }
-
-    func fetchCourseProgress(buddyId: UUID) async throws -> [DBCourseProgress] {
-        try await supabase
-            .from("course_progress")
-            .select()
-            .eq("buddy_id", value: buddyId.uuidString)
-            .execute()
-            .value
     }
 
     // MARK: - Familie koppelen via code

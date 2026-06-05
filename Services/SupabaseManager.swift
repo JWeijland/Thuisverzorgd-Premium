@@ -50,12 +50,10 @@ struct DBElderlyProfile: Codable, Identifiable {
 
 struct DBBuddyProfile: Codable, Identifiable {
     let id: UUID
-    var level: Int?
     var bio: String?
     var study: String?
     var ratingAverage: Double?
     var totalTasks: Int?
-    var kycVerified: Bool?
     var vogValid: Bool?
     var vogExpiresAt: String?
     var ibanLast4: String?
@@ -63,10 +61,9 @@ struct DBBuddyProfile: Codable, Identifiable {
     var isOnboardingComplete: Bool?
 
     enum CodingKeys: String, CodingKey {
-        case id, level, bio, study
+        case id, bio, study
         case ratingAverage        = "rating_average"
         case totalTasks           = "total_tasks"
-        case kycVerified          = "kyc_verified"
         case vogValid             = "vog_valid"
         case vogExpiresAt         = "vog_expires_at"
         case ibanLast4            = "iban_last4"
@@ -80,7 +77,6 @@ struct DBTask: Codable, Identifiable {
     let elderlyId: UUID
     var assignedBuddyId: UUID?
     let category: String
-    let requiredLevel: Int
     let timingType: String
     var scheduledAt: String?
     let note: String
@@ -97,7 +93,6 @@ struct DBTask: Codable, Identifiable {
         case id, note, status, category
         case elderlyId        = "elderly_id"
         case assignedBuddyId  = "assigned_buddy_id"
-        case requiredLevel    = "required_level"
         case timingType       = "timing_type"
         case scheduledAt      = "scheduled_at"
         case priceCents       = "price_cents"
@@ -144,22 +139,6 @@ struct DBEarning: Codable, Identifiable {
         case elderlyName = "elderly_name"
         case amountCents = "amount_cents"
         case createdAt   = "created_at"
-    }
-}
-
-struct DBCourseProgress: Codable, Identifiable {
-    let id: UUID
-    let buddyId: UUID
-    let courseId: String
-    let moduleId: String
-    let completedAt: String
-
-    enum CodingKeys: String, CodingKey {
-        case id
-        case buddyId     = "buddy_id"
-        case courseId    = "course_id"
-        case moduleId    = "module_id"
-        case completedAt = "completed_at"
     }
 }
 
