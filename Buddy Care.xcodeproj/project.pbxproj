@@ -52,7 +52,6 @@
 		D37409EF2FB229AB003448A5 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37409AD2FB229AB003448A5 /* ContentView.swift */; };
 		D37409F02FB229AB003448A5 /* TaskFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37409AB2FB229AB003448A5 /* TaskFlow.swift */; };
 		D37409F12FB229AB003448A5 /* CourseModuleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37409A82FB229AB003448A5 /* CourseModuleView.swift */; };
-		D37409F22FB229AB003448A5 /* WMOGuideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37409CD2FB229AB003448A5 /* WMOGuideView.swift */; };
 		D37409F32FB229AB003448A5 /* OrganizationOnboardingFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = D374099B2FB229AB003448A5 /* OrganizationOnboardingFlow.swift */; };
 		D37409F42FB229AB003448A5 /* Buddie_CareApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37409A02FB229AB003448A5 /* Buddie_CareApp.swift */; };
 		D37409F52FB229AB003448A5 /* ActivityTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37409BB2FB229AB003448A5 /* ActivityTimelineView.swift */; };
@@ -135,7 +134,6 @@
 		D37409C92FB229AB003448A5 /* SupabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseManager.swift; sourceTree = "<group>"; };
 		D37409CA2FB229AB003448A5 /* TaskService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskService.swift; sourceTree = "<group>"; };
 		D37409CC2FB229AB003448A5 /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
-		D37409CD2FB229AB003448A5 /* WMOGuideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WMOGuideView.swift; sourceTree = "<group>"; };
 		D3740A012FB23079003448A5 /* Buddy Care.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Buddy Care.entitlements"; sourceTree = "<group>"; };
 		AA01ABCD2FC100000000A001 /* SpeechService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechService.swift; sourceTree = "<group>"; };
 		AA02ABCD2FC100000000A002 /* MatchingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchingService.swift; sourceTree = "<group>"; };
@@ -312,7 +310,6 @@
 			isa = PBXGroup;
 			children = (
 				D37409CC2FB229AB003448A5 /* SplashView.swift */,
-				D37409CD2FB229AB003448A5 /* WMOGuideView.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -437,7 +434,6 @@
 				D37409EF2FB229AB003448A5 /* ContentView.swift in Sources */,
 				D37409F02FB229AB003448A5 /* TaskFlow.swift in Sources */,
 				D37409F12FB229AB003448A5 /* CourseModuleView.swift in Sources */,
-				D37409F22FB229AB003448A5 /* WMOGuideView.swift in Sources */,
 				D37409F32FB229AB003448A5 /* OrganizationOnboardingFlow.swift in Sources */,
 				D37409F42FB229AB003448A5 /* Buddie_CareApp.swift in Sources */,
 				D37409F52FB229AB003448A5 /* ActivityTimelineView.swift in Sources */,

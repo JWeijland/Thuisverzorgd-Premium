@@ -579,34 +579,6 @@ enum MembershipStatus: String, Equatable {
     }
 }
 
-enum PaymentType: String, CaseIterable, Identifiable {
-    case particulier
-    case zinNatura
-
-    var id: String { rawValue }
-
-    var displayName: String {
-        switch self {
-        case .particulier: return "Particulier"
-        case .zinNatura:   return "Zorg in natura"
-        }
-    }
-
-    var icon: String {
-        switch self {
-        case .particulier: return "creditcard.fill"
-        case .zinNatura:   return "building.columns.fill"
-        }
-    }
-
-    var description: String {
-        switch self {
-        case .particulier: return "U betaalt zelf voor de zorg"
-        case .zinNatura:   return "De gemeente betaalt via de organisatie"
-        }
-    }
-}
-
 struct OrganizationMembership: Identifiable {
     let id: UUID
     let userId: UUID
@@ -631,8 +603,6 @@ struct ServiceRecord: Identifiable, Hashable {
     let hours: Double
     let buddyHourlyRateCents: Int
     let clientHourlyRateCents: Int
-    let paymentType: PaymentType
-    let municipality: String?
     let month: String              // "2026-05"
     let completedAt: Date
     var isFinalized: Bool

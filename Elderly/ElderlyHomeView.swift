@@ -7,7 +7,6 @@ struct ElderlyHomeView: View {
     @State private var showRequestFlow = false
     @State private var showReview = false
     @State private var selectedHistoryTask: ServiceTask? = nil
-    @State private var showWMOGuide = false
     @State private var showQRCode = false
     @State private var messageSent = false
     @State private var qrFlow: QRFlowKind? = nil
@@ -55,24 +54,15 @@ struct ElderlyHomeView: View {
                         .padding(.horizontal, BCSpacing.lg)
                         .padding(.top, BCSpacing.md)
 
-                        // Ook handig
-                        VStack(alignment: .leading, spacing: BCSpacing.sm) {
-                            Text("Ook handig")
-                                .font(et.heading)
-                                .foregroundStyle(BCColors.textPrimary)
-                                .padding(.horizontal, BCSpacing.lg)
+                        // Ook handig — QR is alleen zinvol als er een buddy onderweg is naar de deur.
+                        if appState.activeTaskForElderly != nil {
+                            VStack(alignment: .leading, spacing: BCSpacing.sm) {
+                                Text("Ook handig")
+                                    .font(et.heading)
+                                    .foregroundStyle(BCColors.textPrimary)
+                                    .padding(.horizontal, BCSpacing.lg)
 
-                            HStack(alignment: .top, spacing: BCSpacing.md) {
-                                BCQuickTile(
-                                    title: "Vergoeding aanvragen",
-                                    subtitle: "Via de Wmo — stap voor stap",
-                                    icon: "eurosign.circle.fill",
-                                    color: BCColors.success
-                                ) {
-                                    showWMOGuide = true
-                                }
-                                // QR is alleen zinvol als er een buddy onderweg is naar de deur.
-                                if appState.activeTaskForElderly != nil {
+                                HStack(alignment: .top, spacing: BCSpacing.md) {
                                     BCQuickTile(
                                         title: "QR voor de deur",
                                         subtitle: "Toon dit aan de buddy",
@@ -82,8 +72,8 @@ struct ElderlyHomeView: View {
                                         showQRCode = true
                                     }
                                 }
+                                .padding(.horizontal, BCSpacing.lg)
                             }
-                            .padding(.horizontal, BCSpacing.lg)
                         }
 
                         upcomingSection
@@ -107,9 +97,6 @@ struct ElderlyHomeView: View {
         }
         .sheet(isPresented: $showRequestFlow) {
             RequestHelpFlow()
-        }
-        .sheet(isPresented: $showWMOGuide) {
-            WMOGuideView()
         }
         .sheet(isPresented: $showQRCode) {
             ElderlyQRCodeSheet()

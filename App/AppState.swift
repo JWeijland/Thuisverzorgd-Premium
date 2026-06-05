@@ -103,9 +103,7 @@ final class AppState {
     var currentUserMembership: OrganizationMembership? = nil
     var allMemberships: [OrganizationMembership] = MockData.sampleMemberships
 
-    // Facturatie
-    var elderlyPaymentType: PaymentType = .particulier
-    var elderlyMunicipality: String = ""
+    // Facturatie (display-only — geen echte betaling in MVP)
     var serviceRecords: [ServiceRecord] = MockData.sampleServiceRecords
 
     var isOrganizationMember: Bool {
@@ -594,7 +592,7 @@ final class AppState {
 
     func csvExport(month: String? = nil) -> String {
         let records = month.map { m in serviceRecords.filter { $0.month == m } } ?? serviceRecords
-        var rows = ["Maand,Buddy,Ouder,Categorie,Uren,Uurtarief buddy,Uurtarief klant,Betalingstype,Gemeente,Buddy verdienste,Klant bedrag,Winst,Definitief"]
+        var rows = ["Maand,Buddy,Ouder,Categorie,Uren,Uurtarief buddy,Uurtarief klant,Buddy verdienste,Klant bedrag,Winst,Definitief"]
         for r in records {
             let cols = [
                 r.month,
@@ -604,8 +602,6 @@ final class AppState {
                 String(format: "%.2f", r.hours),
                 String(format: "%.2f", Double(r.buddyHourlyRateCents) / 100),
                 String(format: "%.2f", Double(r.clientHourlyRateCents) / 100),
-                r.paymentType.displayName,
-                r.municipality ?? "-",
                 String(format: "%.2f", Double(r.buddyEarningsCents) / 100),
                 String(format: "%.2f", Double(r.clientChargeCents) / 100),
                 String(format: "%.2f", Double(r.profitCents) / 100),

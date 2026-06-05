@@ -20,11 +20,8 @@ enum Config {
     static let priceLevel3CentsPerHour: Int = 3200   // buddy net €25,60
     static let travelCostCentsPerKmAfter5: Int = 23
 
-    // WMO contracted rates (cents per hour, municipality pays Thuisverzorgd)
-    static let wmoLevel0CentsPerHour: Int = 2200     // buddy net €17,60
-    static let wmoLevel1CentsPerHour: Int = 2700     // buddy net €21,60
-    static let wmoLevel2CentsPerHour: Int = 3300     // buddy net €26,40
-    static let wmoLevel3CentsPerHour: Int = 4000     // buddy net €32,00
+    // Platform fee (display-only; no real payment in MVP)
+    static let platformFeeCentsPerHour: Int = 500    // €5 per uur
 
     // Mock contact (replace before TestFlight)
     static let supportPhoneNumber: String = "085-XXX XXXX"

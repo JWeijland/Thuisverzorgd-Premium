@@ -489,42 +489,42 @@ enum MockData {
                 id: UUID(), buddyName: "Petra Smits", elderlyName: "Riet van der Berg",
                 organizationId: orgId, taskCategory: .companionship,
                 hours: 1.5, buddyHourlyRateCents: 3500, clientHourlyRateCents: 4200,
-                paymentType: .particulier, municipality: nil, month: "2026-05",
+                month: "2026-05",
                 completedAt: Date().addingTimeInterval(-86400 * 3), isFinalized: false
             ),
             ServiceRecord(
                 id: UUID(), buddyName: "Jan de Vries", elderlyName: "Henk de Boer",
                 organizationId: orgId, taskCategory: .groceries,
                 hours: 2.0, buddyHourlyRateCents: 3500, clientHourlyRateCents: 4200,
-                paymentType: .zinNatura, municipality: "Amsterdam", month: "2026-05",
+                month: "2026-05",
                 completedAt: Date().addingTimeInterval(-86400 * 5), isFinalized: false
             ),
             ServiceRecord(
                 id: UUID(), buddyName: "Petra Smits", elderlyName: "Truus Vissers",
                 organizationId: orgId, taskCategory: .mealPrep,
                 hours: 1.0, buddyHourlyRateCents: 3500, clientHourlyRateCents: 4200,
-                paymentType: .zinNatura, municipality: "Amsterdam", month: "2026-05",
+                month: "2026-05",
                 completedAt: Date().addingTimeInterval(-86400 * 7), isFinalized: false
             ),
             ServiceRecord(
                 id: UUID(), buddyName: "Maria Hoekstra", elderlyName: "Kees Bakker",
                 organizationId: orgId, taskCategory: .walkOutdoors,
                 hours: 0.75, buddyHourlyRateCents: 3500, clientHourlyRateCents: 4200,
-                paymentType: .particulier, municipality: nil, month: "2026-04",
+                month: "2026-04",
                 completedAt: Date().addingTimeInterval(-86400 * 40), isFinalized: true
             ),
             ServiceRecord(
                 id: UUID(), buddyName: "Jan de Vries", elderlyName: "Beatrix Lammers",
                 organizationId: orgId, taskCategory: .lightCleaning,
                 hours: 2.5, buddyHourlyRateCents: 3500, clientHourlyRateCents: 4200,
-                paymentType: .zinNatura, municipality: "Rotterdam", month: "2026-04",
+                month: "2026-04",
                 completedAt: Date().addingTimeInterval(-86400 * 42), isFinalized: true
             ),
             ServiceRecord(
                 id: UUID(), buddyName: "Maria Hoekstra", elderlyName: "Riet van der Berg",
                 organizationId: orgId, taskCategory: .walkOutdoors,
                 hours: 1.25, buddyHourlyRateCents: 3500, clientHourlyRateCents: 4200,
-                paymentType: .particulier, municipality: nil, month: "2026-04",
+                month: "2026-04",
                 completedAt: Date().addingTimeInterval(-86400 * 35), isFinalized: true
             ),
         ]

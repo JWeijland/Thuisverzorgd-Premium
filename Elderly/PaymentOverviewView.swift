@@ -65,29 +65,24 @@ struct PaymentOverviewView: View {
         .background(BCColors.background.ignoresSafeArea())
     }
 
-    // MARK: - Betalingstype banner
+    // MARK: - Betaling (display-only)
 
     private var paymentTypeBanner: some View {
         BCCard {
             HStack(spacing: BCSpacing.md) {
-                Image(systemName: appState.elderlyPaymentType.icon)
+                Image(systemName: "creditcard.fill")
                     .font(.system(size: 22, weight: .semibold))
                     .foregroundStyle(BCColors.primary)
                     .frame(width: 40, height: 40)
                     .background(Circle().fill(BCColors.primary.opacity(0.10)))
 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Betalingswijze")
+                    Text("Betalen")
                         .font(et.caption)
                         .foregroundStyle(BCColors.textSecondary)
-                    Text(appState.elderlyPaymentType.displayName)
+                    Text("Betaling volgt later in de app")
                         .font(et.body)
                         .foregroundStyle(BCColors.textPrimary)
-                    if appState.elderlyPaymentType == .zinNatura, !appState.elderlyMunicipality.isEmpty {
-                        Text("Gemeente: \(appState.elderlyMunicipality)")
-                            .font(et.caption)
-                            .foregroundStyle(BCColors.textSecondary)
-                    }
                 }
                 Spacer()
             }
@@ -127,18 +122,16 @@ struct PaymentOverviewView: View {
                     )
                 }
 
-                if appState.elderlyPaymentType == .zinNatura {
-                    HStack(spacing: BCSpacing.sm) {
-                        Image(systemName: "info.circle.fill")
-                            .foregroundStyle(BCColors.primary)
-                        Text("Bij Zorg in natura wordt dit direct met uw gemeente verrekend. U ontvangt geen factuur.")
-                            .font(et.caption)
-                            .foregroundStyle(BCColors.textSecondary)
-                        Spacer()
-                    }
-                    .padding(BCSpacing.sm)
-                    .background(RoundedRectangle(cornerRadius: BCRadius.sm).fill(BCColors.primary.opacity(0.06)))
+                HStack(spacing: BCSpacing.sm) {
+                    Image(systemName: "info.circle.fill")
+                        .foregroundStyle(BCColors.primary)
+                    Text("Dit is een overzicht van de kosten. Betalen via de app komt in een latere versie.")
+                        .font(et.caption)
+                        .foregroundStyle(BCColors.textSecondary)
+                    Spacer()
                 }
+                .padding(BCSpacing.sm)
+                .background(RoundedRectangle(cornerRadius: BCRadius.sm).fill(BCColors.primary.opacity(0.06)))
             }
         }
         .padding(.horizontal, BCSpacing.lg)

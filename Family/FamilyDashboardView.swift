@@ -4,7 +4,6 @@ struct FamilyDashboardView: View {
     @Environment(AppState.self) private var appState
     @State private var showRequestFlow = false
     @State private var showEditProfile = false
-    @State private var showWMOGuide = false
     @State private var showRecentVisits = false
     @Binding var showLinking: Bool
 
@@ -156,14 +155,6 @@ struct FamilyDashboardView: View {
                             }
                         }
                         BCQuickTile(
-                            title: "Wmo-vergoeding",
-                            subtitle: "Financiering via gemeente",
-                            icon: "eurosign.circle.fill",
-                            color: BCColors.success
-                        ) {
-                            showWMOGuide = true
-                        }
-                        BCQuickTile(
                             title: "Oudere koppelen",
                             subtitle: "Voeg een naaste toe",
                             icon: "person.badge.plus",
@@ -181,9 +172,6 @@ struct FamilyDashboardView: View {
         .background(BCColors.background.ignoresSafeArea())
         .sheet(isPresented: $showRequestFlow) {
             RequestHelpFlow(onBehalfOf: appState.activeFamilyElderly)
-        }
-        .sheet(isPresented: $showWMOGuide) {
-            WMOGuideView()
         }
         .sheet(isPresented: $showEditProfile) {
             EditProfileSheet(editingFamilyElderly: true)

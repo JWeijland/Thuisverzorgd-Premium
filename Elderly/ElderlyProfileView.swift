@@ -158,18 +158,11 @@ struct ElderlyProfileView: View {
                     .bcSoftShadow(.card)
                     .padding(.horizontal, BCSpacing.lg)
 
-                    // Betalingswijze alleen voor particuliere cliënten —
-                    // Cordaan-cliënten gaan altijd via natura/verzekering
-                    if !appState.isCordaanElderly {
-                        PaymentTypeSection()
-                            .padding(.horizontal, BCSpacing.lg)
-                    }
-
-                    // Trust row per spec
+                    // Trust row
                     HStack(spacing: BCSpacing.md) {
                         TrustPill(text: "AVG conform")
                         TrustPill(text: "VOG-gescreend")
-                        TrustPill(text: "WMO (aanvraag)")
+                        TrustPill(text: "Reviews")
                     }
                     .padding(.horizontal, BCSpacing.lg)
 
@@ -328,97 +321,6 @@ struct EditProfileSheet: View {
             appState.elderlyUser.medicationNotes = medication
         }
         dismiss()
-    }
-}
-
-private struct PaymentTypeSection: View {
-    @Environment(AppState.self) private var appState
-    @State private var showMunicipalityField = false
-
-    var body: some View {
-        VStack(spacing: 0) {
-            HStack {
-                Label("Betalingswijze", systemImage: "eurosign.circle.fill")
-                    .font(BCTypography.headline)
-                    .foregroundStyle(BCColors.textPrimary)
-                Spacer()
-            }
-            .padding(.horizontal, BCSpacing.lg)
-            .padding(.top, BCSpacing.md)
-            .padding(.bottom, BCSpacing.sm)
-
-            VStack(spacing: BCSpacing.sm) {
-                ForEach(PaymentType.allCases) { type in
-                    Button {
-                        appState.elderlyPaymentType = type
-                        if type == .zinNatura { showMunicipalityField = true }
-                    } label: {
-                        HStack(spacing: BCSpacing.md) {
-                            Image(systemName: type.icon)
-                                .font(.system(size: 18, weight: .semibold))
-                                .foregroundStyle(BCColors.primary)
-                                .frame(width: 36, height: 36)
-                                .background(Circle().fill(BCColors.primary.opacity(0.08)))
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(type.displayName)
-                                    .font(BCTypography.bodyEmphasized)
-                                    .foregroundStyle(BCColors.textPrimary)
-                                Text(type.description)
-                                    .font(BCTypography.caption)
-                                    .foregroundStyle(BCColors.textSecondary)
-                            }
-                            Spacer()
-                            Image(systemName: appState.elderlyPaymentType == type
-                                  ? "checkmark.circle.fill" : "circle")
-                                .font(.system(size: 20, weight: .semibold))
-                                .foregroundStyle(appState.elderlyPaymentType == type
-                                                 ? BCColors.accentDark : BCColors.textTertiary)
-                        }
-                        .padding(BCSpacing.md)
-                        .background(
-                            RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous)
-                                .fill(appState.elderlyPaymentType == type
-                                      ? BCColors.accent.opacity(0.10) : BCColors.surfaceMuted)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous)
-                                        .stroke(appState.elderlyPaymentType == type
-                                                ? BCColors.accentDark : Color.clear,
-                                                lineWidth: appState.elderlyPaymentType == type ? 2 : 0)
-                                )
-                        )
-                    }
-                    .buttonStyle(.plain)
-                }
-
-                // Gemeente invoer bij ZiN
-                if appState.elderlyPaymentType == .zinNatura {
-                    HStack(spacing: BCSpacing.sm) {
-                        Image(systemName: "building.columns.fill")
-                            .foregroundStyle(BCColors.primary)
-                            .frame(width: 24)
-                        Text("Gemeente:")
-                            .font(BCTypography.body)
-                            .foregroundStyle(BCColors.textSecondary)
-                        TextField("Bijv. Amsterdam", text: Binding(
-                            get: { appState.elderlyMunicipality },
-                            set: { appState.elderlyMunicipality = $0 }
-                        ))
-                        .font(BCTypography.body)
-                        .foregroundStyle(BCColors.textPrimary)
-                    }
-                    .padding(BCSpacing.md)
-                    .background(
-                        RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous)
-                            .fill(BCColors.surfaceMuted)
-                    )
-                }
-            }
-        }
-        .background(
-            RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous)
-                .fill(BCColors.surface)
-        )
-        .bcSoftShadow(.card)
     }
 }
 
