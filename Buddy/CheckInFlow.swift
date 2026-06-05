@@ -14,7 +14,8 @@ struct CheckInFlowView: View {
     let task: ServiceTask
     let onComplete: (CheckInRecord) -> Void
 
-    @State private var step: Step = .selfie
+    // Vereenvoudigde check-in: alleen aankomst bevestigen (geen selfie / QR).
+    @State private var step: Step = .gps
     @State private var selfieConfirmed = false
     @State private var capturedSelfie: UIImage? = nil
     @State private var scannedQR: String? = nil
@@ -60,7 +61,7 @@ struct CheckInFlowView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    if step == .selfie || step == .qr {
+                    if step == .gps {
                         Button("Annuleer") { dismiss() }
                             .tint(BCColors.primary)
                     }
@@ -92,7 +93,7 @@ struct CheckInFlowView: View {
     // MARK: - Step indicator
 
     private var stepIndicator: some View {
-        let steps: [Step] = [.selfie, .qr, .gps]
+        let steps: [Step] = [.gps]
         let currentIndex = steps.firstIndex(of: step) ?? 0
 
         return HStack(spacing: 6) {
@@ -112,7 +113,7 @@ extension CheckInFlowView.Step {
         switch self {
         case .selfie: return "Selfie"
         case .qr:     return "QR-code"
-        case .gps:    return "Locatie"
+        case .gps:    return "Aankomst bevestigen"
         case .done:   return "Ingecheckt"
         }
     }

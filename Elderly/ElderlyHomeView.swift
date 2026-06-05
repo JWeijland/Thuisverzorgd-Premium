@@ -7,7 +7,6 @@ struct ElderlyHomeView: View {
     @State private var showRequestFlow = false
     @State private var showReview = false
     @State private var selectedHistoryTask: ServiceTask? = nil
-    @State private var showQRCode = false
     @State private var messageSent = false
     @State private var qrFlow: QRFlowKind? = nil
     @State private var demoTick = 0   // forceert hertekening na demo-acties
@@ -54,28 +53,6 @@ struct ElderlyHomeView: View {
                         .padding(.horizontal, BCSpacing.lg)
                         .padding(.top, BCSpacing.md)
 
-                        // Ook handig — QR is alleen zinvol als er een buddy onderweg is naar de deur.
-                        if appState.activeTaskForElderly != nil {
-                            VStack(alignment: .leading, spacing: BCSpacing.sm) {
-                                Text("Ook handig")
-                                    .font(et.heading)
-                                    .foregroundStyle(BCColors.textPrimary)
-                                    .padding(.horizontal, BCSpacing.lg)
-
-                                HStack(alignment: .top, spacing: BCSpacing.md) {
-                                    BCQuickTile(
-                                        title: "QR voor de deur",
-                                        subtitle: "Toon dit aan de buddy",
-                                        icon: "qrcode",
-                                        color: BCColors.navy500
-                                    ) {
-                                        showQRCode = true
-                                    }
-                                }
-                                .padding(.horizontal, BCSpacing.lg)
-                            }
-                        }
-
                         upcomingSection
 
                         // Spacer for SOS floating button
@@ -97,9 +74,6 @@ struct ElderlyHomeView: View {
         }
         .sheet(isPresented: $showRequestFlow) {
             RequestHelpFlow()
-        }
-        .sheet(isPresented: $showQRCode) {
-            ElderlyQRCodeSheet()
         }
         .sheet(item: $qrFlow) { kind in
             CheckInOutQRSheet(kind: kind, buddyName: appState.activeTaskForElderly?.assignedBuddyName) {
