@@ -77,8 +77,6 @@ final class AppState {
     private let matchingService = MatchingService()
     /// Laatste matches voor activeTaskForElderly — zodat UI kan tonen wie wordt benaderd
     var lastMatches: [MatchingService.Match] = []
-    /// Welke buddies zijn lid van een organisatie (Cordaan) — die negeren voorkeuren-filter
-    var cordaanBuddyIDs: Set<UUID> = []
 
     /// Level-up trigger: zodra dit niet-nil wordt verschijnt de voorkeuren-sheet automatisch.
     var newlyUnlockedLevel: ServiceLevel? = nil
@@ -96,32 +94,13 @@ final class AppState {
     // Buddy availability
     var isAvailableNow: Bool = true
 
-    // MARK: - Organisatie ("Tak") state
-    var availableOrganizations: [Organization] = [MockData.cordaan]
-    var pendingRole: UserRole? = nil
-    var selectedOrganization: Organization? = nil
-    var currentUserMembership: OrganizationMembership? = nil
-    var allMemberships: [OrganizationMembership] = MockData.sampleMemberships
-
     // Facturatie (display-only — geen echte betaling in MVP)
     var serviceRecords: [ServiceRecord] = MockData.sampleServiceRecords
-
-    var isOrganizationMember: Bool {
-        currentUserMembership?.status == .approved
-    }
-    var isCordaanBuddy: Bool {
-        isOrganizationMember && currentRole == .buddy
-    }
-    var isCordaanElderly: Bool {
-        isOrganizationMember && currentRole == .elderly
-    }
 
     // Diploma
     var diplomaStatus: DiplomaStatus = .none
 
     var effectiveBuddyLevel: ServiceLevel {
-        // Buddies via een zorginstelling zijn gediplomeerd en bevoegd voor alles.
-        if isCordaanBuddy { return .three }
         guard case .verified = diplomaStatus else { return buddyUser.level }
         let kort = CourseContent.course_basisWelkom_kort
         let done = completedModules[kort.id] ?? []
@@ -206,9 +185,7 @@ final class AppState {
 
     /// Detecteert of voltooien van deze cursus een nieuw niveau ontgrendelt.
     /// Triggert dan de voorkeuren-sheet via `newlyUnlockedLevel`.
-    /// Cordaan-buddies worden overgeslagen — zij hebben geen voorkeuren-flow.
     private func checkForLevelUnlock(after courseId: UUID) {
-        guard !isCordaanBuddy else { return }
         guard let course = MockData.courses.first(where: { $0.id == courseId }) else { return }
         let allModuleIds = Set(course.modules.map { $0.id })
         let done = completedModules[courseId] ?? []
@@ -287,11 +264,6 @@ final class AppState {
         activeTaskForElderly = nil
         activeTaskForBuddy = nil
         showSOS = false
-        // Organisatie-staat opschonen zodat een volgende rolkeuze schoon start
-        // (anders blijft een eerdere Cordaan-flow de onboarding beïnvloeden).
-        currentUserMembership = nil
-        selectedOrganization = nil
-        pendingRole = nil
         isDemoMode = false
     }
 
@@ -320,7 +292,7 @@ final class AppState {
         activeTaskForElderly = task
 
         // Matching: vind buddies en stuur hen een notificatie
-        let matches = matchingService.rankBuddies(for: task, from: allBuddies, cordaanBuddyIDs: cordaanBuddyIDs)
+        let matches = matchingService.rankBuddies(for: task, from: allBuddies)
         lastMatches = matches
         matchingService.notifyMatchedBuddies(matches: matches, task: task)
     }
@@ -355,7 +327,7 @@ final class AppState {
         showToast(text: "Aanvraag ingezet voor \(elderly.firstName)", icon: "phone.fill")
 
         // Matching: vind buddies en stuur hen een notificatie
-        let matches = matchingService.rankBuddies(for: task, from: allBuddies, cordaanBuddyIDs: cordaanBuddyIDs)
+        let matches = matchingService.rankBuddies(for: task, from: allBuddies)
         lastMatches = matches
         matchingService.notifyMatchedBuddies(matches: matches, task: task)
     }
@@ -427,7 +399,7 @@ final class AppState {
 
         // Opnieuw matchen, exclusief de buddy die net annuleerde
         let remaining = allBuddies.filter { $0.firstName != cancellingBuddyName }
-        let matches = matchingService.rankBuddies(for: task, from: remaining, cordaanBuddyIDs: cordaanBuddyIDs)
+        let matches = matchingService.rankBuddies(for: task, from: remaining)
         lastMatches = matches
         matchingService.notifyMatchedBuddies(matches: matches, task: task)
 
@@ -520,68 +492,6 @@ final class AppState {
         activeTaskForElderly = task   // status .completed → cliëntscherm toont de beoordeling
     }
 
-    // MARK: - Organisatie methoden
-
-    func submitMembershipRequest(organization: Organization, proofNote: String) {
-        let role = pendingRole ?? currentRole ?? .buddy
-        let name = role == .buddy ? buddyUser.fullName : elderlyUser.fullName
-        let membership = OrganizationMembership(
-            id: UUID(),
-            userId: realUserId ?? UUID(),
-            userName: name,
-            userRole: role,
-            organizationId: organization.id,
-            status: .pending,
-            proofNote: proofNote,
-            submittedAt: Date()
-        )
-        currentUserMembership = membership
-        allMemberships.append(membership)
-        selectedOrganization = organization
-    }
-
-    func approveMembership(id: UUID) {
-        guard let idx = allMemberships.firstIndex(where: { $0.id == id }) else { return }
-        allMemberships[idx].status = .approved
-        allMemberships[idx].reviewedAt = Date()
-        if currentUserMembership?.id == id {
-            currentUserMembership = allMemberships[idx]
-        }
-        showToast(text: "Aanvraag goedgekeurd", icon: "checkmark.seal.fill")
-    }
-
-    func rejectMembership(id: UUID, reason: String = "") {
-        guard let idx = allMemberships.firstIndex(where: { $0.id == id }) else { return }
-        allMemberships[idx].status = .rejected
-        allMemberships[idx].reviewedAt = Date()
-        allMemberships[idx].adminNote = reason.isEmpty ? nil : reason
-        if currentUserMembership?.id == id {
-            currentUserMembership = allMemberships[idx]
-        }
-        showToast(text: "Aanvraag afgewezen", icon: "xmark.circle.fill")
-    }
-
-    func activateCordaanDemo(role: UserRole) {
-        let org = MockData.cordaan
-        selectedOrganization = org
-        let name = role == .buddy ? "Demo Cordaan Buddy" : "Demo Cordaan Cliënt"
-        let membership = OrganizationMembership(
-            id: UUID(),
-            userId: UUID(),
-            userName: name,
-            userRole: role,
-            organizationId: org.id,
-            status: .approved,
-            proofNote: "Demo — automatisch goedgekeurd",
-            submittedAt: Date(),
-            reviewedAt: Date()
-        )
-        currentUserMembership = membership
-        isDemoMode = true
-        isOnboardingComplete = true
-        hasSeenSplash = true
-        currentRole = role
-    }
 
     func finalizeMonth(_ month: String) {
         for i in serviceRecords.indices where serviceRecords[i].month == month {

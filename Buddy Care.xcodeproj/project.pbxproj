@@ -22,9 +22,7 @@
 		D37409D22FB229AB003448A5 /* NotificationModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37409C42FB229AB003448A5 /* NotificationModels.swift */; };
 		D37409D32FB229AB003448A5 /* BuddyOnboardingFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37409A22FB229AB003448A5 /* BuddyOnboardingFlow.swift */; };
 		D37409D42FB229AB003448A5 /* RequestHelpFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37409B72FB229AB003448A5 /* RequestHelpFlow.swift */; };
-		D37409D52FB229AB003448A5 /* CordaanBuddyOnboardingFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37409A72FB229AB003448A5 /* CordaanBuddyOnboardingFlow.swift */; };
 		D3740A032FB23079003448A5 /* AdminPhoneRequestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3740A022FB23079003448A5 /* AdminPhoneRequestView.swift */; };
-		D37409D62FB229AB003448A5 /* AdminMembershipsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37409952FB229AB003448A5 /* AdminMembershipsView.swift */; };
 		D37409D72FB229AB003448A5 /* BCTypography.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37409B02FB229AB003448A5 /* BCTypography.swift */; };
 		D37409D82FB229AB003448A5 /* SOSView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37409B92FB229AB003448A5 /* SOSView.swift */; };
 		D37409D92FB229AB003448A5 /* MockData.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37409C22FB229AB003448A5 /* MockData.swift */; };
@@ -52,7 +50,6 @@
 		D37409EF2FB229AB003448A5 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37409AD2FB229AB003448A5 /* ContentView.swift */; };
 		D37409F02FB229AB003448A5 /* TaskFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37409AB2FB229AB003448A5 /* TaskFlow.swift */; };
 		D37409F12FB229AB003448A5 /* CourseModuleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37409A82FB229AB003448A5 /* CourseModuleView.swift */; };
-		D37409F32FB229AB003448A5 /* OrganizationOnboardingFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = D374099B2FB229AB003448A5 /* OrganizationOnboardingFlow.swift */; };
 		D37409F42FB229AB003448A5 /* Buddie_CareApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37409A02FB229AB003448A5 /* Buddie_CareApp.swift */; };
 		D37409F52FB229AB003448A5 /* ActivityTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37409BB2FB229AB003448A5 /* ActivityTimelineView.swift */; };
 		D37409F62FB229AB003448A5 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37409C62FB229AB003448A5 /* AuthService.swift */; };
@@ -85,13 +82,11 @@
 		FAB10000000000000000FACE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info.plist"; sourceTree = "<group>"; };
 		D30283182FA68640008387AB /* Buddy Care.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Buddy Care.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D37409942FB229AB003448A5 /* AdminBillingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminBillingView.swift; sourceTree = "<group>"; };
-		D37409952FB229AB003448A5 /* AdminMembershipsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminMembershipsView.swift; sourceTree = "<group>"; };
 		D37409962FB229AB003448A5 /* AdminTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminTabView.swift; sourceTree = "<group>"; };
 		D3740A022FB23079003448A5 /* AdminPhoneRequestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminPhoneRequestView.swift; sourceTree = "<group>"; };
 		D37409982FB229AB003448A5 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		D37409992FB229AB003448A5 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
 		D374099A2FB229AB003448A5 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
-		D374099B2FB229AB003448A5 /* OrganizationOnboardingFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrganizationOnboardingFlow.swift; sourceTree = "<group>"; };
 		D374099C2FB229AB003448A5 /* RoleSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoleSelectionView.swift; sourceTree = "<group>"; };
 		D374099D2FB229AB003448A5 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		D374099F2FB229AB003448A5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -102,7 +97,6 @@
 		D37409A42FB229AB003448A5 /* BuddyTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuddyTabView.swift; sourceTree = "<group>"; };
 		D37409A52FB229AB003448A5 /* CertificateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CertificateView.swift; sourceTree = "<group>"; };
 		D37409A62FB229AB003448A5 /* CheckInFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckInFlow.swift; sourceTree = "<group>"; };
-		D37409A72FB229AB003448A5 /* CordaanBuddyOnboardingFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CordaanBuddyOnboardingFlow.swift; sourceTree = "<group>"; };
 		D37409A82FB229AB003448A5 /* CourseModuleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CourseModuleView.swift; sourceTree = "<group>"; };
 		D37409A92FB229AB003448A5 /* CoursesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoursesView.swift; sourceTree = "<group>"; };
 		D37409AA2FB229AB003448A5 /* EarningsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EarningsView.swift; sourceTree = "<group>"; };
@@ -203,7 +197,6 @@
 			isa = PBXGroup;
 			children = (
 				D37409942FB229AB003448A5 /* AdminBillingView.swift */,
-				D37409952FB229AB003448A5 /* AdminMembershipsView.swift */,
 				D37409962FB229AB003448A5 /* AdminTabView.swift */,
 				D3740A022FB23079003448A5 /* AdminPhoneRequestView.swift */,
 			);
@@ -216,7 +209,6 @@
 				D37409982FB229AB003448A5 /* AppState.swift */,
 				D37409992FB229AB003448A5 /* Config.swift */,
 				D374099A2FB229AB003448A5 /* LoginView.swift */,
-				D374099B2FB229AB003448A5 /* OrganizationOnboardingFlow.swift */,
 				D374099C2FB229AB003448A5 /* RoleSelectionView.swift */,
 				D374099D2FB229AB003448A5 /* RootView.swift */,
 			);
@@ -233,7 +225,6 @@
 				D37409A42FB229AB003448A5 /* BuddyTabView.swift */,
 				D37409A52FB229AB003448A5 /* CertificateView.swift */,
 				D37409A62FB229AB003448A5 /* CheckInFlow.swift */,
-				D37409A72FB229AB003448A5 /* CordaanBuddyOnboardingFlow.swift */,
 				D37409A82FB229AB003448A5 /* CourseModuleView.swift */,
 				D37409A92FB229AB003448A5 /* CoursesView.swift */,
 				D37409AA2FB229AB003448A5 /* EarningsView.swift */,
@@ -404,8 +395,6 @@
 				D37409D22FB229AB003448A5 /* NotificationModels.swift in Sources */,
 				D37409D32FB229AB003448A5 /* BuddyOnboardingFlow.swift in Sources */,
 				D37409D42FB229AB003448A5 /* RequestHelpFlow.swift in Sources */,
-				D37409D52FB229AB003448A5 /* CordaanBuddyOnboardingFlow.swift in Sources */,
-				D37409D62FB229AB003448A5 /* AdminMembershipsView.swift in Sources */,
 				D37409D72FB229AB003448A5 /* BCTypography.swift in Sources */,
 				D37409D82FB229AB003448A5 /* SOSView.swift in Sources */,
 				D37409D92FB229AB003448A5 /* MockData.swift in Sources */,
@@ -434,7 +423,6 @@
 				D37409EF2FB229AB003448A5 /* ContentView.swift in Sources */,
 				D37409F02FB229AB003448A5 /* TaskFlow.swift in Sources */,
 				D37409F12FB229AB003448A5 /* CourseModuleView.swift in Sources */,
-				D37409F32FB229AB003448A5 /* OrganizationOnboardingFlow.swift in Sources */,
 				D37409F42FB229AB003448A5 /* Buddie_CareApp.swift in Sources */,
 				D37409F52FB229AB003448A5 /* ActivityTimelineView.swift in Sources */,
 				D37409F62FB229AB003448A5 /* AuthService.swift in Sources */,

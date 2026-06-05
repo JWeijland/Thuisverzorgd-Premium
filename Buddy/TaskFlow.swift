@@ -53,12 +53,10 @@ struct TaskDetailSheet: View {
                 BCCard {
                     HStack(spacing: BCSpacing.sm) {
                         statBox(label: "Afstand", value: "± 1,4 km", color: BCColors.textPrimary)
-                        if !appState.isCordaanBuddy {
-                            Divider().frame(height: 40)
-                            statBox(label: "Niveau", value: "Niv. \(task.requiredLevel.rawValue)", color: task.requiredLevel.color)
-                            Divider().frame(height: 40)
-                            statBox(label: "Verdienste", value: task.priceFormatted, color: BCColors.green600)
-                        }
+                        Divider().frame(height: 40)
+                        statBox(label: "Niveau", value: "Niv. \(task.requiredLevel.rawValue)", color: task.requiredLevel.color)
+                        Divider().frame(height: 40)
+                        statBox(label: "Verdienste", value: task.priceFormatted, color: BCColors.green600)
                     }
                 }
 
@@ -313,9 +311,7 @@ struct TaskInProgressView: View {
             Text("Goed gedaan!")
                 .font(BCTypography.title2)
                 .foregroundStyle(BCColors.textPrimary)
-            Text(appState.isCordaanBuddy
-                 ? "Het bezoek is geregistreerd bij de zorginstelling."
-                 : "De vergoeding wordt binnen 24 uur uitbetaald.")
+            Text("Het bedrag wordt later via de app verrekend.")
                 .font(BCTypography.body)
                 .foregroundStyle(BCColors.textSecondary)
                 .multilineTextAlignment(.center)

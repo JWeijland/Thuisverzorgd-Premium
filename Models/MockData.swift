@@ -470,93 +470,49 @@ enum MockData {
         EarningEntry(id: UUID(), date: Date().addingTimeInterval(-86400 * 9), elderlyName: "Kees", category: .walkOutdoors, amountCents: 1040)
     ]
 
-    // MARK: - Organisaties ("Takken")
-
-    static let cordaan = Organization(
-        id: UUID(),
-        name: "Cordaan",
-        shortName: "Cordaan",
-        logoSymbol: "building.2.fill",
-        buddyHourlyRateCents: 3500,
-        markupPercent: 20.0,
-        isActive: true
-    )
-
     static var sampleServiceRecords: [ServiceRecord] {
-        let orgId = cordaan.id
-        return [
+        [
             ServiceRecord(
                 id: UUID(), buddyName: "Petra Smits", elderlyName: "Riet van der Berg",
-                organizationId: orgId, taskCategory: .companionship,
-                hours: 1.5, buddyHourlyRateCents: 3500, clientHourlyRateCents: 4200,
+                taskCategory: .companionship,
+                hours: 1.5, buddyHourlyRateCents: 2000, clientHourlyRateCents: 2500,
                 month: "2026-05",
                 completedAt: Date().addingTimeInterval(-86400 * 3), isFinalized: false
             ),
             ServiceRecord(
                 id: UUID(), buddyName: "Jan de Vries", elderlyName: "Henk de Boer",
-                organizationId: orgId, taskCategory: .groceries,
-                hours: 2.0, buddyHourlyRateCents: 3500, clientHourlyRateCents: 4200,
+                taskCategory: .groceries,
+                hours: 2.0, buddyHourlyRateCents: 2000, clientHourlyRateCents: 2500,
                 month: "2026-05",
                 completedAt: Date().addingTimeInterval(-86400 * 5), isFinalized: false
             ),
             ServiceRecord(
                 id: UUID(), buddyName: "Petra Smits", elderlyName: "Truus Vissers",
-                organizationId: orgId, taskCategory: .mealPrep,
-                hours: 1.0, buddyHourlyRateCents: 3500, clientHourlyRateCents: 4200,
+                taskCategory: .mealPrep,
+                hours: 1.0, buddyHourlyRateCents: 2000, clientHourlyRateCents: 2500,
                 month: "2026-05",
                 completedAt: Date().addingTimeInterval(-86400 * 7), isFinalized: false
             ),
             ServiceRecord(
                 id: UUID(), buddyName: "Maria Hoekstra", elderlyName: "Kees Bakker",
-                organizationId: orgId, taskCategory: .walkOutdoors,
-                hours: 0.75, buddyHourlyRateCents: 3500, clientHourlyRateCents: 4200,
+                taskCategory: .walkOutdoors,
+                hours: 0.75, buddyHourlyRateCents: 2000, clientHourlyRateCents: 2500,
                 month: "2026-04",
                 completedAt: Date().addingTimeInterval(-86400 * 40), isFinalized: true
             ),
             ServiceRecord(
                 id: UUID(), buddyName: "Jan de Vries", elderlyName: "Beatrix Lammers",
-                organizationId: orgId, taskCategory: .lightCleaning,
-                hours: 2.5, buddyHourlyRateCents: 3500, clientHourlyRateCents: 4200,
+                taskCategory: .lightCleaning,
+                hours: 2.5, buddyHourlyRateCents: 2000, clientHourlyRateCents: 2500,
                 month: "2026-04",
                 completedAt: Date().addingTimeInterval(-86400 * 42), isFinalized: true
             ),
             ServiceRecord(
                 id: UUID(), buddyName: "Maria Hoekstra", elderlyName: "Riet van der Berg",
-                organizationId: orgId, taskCategory: .walkOutdoors,
-                hours: 1.25, buddyHourlyRateCents: 3500, clientHourlyRateCents: 4200,
+                taskCategory: .walkOutdoors,
+                hours: 1.25, buddyHourlyRateCents: 2000, clientHourlyRateCents: 2500,
                 month: "2026-04",
                 completedAt: Date().addingTimeInterval(-86400 * 35), isFinalized: true
-            ),
-        ]
-    }
-
-    static var sampleMemberships: [OrganizationMembership] {
-        [
-            OrganizationMembership(
-                id: UUID(), userId: UUID(), userName: "Petra Smits", userRole: .buddy,
-                organizationId: cordaan.id, status: .pending,
-                proofNote: "Personeelspas geüpload",
-                submittedAt: Date().addingTimeInterval(-3600 * 2)
-            ),
-            OrganizationMembership(
-                id: UUID(), userId: UUID(), userName: "Jan de Vries", userRole: .buddy,
-                organizationId: cordaan.id, status: .approved,
-                proofNote: "Arbeidscontract geüpload",
-                submittedAt: Date().addingTimeInterval(-86400 * 5),
-                reviewedAt: Date().addingTimeInterval(-86400 * 4)
-            ),
-            OrganizationMembership(
-                id: UUID(), userId: UUID(), userName: "Truus Vissers", userRole: .elderly,
-                organizationId: cordaan.id, status: .pending,
-                proofNote: "Cliëntenkaart geüpload",
-                submittedAt: Date().addingTimeInterval(-3600 * 5)
-            ),
-            OrganizationMembership(
-                id: UUID(), userId: UUID(), userName: "Kees Bakker", userRole: .elderly,
-                organizationId: cordaan.id, status: .approved,
-                proofNote: "Beschikking Wmo geüpload",
-                submittedAt: Date().addingTimeInterval(-86400 * 12),
-                reviewedAt: Date().addingTimeInterval(-86400 * 11)
             ),
         ]
     }

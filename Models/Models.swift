@@ -538,67 +538,12 @@ struct ActivityItem: Identifiable, Hashable {
     func hash(into hasher: inout Hasher) { hasher.combine(id) }
 }
 
-// MARK: - Organizations ("Takken")
-
-struct Organization: Identifiable, Hashable {
-    let id: UUID
-    let name: String
-    let shortName: String
-    let logoSymbol: String
-    let buddyHourlyRateCents: Int  // wat de buddy per uur ontvangt
-    let markupPercent: Double      // Thuisverzorgd winstopslag (%)
-    let isActive: Bool
-
-    var clientHourlyRateCents: Int {
-        Int(Double(buddyHourlyRateCents) * (1.0 + markupPercent / 100.0))
-    }
-
-    func hash(into hasher: inout Hasher) { hasher.combine(id) }
-    static func == (lhs: Organization, rhs: Organization) -> Bool { lhs.id == rhs.id }
-}
-
-enum MembershipStatus: String, Equatable {
-    case none, pending, approved, rejected
-
-    var displayLabel: String {
-        switch self {
-        case .none:     return "Geen"
-        case .pending:  return "In behandeling"
-        case .approved: return "Goedgekeurd"
-        case .rejected: return "Afgewezen"
-        }
-    }
-
-    var color: Color {
-        switch self {
-        case .none:     return BCColors.textTertiary
-        case .pending:  return BCColors.warning
-        case .approved: return BCColors.success
-        case .rejected: return BCColors.danger
-        }
-    }
-}
-
-struct OrganizationMembership: Identifiable {
-    let id: UUID
-    let userId: UUID
-    let userName: String
-    let userRole: UserRole
-    let organizationId: UUID
-    var status: MembershipStatus
-    let proofNote: String
-    let submittedAt: Date
-    var reviewedAt: Date?
-    var adminNote: String?
-}
-
 // MARK: - Facturatie / Service records
 
 struct ServiceRecord: Identifiable, Hashable {
     let id: UUID
     let buddyName: String
     let elderlyName: String
-    let organizationId: UUID
     let taskCategory: TaskCategory
     let hours: Double
     let buddyHourlyRateCents: Int

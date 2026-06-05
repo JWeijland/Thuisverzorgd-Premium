@@ -23,11 +23,9 @@ struct MatchingService {
     /// - Parameters:
     ///   - task: de openstaande taak
     ///   - buddies: alle buddies in het systeem
-    ///   - cordaanBuddyIDs: IDs van Cordaan-buddies — die hebben geen voorkeuren-filter
     func rankBuddies(
         for task: ServiceTask,
-        from buddies: [BuddyUser],
-        cordaanBuddyIDs: Set<UUID> = []
+        from buddies: [BuddyUser]
     ) -> [Match] {
         let targetLoc = CLLocation(latitude: task.coordinate.latitude, longitude: task.coordinate.longitude)
         let allowedServiceNames = BuddyServiceCatalog.serviceNames(for: task.category)
@@ -39,12 +37,10 @@ struct MatchingService {
             // 2. Moet voldoende niveau hebben
             guard buddy.level.rawValue >= task.requiredLevel.rawValue else { return nil }
 
-            // 3. Voorkeuren-filter — Cordaan-buddies overslaan (gecertificeerd, accepteren alles)
-            if !cordaanBuddyIDs.contains(buddy.id) {
-                let allBuddyPreferences = buddy.servicePreferences.values.reduce(into: Set<String>()) { $0.formUnion($1) }
-                let overlap = allBuddyPreferences.intersection(allowedServiceNames)
-                guard !overlap.isEmpty else { return nil }
-            }
+            // 3. Voorkeuren-filter — buddy moet deze dienst aanbieden
+            let allBuddyPreferences = buddy.servicePreferences.values.reduce(into: Set<String>()) { $0.formUnion($1) }
+            let overlap = allBuddyPreferences.intersection(allowedServiceNames)
+            guard !overlap.isEmpty else { return nil }
 
             // 4. Afstand-filter (eigen maxDistanceKm van de buddy)
             let buddyLoc = CLLocation(latitude: buddy.coordinate.latitude, longitude: buddy.coordinate.longitude)

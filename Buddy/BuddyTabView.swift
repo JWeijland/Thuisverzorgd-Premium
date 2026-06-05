@@ -10,15 +10,13 @@ struct BuddyTabView: View {
                 .tag(0)
                 .tabItem { Label("Kaart", systemImage: "map.fill") }
 
-            if !appState.isCordaanBuddy {
-                WalletView()
-                    .tag(1)
-                    .tabItem { Label("Wallet", systemImage: "wallet.pass.fill") }
+            WalletView()
+                .tag(1)
+                .tabItem { Label("Wallet", systemImage: "wallet.pass.fill") }
 
-                CoursesView()
-                    .tag(2)
-                    .tabItem { Label("Cursussen", systemImage: "graduationcap.fill") }
-            }
+            CoursesView()
+                .tag(2)
+                .tabItem { Label("Cursussen", systemImage: "graduationcap.fill") }
 
             BuddyProfileView()
                 .tag(3)
@@ -29,11 +27,7 @@ struct BuddyTabView: View {
             get: { !appState.isOnboardingComplete },
             set: { if !$0 { appState.isOnboardingComplete = true } }
         )) {
-            if appState.isCordaanBuddy {
-                CordaanBuddyOnboardingFlow()
-            } else {
-                BuddyOnboardingFlow()
-            }
+            BuddyOnboardingFlow()
         }
         .sheet(isPresented: Binding(
             get: { appState.newlyUnlockedLevel != nil },

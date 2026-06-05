@@ -13,22 +13,17 @@ struct ElderlyTabView: View {
                         Label("Hulp", systemImage: "house.fill")
                     }
 
-                if !appState.isCordaanElderly {
-                    MyBuddiesView()
-                        .tag(1)
-                        .tabItem {
-                            Label("Buddies", systemImage: "person.2.fill")
-                        }
-                }
+                MyBuddiesView()
+                    .tag(1)
+                    .tabItem {
+                        Label("Buddies", systemImage: "person.2.fill")
+                    }
 
-                // Betalingen alleen voor particuliere cliënten — Cordaan-zorg loopt via de instelling
-                if !appState.isCordaanElderly {
-                    PaymentOverviewView()
-                        .tag(2)
-                        .tabItem {
-                            Label("Betalingen", systemImage: "eurosign.circle.fill")
-                        }
-                }
+                PaymentOverviewView()
+                    .tag(2)
+                    .tabItem {
+                        Label("Betalingen", systemImage: "eurosign.circle.fill")
+                    }
 
                 ElderlyProfileView()
                     .tag(3)

@@ -113,8 +113,7 @@ struct ElderlyHomeView: View {
             PastVisitSheet(task: task)
         }
         .fullScreenCover(isPresented: $showReview) {
-            if !appState.isCordaanElderly,
-               let task = appState.taskHistory.first,
+            if let task = appState.taskHistory.first,
                let buddyName = task.assignedBuddyName {
                 ReviewView(buddyName: buddyName) {
                     showReview = false
@@ -122,7 +121,7 @@ struct ElderlyHomeView: View {
             }
         }
         .onChange(of: appState.activeTaskForElderly?.status) { _, newStatus in
-            if newStatus == .completed && !appState.isCordaanElderly {
+            if newStatus == .completed {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                     showReview = true
                 }
@@ -232,8 +231,7 @@ struct ElderlyHomeView: View {
                                                 Text("Met \(buddy)")
                                                     .font(et.caption)
                                                     .foregroundStyle(BCColors.textSecondary)
-                                                if !appState.isCordaanElderly,
-                                                   appState.favoriteBuddyNames.contains(buddy) {
+                                                if appState.favoriteBuddyNames.contains(buddy) {
                                                     Image(systemName: "heart.fill")
                                                         .font(.system(size: largeText ? 13 : 10))
                                                         .foregroundStyle(BCColors.danger)
@@ -245,16 +243,14 @@ struct ElderlyHomeView: View {
                                                 .font(et.caption)
                                                 .foregroundStyle(BCColors.textTertiary)
                                         }
-                                        if !appState.isCordaanElderly {
-                                            HStack(spacing: 3) {
-                                                ForEach(1...5, id: \.self) { star in
-                                                    Image(systemName: star <= (rated ?? 0) ? "star.fill" : "star")
-                                                        .font(.system(size: 10, weight: .regular))
-                                                        .foregroundStyle(star <= (rated ?? 0) ? BCColors.warning : BCColors.border)
-                                                }
+                                        HStack(spacing: 3) {
+                                            ForEach(1...5, id: \.self) { star in
+                                                Image(systemName: star <= (rated ?? 0) ? "star.fill" : "star")
+                                                    .font(.system(size: 10, weight: .regular))
+                                                    .foregroundStyle(star <= (rated ?? 0) ? BCColors.warning : BCColors.border)
                                             }
-                                            .padding(.top, 1)
                                         }
+                                        .padding(.top, 1)
                                     }
                                     Spacer()
                                     Image(systemName: "chevron.right")
@@ -263,7 +259,7 @@ struct ElderlyHomeView: View {
                                 }
                             }
                             .overlay(alignment: .leading) {
-                                if needsReview && !appState.isCordaanElderly {
+                                if needsReview {
                                     UnevenRoundedRectangle(
                                         topLeadingRadius: BCRadius.lg,
                                         bottomLeadingRadius: BCRadius.lg,
@@ -575,8 +571,7 @@ private struct PastVisitSheet: View {
                         .animation(.easeInOut(duration: 0.2), value: isFavorite)
                     }
 
-                    // Rating section — niet voor zorginstelling-cliënten
-                    if !appState.isCordaanElderly {
+                    // Rating section
                     if alreadyRated {
                         BCCard {
                             HStack {
@@ -662,7 +657,6 @@ private struct PastVisitSheet: View {
                         }
                         .animation(.easeInOut(duration: 0.2), value: selectedStars)
                     }
-                    } // einde rating section (niet-Cordaan)
 
                     Spacer(minLength: BCSpacing.xl)
                 }

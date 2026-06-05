@@ -37,9 +37,8 @@ struct ElderlyProfileView: View {
                     }
                     .padding(.horizontal, BCSpacing.lg)
 
-                    // Tegoed alleen voor particuliere cliënten — bij Cordaan-zorg niet relevant
-                    if !appState.isCordaanElderly {
-                        BCCard {
+                    // Tegoed / referral
+                    BCCard {
                             VStack(alignment: .leading, spacing: BCSpacing.sm) {
                                 Label("Tegoed", systemImage: "creditcard.fill")
                                     .font(BCTypography.headline)
@@ -66,9 +65,8 @@ struct ElderlyProfileView: View {
                                     .buttonStyle(.plain)
                                 }
                             }
-                        }
-                        .padding(.horizontal, BCSpacing.lg)
                     }
+                    .padding(.horizontal, BCSpacing.lg)
 
                     VStack(spacing: 0) {
                         HStack {

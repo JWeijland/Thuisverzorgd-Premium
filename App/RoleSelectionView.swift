@@ -2,7 +2,6 @@ import SwiftUI
 
 struct RoleSelectionView: View {
     @Environment(AppState.self) private var appState
-    @State private var orgFlowRole: UserRole? = nil
 
     var body: some View {
         ZStack {
@@ -19,13 +18,7 @@ struct RoleSelectionView: View {
                         VStack(spacing: BCSpacing.md) {
                             ForEach([UserRole.elderly, .buddy, .family], id: \.id) { role in
                                 RoleCard(role: role) {
-                                    // Alleen buddy's kunnen via een zorgorganisatie werken;
-                                    // ouderen en familie stappen direct in (geen jargon-vraag).
-                                    if role == .buddy {
-                                        orgFlowRole = role
-                                    } else {
-                                        enterDirectly(as: role)
-                                    }
+                                    enterDirectly(as: role)
                                 }
                             }
                         }
@@ -42,16 +35,10 @@ struct RoleSelectionView: View {
                 }
             }
         }
-        .sheet(item: $orgFlowRole) { role in
-            OrganizationOnboardingFlow(role: role)
-        }
     }
 
-    /// Ouderen/familie zonder organisatie: meteen de juiste rol in (zelfstandig pad).
+    /// Iedereen stapt direct de juiste rol in.
     private func enterDirectly(as role: UserRole) {
-        appState.currentUserMembership = nil
-        appState.selectedOrganization = nil
-        appState.pendingRole = nil
         appState.isOnboardingComplete = false
         appState.hasSeenSplash = true
         appState.currentRole = role
@@ -102,7 +89,7 @@ struct RoleSelectionView: View {
         HStack(spacing: BCSpacing.md) {
             TrustBadge(icon: "checkmark.shield.fill", label: "VOG\ngescreend")
             TrustBadge(icon: "lock.fill", label: "AVG\nveilig")
-            TrustBadge(icon: "hand.raised.fill", label: "Verzekerde\ndienst")
+            TrustBadge(icon: "star.fill", label: "Reviews\n& ratings")
         }
     }
 
@@ -121,12 +108,6 @@ struct RoleSelectionView: View {
                     appState.hasSeenSplash = true
                     appState.isOnboardingComplete = true
                     appState.currentRole = .buddy
-                }
-                DemoButton(label: "Demo: Cordaan Buddy", icon: "building.2.fill") {
-                    appState.activateCordaanDemo(role: .buddy)
-                }
-                DemoButton(label: "Demo: Cordaan Cliënt", icon: "building.2.fill") {
-                    appState.activateCordaanDemo(role: .elderly)
                 }
                 DemoButton(label: "Admin dashboard", icon: "gearshape.2.fill") {
                     appState.isDemoMode = true
