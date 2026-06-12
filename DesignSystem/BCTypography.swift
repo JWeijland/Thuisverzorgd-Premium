@@ -8,11 +8,6 @@ import UIKit
 // valt alles netjes terug op het afgeronde systeem-font — geen lelijke
 // kale San Francisco en geen code-wijziging nodig.
 
-enum BCFontFamily {
-    case heading   // Montserrat
-    case body      // Open Sans
-}
-
 enum BCFont {
     /// Naam van een geïnstalleerd custom font of nil als het niet bestaat.
     private static func installedName(_ candidates: [String]) -> String? {

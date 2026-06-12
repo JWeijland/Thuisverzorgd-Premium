@@ -74,6 +74,88 @@ enum TaskCategory: String, CaseIterable, Identifiable, Codable {
     }
 }
 
+// MARK: - Request extras (betaalde boosts bij een aanvraag)
+
+/// Optionele betaalde extra's die een oudere/familielid aan een aanvraag kan
+/// toevoegen om sneller of zekerder een buddy te vinden.
+/// Kleine bedragen (€3–5). In de MVP via een demo-betaalflow.
+enum RequestExtra: String, CaseIterable, Identifiable, Codable {
+    case urgent        // Spoed
+    case wideReach     // Groter bereik / verre buddies
+    case extendedStay  // Extra lange aanwezigheid
+
+    var id: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .urgent:       return "Spoed"
+        case .wideReach:    return "Groter bereik"
+        case .extendedStay: return "Extra lange aanwezigheid"
+        }
+    }
+
+    var description: String {
+        switch self {
+        case .urgent:       return "Uw aanvraag krijgt voorrang en wordt als eerste aan buddies getoond."
+        case .wideReach:    return "We zoeken ook buddies verder weg — meer bereik, meer kans op een match."
+        case .extendedStay: return "De buddy blijft langer (circa een uur extra) voor wat meer rust en aandacht."
+        }
+    }
+
+    var icon: String {
+        switch self {
+        case .urgent:       return "bolt.fill"
+        case .wideReach:    return "dot.radiowaves.left.and.right"
+        case .extendedStay: return "clock.badge.checkmark.fill"
+        }
+    }
+
+    var priceCents: Int {
+        switch self {
+        case .urgent:       return 500
+        case .wideReach:    return 300
+        case .extendedStay: return 400
+        }
+    }
+
+    var priceFormatted: String { RequestExtra.formatCents(priceCents) }
+
+    // MARK: Gedragsparameters (gebruikt door MatchingService)
+
+    /// Factor waarmee de zoekafstand wordt verruimd bij `wideReach`.
+    static let wideReachMultiplier: Double = 2.0
+    /// Extra aanwezigheid in minuten bij `extendedStay`.
+    static let extendedStayMinutes: Int = 60
+
+    static func formatCents(_ cents: Int) -> String {
+        String(format: "€ %.2f", Double(cents) / 100).replacingOccurrences(of: ".", with: ",")
+    }
+}
+
+// MARK: - Betaling (demo)
+
+enum PaymentStatus: String, Codable {
+    case pending
+    case paid
+    case failed
+    case refunded
+}
+
+/// Een (demo-)betaling voor betaalde extra's bij een aanvraag.
+/// In de MVP afgehandeld door `DemoPaymentService`; later vervangbaar door
+/// een echte provider (bijv. Mollie) zonder de UI te wijzigen.
+struct Purchase: Identifiable, Hashable, Codable {
+    let id: UUID
+    let taskID: UUID?
+    let items: [RequestExtra]
+    let amountCents: Int
+    var status: PaymentStatus
+    let createdAt: Date
+    let method: String  // "demo" in de MVP
+
+    var amountFormatted: String { RequestExtra.formatCents(amountCents) }
+}
+
 // MARK: - Buddy service catalog (flat — geen niveaus, geen medische handelingen)
 
 /// Platte catalogus van buddy-diensten gericht op het dagelijks leven.
@@ -228,9 +310,22 @@ struct ServiceTask: Identifiable, Hashable {
     var recurringSchedule: RecurringSchedule? = nil
     var checkInRecord: CheckInRecord? = nil
 
+    /// Betaalde extra's die bij deze aanvraag zijn gekozen.
+    var extras: Set<RequestExtra> = []
+    /// De (demo-)betaling voor de gekozen extra's, indien afgerekend.
+    var purchase: Purchase? = nil
+
     var priceFormatted: String {
         String(format: "€ %.2f", Double(priceCents) / 100).replacingOccurrences(of: ".", with: ",")
     }
+
+    /// Totaalbedrag van de gekozen extra's in centen.
+    var extrasTotalCents: Int { extras.reduce(0) { $0 + $1.priceCents } }
+    var extrasTotalFormatted: String { RequestExtra.formatCents(extrasTotalCents) }
+
+    var hasUrgentBoost: Bool { extras.contains(.urgent) }
+    var hasWideReachBoost: Bool { extras.contains(.wideReach) }
+    var hasExtendedStayBoost: Bool { extras.contains(.extendedStay) }
 
     func hash(into hasher: inout Hasher) { hasher.combine(id) }
     static func == (lhs: ServiceTask, rhs: ServiceTask) -> Bool { lhs.id == rhs.id }

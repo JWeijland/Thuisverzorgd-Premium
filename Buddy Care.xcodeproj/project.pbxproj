@@ -45,7 +45,6 @@
 		D37409EC2FB229AB003448A5 /* BuddyTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37409A42FB229AB003448A5 /* BuddyTabView.swift */; };
 		D37409ED2FB229AB003448A5 /* ProfileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37409C82FB229AB003448A5 /* ProfileService.swift */; };
 		D37409EE2FB229AB003448A5 /* BCColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37409AE2FB229AB003448A5 /* BCColors.swift */; };
-		D37409EF2FB229AB003448A5 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37409AD2FB229AB003448A5 /* ContentView.swift */; };
 		D37409F02FB229AB003448A5 /* TaskFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37409AB2FB229AB003448A5 /* TaskFlow.swift */; };
 		D37409F42FB229AB003448A5 /* Buddie_CareApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37409A02FB229AB003448A5 /* Buddie_CareApp.swift */; };
 		D37409F52FB229AB003448A5 /* ActivityTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37409BB2FB229AB003448A5 /* ActivityTimelineView.swift */; };
@@ -92,7 +91,6 @@
 		D37409A62FB229AB003448A5 /* CheckInFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckInFlow.swift; sourceTree = "<group>"; };
 		D37409AA2FB229AB003448A5 /* EarningsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EarningsView.swift; sourceTree = "<group>"; };
 		D37409AB2FB229AB003448A5 /* TaskFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskFlow.swift; sourceTree = "<group>"; };
-		D37409AD2FB229AB003448A5 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		D37409AE2FB229AB003448A5 /* BCColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BCColors.swift; sourceTree = "<group>"; };
 		D37409AF2FB229AB003448A5 /* BCComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BCComponents.swift; sourceTree = "<group>"; };
 		D37409B02FB229AB003448A5 /* BCTypography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BCTypography.swift; sourceTree = "<group>"; };
@@ -160,7 +158,6 @@
 				D374099F2FB229AB003448A5 /* Assets.xcassets */,
 				D37409A02FB229AB003448A5 /* Buddie_CareApp.swift */,
 				D37409AC2FB229AB003448A5 /* Buddy */,
-				D37409AD2FB229AB003448A5 /* ContentView.swift */,
 				D37409B12FB229AB003448A5 /* DesignSystem */,
 				D37409BA2FB229AB003448A5 /* Elderly */,
 				D37409C02FB229AB003448A5 /* Family */,
@@ -400,7 +397,6 @@
 				D37409EC2FB229AB003448A5 /* BuddyTabView.swift in Sources */,
 				D37409ED2FB229AB003448A5 /* ProfileService.swift in Sources */,
 				D37409EE2FB229AB003448A5 /* BCColors.swift in Sources */,
-				D37409EF2FB229AB003448A5 /* ContentView.swift in Sources */,
 				D37409F02FB229AB003448A5 /* TaskFlow.swift in Sources */,
 				D37409F42FB229AB003448A5 /* Buddie_CareApp.swift in Sources */,
 				D37409F52FB229AB003448A5 /* ActivityTimelineView.swift in Sources */,
@@ -475,7 +471,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -533,7 +529,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -555,7 +551,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "Thuisverzorgd Premium";
+				INFOPLIST_KEY_CFBundleDisplayName = "ThuisVerzorgd";
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Thuisverzorgd gebruikt de camera voor de selfie-check en het scannen van de QR-code bij inchecken.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Thuisverzorgd controleert of je op de juiste locatie bent bij het inchecken.";
@@ -596,7 +592,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "Thuisverzorgd Premium";
+				INFOPLIST_KEY_CFBundleDisplayName = "ThuisVerzorgd";
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Thuisverzorgd gebruikt de camera voor de selfie-check en het scannen van de QR-code bij inchecken.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Thuisverzorgd controleert of je op de juiste locatie bent bij het inchecken.";

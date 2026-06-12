@@ -39,9 +39,11 @@ struct MatchingService {
             guard !overlap.isEmpty else { return nil }
 
             // 3. Afstand-filter (eigen maxDistanceKm van de buddy)
+            //    'Groter bereik'-extra verruimt de toegestane afstand → meer kans op een match.
             let buddyLoc = CLLocation(latitude: buddy.coordinate.latitude, longitude: buddy.coordinate.longitude)
             let distance = targetLoc.distance(from: buddyLoc)
-            let maxMeters = Double(buddy.maxDistanceKm) * 1000.0
+            let reachFactor = task.hasWideReachBoost ? RequestExtra.wideReachMultiplier : 1.0
+            let maxMeters = Double(buddy.maxDistanceKm) * 1000.0 * reachFactor
             guard distance <= maxMeters else { return nil }
 
             let exp = buddy.completedTasksByCategory[task.category] ?? 0
@@ -53,8 +55,18 @@ struct MatchingService {
             )
         }
 
-        // Sorteer: ervaring desc → afstand asc → rating desc
+        // Sorteer. Normaal: ervaring desc → afstand asc → rating desc.
+        // Bij 'Spoed' telt snelheid het zwaarst → afstand asc eerst (snelst ter plaatse).
         return matches.sorted { a, b in
+            if task.hasUrgentBoost {
+                if a.distanceMeters != b.distanceMeters {
+                    return a.distanceMeters < b.distanceMeters
+                }
+                if a.experienceCount != b.experienceCount {
+                    return a.experienceCount > b.experienceCount
+                }
+                return a.buddy.ratingAverage > b.buddy.ratingAverage
+            }
             if a.experienceCount != b.experienceCount {
                 return a.experienceCount > b.experienceCount
             }

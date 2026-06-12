@@ -20,6 +20,9 @@ struct RequestHelpFlow: View {
     @State private var customDate: Date = Date().addingTimeInterval(3600)
     @State private var useCustomDate: Bool = false
     @State private var showVoiceInput: Bool = false
+    // Betaalde extra's
+    @State private var selectedExtras: Set<RequestExtra> = []
+    @State private var showCheckout: Bool = false
     // Recurring
     @State private var isRecurring: Bool = false
     @State private var recurringFrequency: RecurringFrequency = .daily
@@ -65,7 +68,21 @@ struct RequestHelpFlow: View {
                     applySpokenTranscript(spokenText)
                 }
             }
+            .sheet(isPresented: $showCheckout) {
+                ExtrasCheckoutSheet(
+                    extras: sortedSelectedExtras,
+                    basePriceCents: selectedCategory?.suggestedPriceCents ?? 0
+                ) { purchase in
+                    showCheckout = false
+                    submit(purchase: purchase)
+                }
+                .environment(appState)
+            }
         }
+    }
+
+    private var sortedSelectedExtras: [RequestExtra] {
+        RequestExtra.allCases.filter { selectedExtras.contains($0) }
     }
 
     private func applySpokenTranscript(_ text: String) {
@@ -425,34 +442,52 @@ struct RequestHelpFlow: View {
                 }
                 .padding(.horizontal, BCSpacing.lg)
 
+                extrasSection
+
                 BCCard {
-                    HStack {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(isRecurring ? "Tarief per bezoek" : "Geschat tarief")
-                                .font(BCTypography.subheadline)
-                                .foregroundStyle(BCColors.textSecondary)
-                            Text(formattedPrice)
-                                .font(BCTypography.title2)
-                                .foregroundStyle(BCColors.navy900)
-                            if isRecurring {
-                                Text("Elke keer apart verrekend via uw tegoed")
-                                    .font(BCTypography.caption)
-                                    .foregroundStyle(BCColors.textTertiary)
+                    VStack(spacing: BCSpacing.sm) {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(isRecurring ? "Tarief per bezoek" : "Geschat tarief")
+                                    .font(BCTypography.subheadline)
+                                    .foregroundStyle(BCColors.textSecondary)
+                                Text(formattedPrice)
+                                    .font(BCTypography.title2)
+                                    .foregroundStyle(BCColors.navy900)
+                                if isRecurring {
+                                    Text("Elke keer apart verrekend via uw tegoed")
+                                        .font(BCTypography.caption)
+                                        .foregroundStyle(BCColors.textTertiary)
+                                }
+                            }
+                            Spacer()
+                            ZStack {
+                                Circle().fill(BCColors.accent.opacity(0.15))
+                                Image(systemName: isRecurring ? "repeat" : "creditcard.fill")
+                                    .font(.system(size: 24, weight: .semibold))
+                                    .foregroundStyle(BCColors.green700)
+                            }
+                            .frame(width: 56, height: 56)
+                        }
+                        if !selectedExtras.isEmpty {
+                            Divider()
+                            HStack {
+                                Text("Extra's (nu te betalen)")
+                                    .font(BCTypography.subheadline)
+                                    .foregroundStyle(BCColors.textSecondary)
+                                Spacer()
+                                Text(RequestExtra.formatCents(selectedExtrasTotalCents))
+                                    .font(BCTypography.headline)
+                                    .foregroundStyle(BCColors.navy900)
                             }
                         }
-                        Spacer()
-                        ZStack {
-                            Circle().fill(BCColors.accent.opacity(0.15))
-                            Image(systemName: isRecurring ? "repeat" : "creditcard.fill")
-                                .font(.system(size: 24, weight: .semibold))
-                                .foregroundStyle(BCColors.green700)
-                        }
-                        .frame(width: 56, height: 56)
                     }
                 }
                 .padding(.horizontal, BCSpacing.lg)
 
-                Text("Door op Bevestigen te tikken vraagt u officieel hulp aan. We zoeken meteen iemand in de buurt voor u.")
+                Text(selectedExtras.isEmpty
+                     ? "Door op Bevestigen te tikken vraagt u officieel hulp aan. We zoeken meteen iemand in de buurt voor u."
+                     : "U rekent eerst de gekozen extra's af. Daarna zetten we de aanvraag in en zoeken meteen iemand voor u.")
                     .font(BCTypography.caption)
                     .foregroundStyle(BCColors.textTertiary)
                     .padding(.horizontal, BCSpacing.lg)
@@ -467,6 +502,47 @@ struct RequestHelpFlow: View {
         return String(format: "€ %.2f", euros).replacingOccurrences(of: ".", with: ",")
     }
 
+    private var selectedExtrasTotalCents: Int {
+        selectedExtras.reduce(0) { $0 + $1.priceCents }
+    }
+
+    private var confirmButtonTitle: String {
+        guard step == 2 else { return "Volgende" }
+        return selectedExtras.isEmpty ? "Bevestigen" : "Extra's afrekenen"
+    }
+
+    // MARK: - Betaalde extra's (boosts)
+
+    private var extrasSection: some View {
+        VStack(alignment: .leading, spacing: BCSpacing.sm) {
+            HStack(spacing: BCSpacing.xs) {
+                Image(systemName: "sparkles")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(BCColors.accent)
+                Text("Sneller of zekerder geholpen?")
+                    .font(BCTypography.headline)
+                    .foregroundStyle(BCColors.textPrimary)
+            }
+            Text("Optioneel — kleine toeslag, direct te betalen.")
+                .font(BCTypography.caption)
+                .foregroundStyle(BCColors.textSecondary)
+
+            VStack(spacing: BCSpacing.sm) {
+                ForEach(RequestExtra.allCases) { extra in
+                    ExtraToggleCard(extra: extra, isSelected: selectedExtras.contains(extra)) {
+                        if selectedExtras.contains(extra) {
+                            selectedExtras.remove(extra)
+                        } else {
+                            selectedExtras.insert(extra)
+                        }
+                    }
+                }
+            }
+        }
+        .padding(.horizontal, BCSpacing.lg)
+        .animation(.easeInOut(duration: 0.15), value: selectedExtras)
+    }
+
     private var bottomBar: some View {
         VStack(spacing: BCSpacing.sm) {
             Divider()
@@ -477,8 +553,8 @@ struct RequestHelpFlow: View {
                     }
                 }
                 BCCTAButton(
-                    title: step == 2 ? "Bevestigen" : "Volgende",
-                    icon: step == 2 ? "checkmark" : "arrow.right",
+                    title: confirmButtonTitle,
+                    icon: step == 2 ? (selectedExtras.isEmpty ? "checkmark" : "creditcard.fill") : "arrow.right",
                     fullWidth: true
                 ) {
                     next()
@@ -504,22 +580,27 @@ struct RequestHelpFlow: View {
     private func next() {
         if step < 2 {
             step += 1
+        } else if selectedExtras.isEmpty {
+            submit(purchase: nil)
         } else {
-            confirm()
+            // Eerst de gekozen extra's afrekenen via de (demo-)betaalflow.
+            showCheckout = true
         }
     }
 
-    private func confirm() {
+    private func submit(purchase: Purchase?) {
         guard let cat = selectedCategory, let timing = selectedTiming else { return }
         let finalNote = cat == .other && !otherDescription.isEmpty
             ? (otherDescription + (note.isEmpty ? "" : "\n\(note)"))
             : note
         if let elderly = onBehalfOf {
             appState.requestHelpOnBehalf(for: elderly, category: cat, timing: timing,
-                                         note: finalNote, recurringSchedule: recurringSchedule)
+                                         note: finalNote, recurringSchedule: recurringSchedule,
+                                         extras: selectedExtras, purchase: purchase)
         } else {
             appState.requestHelp(category: cat, timing: timing, note: finalNote,
-                                 recurringSchedule: recurringSchedule)
+                                 recurringSchedule: recurringSchedule,
+                                 extras: selectedExtras, purchase: purchase)
         }
         dismiss()
         // De auto-acceptatie na 5s wordt nu in AppState.requestHelp geregeld,
@@ -683,5 +764,192 @@ private struct SummaryRow: View {
             Spacer()
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+// MARK: - Extra-keuzekaart (boost)
+
+private struct ExtraToggleCard: View {
+    let extra: RequestExtra
+    let isSelected: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: BCSpacing.md) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: BCRadius.md, style: .continuous)
+                        .fill(isSelected ? BCColors.accent : BCColors.accent.opacity(0.12))
+                    Image(systemName: extra.icon)
+                        .font(.system(size: 22, weight: .semibold))
+                        .foregroundStyle(isSelected ? BCColors.navy900 : BCColors.green700)
+                }
+                .frame(width: 48, height: 48)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    HStack(spacing: BCSpacing.xs) {
+                        Text(extra.displayName)
+                            .font(BCTypography.bodyEmphasized)
+                            .foregroundStyle(BCColors.textPrimary)
+                        Text("+ \(extra.priceFormatted)")
+                            .font(BCTypography.captionEmphasized)
+                            .foregroundStyle(BCColors.green700)
+                    }
+                    Text(extra.description)
+                        .font(BCTypography.caption)
+                        .foregroundStyle(BCColors.textSecondary)
+                        .multilineTextAlignment(.leading)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                Spacer(minLength: BCSpacing.sm)
+
+                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                    .font(.system(size: 24))
+                    .foregroundStyle(isSelected ? BCColors.green600 : BCColors.textTertiary)
+            }
+            .padding(BCSpacing.md)
+            .frame(maxWidth: .infinity)
+            .background(RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous).fill(BCColors.surface))
+            .overlay(RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous)
+                .stroke(isSelected ? BCColors.green600 : Color.clear, lineWidth: 2))
+            .bcSoftShadow(.card)
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+// MARK: - Demo-checkout voor betaalde extra's
+
+private struct ExtrasCheckoutSheet: View {
+    @Environment(AppState.self) private var appState
+    @Environment(\.dismiss) private var dismiss
+
+    let extras: [RequestExtra]
+    let basePriceCents: Int
+    let onPaid: (Purchase) -> Void
+
+    @State private var isPaying = false
+    @State private var errorMessage: String? = nil
+
+    private var extrasTotalCents: Int { extras.reduce(0) { $0 + $1.priceCents } }
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: BCSpacing.lg) {
+                    header
+
+                    BCCard {
+                        VStack(spacing: BCSpacing.sm) {
+                            ForEach(extras) { extra in
+                                HStack(spacing: BCSpacing.md) {
+                                    Image(systemName: extra.icon)
+                                        .font(.system(size: 18, weight: .semibold))
+                                        .foregroundStyle(BCColors.green700)
+                                        .frame(width: 28)
+                                    Text(extra.displayName)
+                                        .font(BCTypography.body)
+                                        .foregroundStyle(BCColors.textPrimary)
+                                    Spacer()
+                                    Text(extra.priceFormatted)
+                                        .font(BCTypography.bodyEmphasized)
+                                        .foregroundStyle(BCColors.textPrimary)
+                                }
+                                if extra != extras.last { Divider() }
+                            }
+                            Divider()
+                            HStack {
+                                Text("Totaal")
+                                    .font(BCTypography.headline)
+                                    .foregroundStyle(BCColors.textPrimary)
+                                Spacer()
+                                Text(RequestExtra.formatCents(extrasTotalCents))
+                                    .font(BCTypography.title2)
+                                    .foregroundStyle(BCColors.navy900)
+                            }
+                        }
+                    }
+                    .padding(.horizontal, BCSpacing.lg)
+
+                    HStack(spacing: BCSpacing.xs) {
+                        Image(systemName: "lock.fill")
+                            .font(.system(size: 12, weight: .semibold))
+                        Text("Demo-betaling — er wordt geen echt geld afgeschreven.")
+                            .font(BCTypography.caption)
+                    }
+                    .foregroundStyle(BCColors.textTertiary)
+                    .padding(.horizontal, BCSpacing.lg)
+
+                    if let errorMessage {
+                        Text(errorMessage)
+                            .font(BCTypography.subheadline)
+                            .foregroundStyle(BCColors.danger)
+                            .padding(.horizontal, BCSpacing.lg)
+                    }
+                }
+                .padding(.bottom, BCSpacing.lg)
+            }
+            .background(BCColors.background.ignoresSafeArea())
+            .navigationTitle("Extra's afrekenen")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button("Annuleer") { dismiss() }
+                        .tint(BCColors.primary)
+                        .disabled(isPaying)
+                }
+            }
+            .safeAreaInset(edge: .bottom) {
+                VStack(spacing: 0) {
+                    Divider()
+                    BCCTAButton(
+                        title: isPaying ? "Bezig met betalen…" : "Betaal \(RequestExtra.formatCents(extrasTotalCents))",
+                        icon: isPaying ? "hourglass" : "creditcard.fill",
+                        fullWidth: true
+                    ) {
+                        Task { await pay() }
+                    }
+                    .opacity(isPaying ? 0.6 : 1)
+                    .disabled(isPaying)
+                    .padding(.horizontal, BCSpacing.lg)
+                    .padding(.vertical, BCSpacing.md)
+                }
+                .background(BCColors.background)
+            }
+        }
+        .interactiveDismissDisabled(isPaying)
+    }
+
+    private var header: some View {
+        VStack(alignment: .leading, spacing: BCSpacing.xs) {
+            ZStack {
+                Circle().fill(BCColors.accent.opacity(0.15))
+                Image(systemName: "sparkles")
+                    .font(.system(size: 26, weight: .semibold))
+                    .foregroundStyle(BCColors.green700)
+            }
+            .frame(width: 64, height: 64)
+            .padding(.top, BCSpacing.md)
+            Text("U boost uw aanvraag")
+                .font(BCTypography.title2)
+                .foregroundStyle(BCColors.textPrimary)
+            Text("Na betaling zetten we de aanvraag meteen in.")
+                .font(BCTypography.subheadline)
+                .foregroundStyle(BCColors.textSecondary)
+        }
+        .padding(.horizontal, BCSpacing.lg)
+    }
+
+    private func pay() async {
+        isPaying = true
+        errorMessage = nil
+        let result = await appState.paymentService.charge(extras: extras, taskID: nil)
+        isPaying = false
+        switch result {
+        case .success(let purchase):
+            onPaid(purchase)
+        case .failure(let message):
+            errorMessage = message
+        }
     }
 }

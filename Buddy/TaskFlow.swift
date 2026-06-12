@@ -3,14 +3,197 @@ import MapKit
 
 // MARK: - Maps routing
 
-/// Opent Apple Maps met een looproute naar het adres van de oudere.
-func openRouteInMaps(to task: ServiceTask) {
+/// Opent Apple Maps met een route naar het adres van de oudere.
+func openRouteInMaps(to task: ServiceTask, mode: BuddyNavigationView.TransportMode = .walking) {
     let placemark = MKPlacemark(coordinate: task.coordinate)
     let item = MKMapItem(placemark: placemark)
     item.name = "\(task.elderlyName) — \(task.elderlyAddress)"
+    let directionsMode = mode == .walking
+        ? MKLaunchOptionsDirectionsModeWalking
+        : MKLaunchOptionsDirectionsModeDriving
     item.openInMaps(launchOptions: [
-        MKLaunchOptionsDirectionsModeKey: MKLaunchOptionsDirectionsModeWalking
+        MKLaunchOptionsDirectionsModeKey: directionsMode
     ])
+}
+
+// MARK: - In-app navigatie naar de oudere (in app-thema)
+
+/// Volledig scherm met een in-app route (MapKit) van de buddy naar het adres
+/// van de oudere, in de huisstijl. Apple Kaarten blijft beschikbaar als fallback.
+struct BuddyNavigationView: View {
+    @Environment(AppState.self) private var appState
+    @Environment(\.dismiss) private var dismiss
+
+    let task: ServiceTask
+
+    enum TransportMode: CaseIterable, Identifiable {
+        case walking, driving
+        var id: Self { self }
+        var label: String { self == .walking ? "Lopen" : "Auto" }
+        var icon: String { self == .walking ? "figure.walk" : "car.fill" }
+        var mkType: MKDirectionsTransportType { self == .walking ? .walking : .automobile }
+    }
+
+    @State private var transport: TransportMode = .walking
+    @State private var route: MKRoute?
+    @State private var isLoading = true
+    @State private var errorText: String?
+    @State private var cameraPosition: MapCameraPosition = .automatic
+
+    /// Vertrekpunt = de (mock-)locatie van de buddy.
+    private var origin: CLLocationCoordinate2D { appState.buddyUser.coordinate }
+
+    var body: some View {
+        NavigationStack {
+            ZStack(alignment: .bottom) {
+                map
+                    .ignoresSafeArea(edges: .top)
+                routeCard
+            }
+            .background(BCColors.background.ignoresSafeArea())
+            .navigationTitle("Navigatie")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button("Sluiten") { dismiss() }
+                        .tint(BCColors.primary)
+                }
+            }
+            .task(id: transport) { await computeRoute() }
+        }
+    }
+
+    private var map: some View {
+        Map(position: $cameraPosition) {
+            Annotation("Start", coordinate: origin) {
+                ZStack {
+                    Circle().fill(.white)
+                    Circle().fill(BCColors.primary).padding(4)
+                }
+                .frame(width: 22, height: 22)
+                .bcSoftShadow(.subtle)
+            }
+            Annotation(task.elderlyName, coordinate: task.coordinate) {
+                ZStack {
+                    Circle().fill(BCColors.accent)
+                    Image(systemName: "house.fill")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundStyle(BCColors.navy900)
+                }
+                .frame(width: 34, height: 34)
+                .bcSoftShadow(.raised)
+            }
+            if let route {
+                MapPolyline(route.polyline)
+                    .stroke(BCColors.primary, style: StrokeStyle(lineWidth: 7, lineCap: .round, lineJoin: .round))
+            }
+        }
+        .mapStyle(.standard(elevation: .flat))
+        .tint(BCColors.primary)
+    }
+
+    private var routeCard: some View {
+        VStack(spacing: BCSpacing.sm) {
+            Picker("Vervoer", selection: $transport) {
+                ForEach(TransportMode.allCases) { mode in
+                    Label(mode.label, systemImage: mode.icon).tag(mode)
+                }
+            }
+            .pickerStyle(.segmented)
+
+            HStack(spacing: BCSpacing.md) {
+                Image(systemName: task.category.icon)
+                    .font(.system(size: 20, weight: .semibold))
+                    .foregroundStyle(.white)
+                    .frame(width: 44, height: 44)
+                    .background(Circle().fill(BCColors.primary))
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Naar \(task.elderlyName)")
+                        .font(BCTypography.headline)
+                        .foregroundStyle(BCColors.textPrimary)
+                    Text(task.elderlyAddress)
+                        .font(BCTypography.caption)
+                        .foregroundStyle(BCColors.textSecondary)
+                        .lineLimit(1)
+                }
+                Spacer()
+                if isLoading {
+                    ProgressView().tint(BCColors.primary)
+                } else if let route {
+                    VStack(alignment: .trailing, spacing: 2) {
+                        Text(formatETA(route.expectedTravelTime))
+                            .font(BCTypography.title3)
+                            .foregroundStyle(BCColors.navy900)
+                        Text(formatDistance(route.distance))
+                            .font(BCTypography.caption)
+                            .foregroundStyle(BCColors.textSecondary)
+                    }
+                }
+            }
+
+            if let errorText {
+                Text(errorText)
+                    .font(BCTypography.caption)
+                    .foregroundStyle(BCColors.danger)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            } else if let route, let first = route.steps.first(where: { !$0.instructions.isEmpty }) {
+                HStack(spacing: BCSpacing.sm) {
+                    Image(systemName: "arrow.turn.up.right")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundStyle(BCColors.accentDark)
+                    Text(first.instructions)
+                        .font(BCTypography.subheadline)
+                        .foregroundStyle(BCColors.textPrimary)
+                        .lineLimit(2)
+                    Spacer()
+                }
+                .padding(BCSpacing.sm)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(RoundedRectangle(cornerRadius: BCRadius.md, style: .continuous).fill(BCColors.surfaceMuted))
+            }
+
+            BCSecondaryButton(title: "Open in Apple Kaarten", icon: "map.fill") {
+                openRouteInMaps(to: task, mode: transport)
+            }
+        }
+        .padding(BCSpacing.md)
+        .background(
+            RoundedRectangle(cornerRadius: BCRadius.xl, style: .continuous)
+                .fill(BCColors.surface)
+                .bcSoftShadow(.raised)
+        )
+        .padding(BCSpacing.md)
+    }
+
+    private func computeRoute() async {
+        isLoading = true
+        errorText = nil
+        let request = MKDirections.Request()
+        request.source = MKMapItem(placemark: MKPlacemark(coordinate: origin))
+        request.destination = MKMapItem(placemark: MKPlacemark(coordinate: task.coordinate))
+        request.transportType = transport.mkType
+        do {
+            let response = try await MKDirections(request: request).calculate()
+            if let best = response.routes.first {
+                route = best
+                cameraPosition = .rect(best.polyline.boundingMapRect)
+            } else {
+                errorText = "Geen route gevonden."
+            }
+        } catch {
+            errorText = "Route kon niet worden geladen. Gebruik Apple Kaarten."
+        }
+        isLoading = false
+    }
+
+    private func formatETA(_ seconds: TimeInterval) -> String {
+        let minutes = max(1, Int((seconds / 60).rounded()))
+        return "\(minutes) min"
+    }
+
+    private func formatDistance(_ meters: CLLocationDistance) -> String {
+        meters < 1000 ? "\(Int(meters.rounded())) m" : String(format: "%.1f km", meters / 1000)
+    }
 }
 
 // MARK: - Task detail sheet (tapped from map)
@@ -113,6 +296,7 @@ struct TaskInProgressView: View {
     @State private var note: String = ""
     @State private var showCheckIn = false
     @State private var showCancelConfirm = false
+    @State private var showNavigation = false
 
     enum Stage { case onTheWay, atDoor, inProgress, completing, done }
 
@@ -150,6 +334,10 @@ struct TaskInProgressView: View {
                     stage = .inProgress
                 }
             }
+            .fullScreenCover(isPresented: $showNavigation) {
+                BuddyNavigationView(task: task)
+                    .environment(appState)
+            }
             .confirmationDialog(
                 "Taak annuleren?",
                 isPresented: $showCancelConfirm,
@@ -184,9 +372,26 @@ struct TaskInProgressView: View {
                     }
                 }
 
-                miniMap
+                Button {
+                    showNavigation = true
+                } label: {
+                    miniMap.overlay(alignment: .bottomTrailing) {
+                        Label("Navigeren", systemImage: "location.north.line.fill")
+                            .font(BCTypography.captionEmphasized)
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, BCSpacing.sm)
+                            .padding(.vertical, 6)
+                            .background(Capsule().fill(BCColors.primary))
+                            .padding(BCSpacing.sm)
+                    }
+                }
+                .buttonStyle(.plain)
 
-                BCSecondaryButton(title: "Open route in kaart", icon: "map.fill") {
+                BCCTAButton(title: "Navigeren naar het adres", icon: "location.north.line.fill", iconLeading: true) {
+                    showNavigation = true
+                }
+
+                BCSecondaryButton(title: "Open route in Apple Kaarten", icon: "map.fill") {
                     openRouteInMaps(to: task)
                 }
             }

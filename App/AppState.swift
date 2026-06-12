@@ -78,6 +78,11 @@ final class AppState {
     /// Laatste matches voor activeTaskForElderly — zodat UI kan tonen wie wordt benaderd
     var lastMatches: [MatchingService.Match] = []
 
+    // Betalingen (demo in de MVP)
+    let paymentService: PaymentService = PaymentServiceFactory.make()
+    /// Geschiedenis van (demo-)betalingen voor betaalde extra's.
+    var purchases: [Purchase] = []
+
     // UI state
     var showSOS: Bool = false
     var toastMessage: ToastMessage? = nil
@@ -198,7 +203,8 @@ final class AppState {
     // MARK: - Task actions
 
     func requestHelp(category: TaskCategory, timing: TaskTiming, note: String,
-                     recurringSchedule: RecurringSchedule? = nil) {
+                     recurringSchedule: RecurringSchedule? = nil,
+                     extras: Set<RequestExtra> = [], purchase: Purchase? = nil) {
         var task = ServiceTask(
             id: UUID(),
             elderlyName: elderlyUser.firstName,
@@ -215,6 +221,9 @@ final class AppState {
             assignedBuddyEtaMinutes: nil
         )
         task.recurringSchedule = recurringSchedule
+        task.extras = extras
+        task.purchase = purchase
+        if let purchase { purchases.insert(purchase, at: 0) }
         openTasks.insert(task, at: 0)
         activeTaskForElderly = task
 
@@ -229,7 +238,9 @@ final class AppState {
         category: TaskCategory,
         timing: TaskTiming,
         note: String,
-        recurringSchedule: RecurringSchedule? = nil
+        recurringSchedule: RecurringSchedule? = nil,
+        extras: Set<RequestExtra> = [],
+        purchase: Purchase? = nil
     ) {
         var task = ServiceTask(
             id: UUID(),
@@ -247,6 +258,9 @@ final class AppState {
             assignedBuddyEtaMinutes: nil
         )
         task.recurringSchedule = recurringSchedule
+        task.extras = extras
+        task.purchase = purchase
+        if let purchase { purchases.insert(purchase, at: 0) }
         openTasks.insert(task, at: 0)
         activeTaskForElderly = task
         showToast(text: "Aanvraag ingezet voor \(elderly.firstName)", icon: "phone.fill")
@@ -276,7 +290,6 @@ final class AppState {
             || task.elderlyName == elderlyUser.fullName {
             activeTaskForElderly = task
         }
-        print("[DEMO-ACCEPT] taskID=\(taskID) elderlyName=\(task.elderlyName) → activeTaskForElderly.buddy=\(activeTaskForElderly?.assignedBuddyName ?? "nil"), status=\(activeTaskForElderly?.status.rawValue ?? "nil")")
         MockPushService().send(notification: .taskAccepted(
             buddyName: chosenBuddy.firstName,
             etaMinutes: task.assignedBuddyEtaMinutes ?? 12

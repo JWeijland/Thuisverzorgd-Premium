@@ -122,34 +122,6 @@ struct BCSecondaryButton: View {
     }
 }
 
-struct BCDangerButton: View {
-    let title: String
-    var icon: String? = nil
-    let action: () -> Void
-
-    var body: some View {
-        Button {
-            UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
-            action()
-        } label: {
-            HStack(spacing: BCSpacing.sm) {
-                if let icon {
-                    Image(systemName: icon)
-                }
-                Text(title).font(BCTypography.bodyEmphasized)
-            }
-            .foregroundStyle(.white)
-            .frame(maxWidth: .infinity)
-            .frame(height: 72)
-            .background(
-                RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous)
-                    .fill(BCColors.danger)
-            )
-        }
-        .buttonStyle(.plain)
-    }
-}
-
 // MARK: - Help hero (variant C — wit & rustig, zachte toon)
 //
 // De belangrijkste actie van cliënt & familie. Witte card met navy icoon-blok,
@@ -214,58 +186,6 @@ struct BCHelpHeroCard: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel("\(title). \(subtitle)")
-    }
-}
-
-// Large tappable card for elderly home screen — 120pt+ height, soft elevation
-struct BCBigTile: View {
-    @Environment(\.largeTextEnabled) private var largeText
-    let title: String
-    let subtitle: String?
-    let icon: String
-    var color: Color = BCColors.primary
-    let action: () -> Void
-
-    private var et: BCElderlyType { BCElderlyType(large: largeText) }
-
-    var body: some View {
-        Button(action: action) {
-            HStack(spacing: BCSpacing.md) {
-                ZStack {
-                    RoundedRectangle(cornerRadius: BCRadius.md, style: .continuous)
-                        .fill(color.opacity(0.12))
-                        .frame(width: et.iconBoxSize, height: et.iconBoxSize)
-                    Image(systemName: icon)
-                        .font(.system(size: et.iconSize, weight: .semibold))
-                        .foregroundStyle(color)
-                }
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(title)
-                        .font(et.button)
-                        .foregroundStyle(BCColors.textPrimary)
-                        .multilineTextAlignment(.leading)
-                    if let subtitle {
-                        Text(subtitle)
-                            .font(et.caption)
-                            .foregroundStyle(BCColors.textSecondary)
-                            .multilineTextAlignment(.leading)
-                            .lineLimit(2)
-                    }
-                }
-                Spacer(minLength: 0)
-                Image(systemName: "chevron.right")
-                    .font(.system(size: largeText ? 20 : 16, weight: .semibold))
-                    .foregroundStyle(BCColors.textTertiary)
-            }
-            .padding(largeText ? BCSpacing.lg : BCSpacing.md)
-            .frame(maxWidth: .infinity, minHeight: et.tileHeight, alignment: .leading)
-            .background(
-                RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous)
-                    .fill(BCColors.surface)
-            )
-            .bcSoftShadow(.card)
-        }
-        .buttonStyle(.plain)
     }
 }
 
