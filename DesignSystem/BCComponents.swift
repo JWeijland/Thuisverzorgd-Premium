@@ -525,6 +525,115 @@ struct BCEmptyState: View {
     }
 }
 
+// MARK: - BCDisclosureSection
+//
+// Rustige, ingeklapte sectie voor secundaire instellingen (Privacy, Meldingen).
+// Identiek bruikbaar op elke profielpagina zodat alle rollen dit gelijk tonen.
+
+struct BCDisclosureSection<Content: View>: View {
+    let title: String
+    let icon: String
+    @State private var expanded: Bool
+    @ViewBuilder var content: () -> Content
+
+    init(title: String, icon: String, initiallyExpanded: Bool = false,
+         @ViewBuilder content: @escaping () -> Content) {
+        self.title = title
+        self.icon = icon
+        self._expanded = State(initialValue: initiallyExpanded)
+        self.content = content
+    }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            Button {
+                withAnimation(.easeInOut(duration: 0.2)) { expanded.toggle() }
+            } label: {
+                HStack(spacing: BCSpacing.sm) {
+                    Image(systemName: icon)
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundStyle(BCColors.primary)
+                        .frame(width: 24)
+                    Text(title)
+                        .font(BCTypography.body)
+                        .foregroundStyle(BCColors.textPrimary)
+                    Spacer()
+                    Image(systemName: "chevron.down")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(BCColors.textTertiary)
+                        .rotationEffect(.degrees(expanded ? 180 : 0))
+                }
+                .padding(.horizontal, BCSpacing.lg)
+                .padding(.vertical, BCSpacing.md)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("\(title), \(expanded ? "ingeklapt" : "uitgeklapt")")
+
+            if expanded {
+                Divider().padding(.leading, BCSpacing.lg)
+                VStack(spacing: 0) { content() }
+                    .padding(.bottom, BCSpacing.xs)
+            }
+        }
+        .background(
+            RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous)
+                .fill(BCColors.surface)
+        )
+        .bcSoftShadow(.card)
+    }
+}
+
+/// Privacy-sectie — identiek op elke profielpagina. Neemt alleen een binding,
+/// zodat het design-system niet van AppState afhangt.
+struct BCPrivacySection: View {
+    @Binding var consent: Bool
+
+    var body: some View {
+        BCDisclosureSection(title: "Privacy", icon: "hand.raised.fill") {
+            BCToggleRow(
+                title: "Anonieme gebruiksdata delen",
+                subtitle: "Helpt Thuisverzorgd verbeteren. Volledig geanonimiseerd en geaggregeerd — nooit tot u herleidbaar.",
+                icon: "chart.bar.fill",
+                isOn: $consent
+            )
+        }
+    }
+}
+
+/// Toggle-rij in het bestaande stramien — icoon, titel, optionele subtitel.
+struct BCToggleRow: View {
+    let title: String
+    var subtitle: String? = nil
+    let icon: String
+    @Binding var isOn: Bool
+
+    var body: some View {
+        Toggle(isOn: $isOn) {
+            HStack(spacing: BCSpacing.sm) {
+                Image(systemName: icon)
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundStyle(BCColors.primary)
+                    .frame(width: 24)
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(title)
+                        .font(BCTypography.body)
+                        .foregroundStyle(BCColors.textPrimary)
+                    if let subtitle {
+                        Text(subtitle)
+                            .font(BCTypography.caption)
+                            .foregroundStyle(BCColors.textTertiary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+            }
+        }
+        .tint(BCColors.primary)
+        .padding(.horizontal, BCSpacing.lg)
+        .padding(.vertical, BCSpacing.sm)
+    }
+}
+
 // MARK: - BCNavBar
 
 struct BCNavBar: View {

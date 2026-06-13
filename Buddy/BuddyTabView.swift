@@ -12,10 +12,10 @@ struct BuddyTabView: View {
 
             WalletView()
                 .tag(1)
-                .tabItem { Label("Wallet", systemImage: "wallet.pass.fill") }
+                .tabItem { Label("Portemonnee", systemImage: "wallet.pass.fill") }
 
             BuddyProfileView()
-                .tag(3)
+                .tag(2)
                 .tabItem { Label("Profiel", systemImage: "person.crop.circle") }
         }
         .tint(BCColors.primary)

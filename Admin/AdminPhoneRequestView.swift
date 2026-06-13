@@ -375,6 +375,8 @@ struct AdminPhoneRequestView: View {
             timing: timing,
             note: finalNote
         )
+        // In live-modus ook echt persisteren via de admin-RPC.
+        appState.persistTaskOnBehalf(for: elderly, category: category, timing: timing, note: finalNote)
         reset()
     }
 

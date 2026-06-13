@@ -38,7 +38,7 @@ struct BuddyProfileView: View {
                     BCCard {
                         Toggle(isOn: Binding(
                             get: { appState.isAvailableNow },
-                            set: { appState.isAvailableNow = $0 }
+                            set: { appState.setBuddyAvailable($0) }
                         )) {
                             HStack(spacing: BCSpacing.sm) {
                                 Image(systemName: appState.isAvailableNow ? "checkmark.circle.fill" : "xmark.circle.fill")
@@ -85,6 +85,19 @@ struct BuddyProfileView: View {
                         }
                     }
                     .padding(.horizontal, BCSpacing.lg)
+
+                    // Meldingen + Privacy — rustig ingeklapt
+                    BCDisclosureSection(title: "Meldingen", icon: "bell.fill") {
+                        BCToggleRow(title: "Meldingen toestaan", icon: "bell.fill",
+                                    isOn: appState.notificationBinding(\.pushEnabled))
+                        Divider().padding(.leading, BCSpacing.lg)
+                        BCToggleRow(title: "Nieuwe taken in de buurt", icon: "mappin.circle.fill",
+                                    isOn: appState.notificationBinding(\.newTasksNearby))
+                    }
+                    .padding(.horizontal, BCSpacing.lg)
+
+                    BCPrivacySection(consent: appState.analyticsConsentBinding)
+                        .padding(.horizontal, BCSpacing.lg)
 
                     BCSectionHeader(title: "Recente beoordelingen")
                         .padding(.horizontal, BCSpacing.lg)

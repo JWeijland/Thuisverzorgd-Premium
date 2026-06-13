@@ -287,10 +287,73 @@ enum TaskStatus: String, Codable {
     }
 }
 
+// MARK: - Database mapping (Swift enums ↔ Postgres enums)
+
+extension TaskCategory {
+    /// snake_case waarde zoals in de Postgres `task_category`-enum.
+    var dbValue: String {
+        switch self {
+        case .companionship:      return "companionship"
+        case .groceries:          return "groceries"
+        case .medicationReminder: return "medication_reminder"
+        case .bedHelp:            return "bed_help"
+        case .lightCleaning:      return "light_cleaning"
+        case .mealPrep:           return "meal_prep"
+        case .walkOutdoors:       return "walk_outdoors"
+        case .appointment:        return "appointment"
+        case .other:              return "other"
+        }
+    }
+
+    init?(dbValue: String) {
+        switch dbValue {
+        case "companionship":       self = .companionship
+        case "groceries":           self = .groceries
+        case "medication_reminder": self = .medicationReminder
+        case "bed_help":            self = .bedHelp
+        case "light_cleaning":      self = .lightCleaning
+        case "meal_prep":           self = .mealPrep
+        case "walk_outdoors":       self = .walkOutdoors
+        case "appointment":         self = .appointment
+        case "other":               self = .other
+        default:                    return nil
+        }
+    }
+}
+
+extension TaskStatus {
+    /// Waarde zoals in de Postgres `task_status`-enum (`in_progress` i.p.v. `inProgress`).
+    var dbValue: String {
+        self == .inProgress ? "in_progress" : rawValue
+    }
+
+    init?(dbValue: String) {
+        if dbValue == "in_progress" { self = .inProgress }
+        else { self.init(rawValue: dbValue) }
+    }
+}
+
+extension TaskTiming {
+    /// (`timing_type`, `scheduled_at`) voor de tasks-tabel.
+    var dbValues: (type: String, scheduledAt: Date?) {
+        switch self {
+        case .now:
+            return ("now", nil)
+        case .today(let hour):
+            let date = Calendar.current.date(bySettingHour: hour, minute: 0, second: 0, of: Date())
+            return ("today", date)
+        case .scheduled(let date):
+            return ("scheduled", date)
+        }
+    }
+}
+
 // MARK: - Service Task (avoid name clash with Swift Task)
 
 struct ServiceTask: Identifiable, Hashable {
     let id: UUID
+    /// Id van de bijbehorende rij in Supabase (live-modus). nil in demo/mock.
+    var dbId: UUID? = nil
     let elderlyName: String
     let elderlyAddress: String
     let coordinate: CLLocationCoordinate2D
@@ -365,7 +428,9 @@ struct ElderlyUser: Identifiable, Hashable {
     let firstName: String
     let lastName: String
     var address: String
-    let coordinate: CLLocationCoordinate2D
+    /// Wordt bijgewerkt zodra het adres is gegeocodeerd (zie GeocodingService),
+    /// zodat aanvragen op de echte locatie staan i.p.v. een gedeeld default-punt.
+    var coordinate: CLLocationCoordinate2D
     let dateOfBirth: Date
     var phoneNumber: String?
     var allergies: [String]
@@ -389,8 +454,11 @@ struct BuddyUser: Identifiable, Hashable {
     let totalTasks: Int
     let bio: String
     let study: String
-    let vogValid: Bool
+    var vogValid: Bool
     let vogExpiresAt: Date
+    /// Of het kennismakingsgesprek (intake) is afgerond. Default true voor
+    /// bestaande mock-buddies; admin kan dit in de beheerschil zetten.
+    var intakeDone: Bool = true
     var ibanLast4: String = "****"
     var isAvailableNow: Bool = true
     /// Locatie van de buddy — gebruikt voor proximity matching.

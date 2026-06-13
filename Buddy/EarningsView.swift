@@ -25,7 +25,7 @@ struct WalletView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            BCNavBar(title: "Wallet", subtitle: "Jouw saldo en verdiensten")
+            BCNavBar(title: "Portemonnee", subtitle: "Jouw saldo en verdiensten")
 
             ScrollView {
                 VStack(spacing: BCSpacing.lg) {
@@ -109,7 +109,7 @@ private struct WalletHeroCard: View {
 
             VStack(alignment: .leading, spacing: BCSpacing.md) {
                 HStack {
-                    Label("Thuisverzorgd Wallet", systemImage: "wallet.pass.fill")
+                    Label("Thuisverzorgd Portemonnee", systemImage: "wallet.pass.fill")
                         .font(BCTypography.captionEmphasized)
                         .foregroundStyle(.white.opacity(0.8))
                     Spacer()

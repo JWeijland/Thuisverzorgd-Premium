@@ -105,6 +105,12 @@ final class AuthService {
         currentUserId = session.user.id
     }
 
+    // MARK: - Wachtwoord vergeten
+
+    func resetPassword(email: String) async throws {
+        try await supabase.auth.resetPasswordForEmail(email)
+    }
+
     // MARK: - Uitloggen
 
     func signOut() async throws {

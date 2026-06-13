@@ -1,5 +1,16 @@
 import Foundation
 
+/// App-side meldingsvoorkeuren. Spiegelt `notification_preferences` in Supabase.
+/// Niet elke rol gebruikt elk veld (bv. `newTasksNearby` is alleen voor buddies,
+/// `sosAlerts`/`monthlyReport` alleen voor familie).
+struct NotificationPreferences: Equatable {
+    var pushEnabled: Bool = true
+    var visitUpdates: Bool = true
+    var newTasksNearby: Bool = true
+    var sosAlerts: Bool = true
+    var monthlyReport: Bool = false
+}
+
 enum BuddieNotification {
     case newTaskInArea(elderlyName: String, distanceKm: Double, priceEuros: Double)
     case taskAccepted(buddyName: String, etaMinutes: Int)

@@ -2,9 +2,6 @@ import SwiftUI
 
 struct FamilyProfileView: View {
     @Environment(AppState.self) private var appState
-    @State private var notifyOnVisit = true
-    @State private var notifyOnSOS = true
-    @State private var notifyOnReview = false
     @State private var showLinking = false
 
     var body: some View {
@@ -70,28 +67,23 @@ struct FamilyProfileView: View {
                     }
                     .padding(.horizontal, BCSpacing.lg)
 
-                    BCCard {
-                        VStack(spacing: 0) {
-                            Toggle(isOn: $notifyOnVisit) {
-                                Label("Melding bij elk bezoek", systemImage: "bell.fill")
-                                    .font(BCTypography.body)
-                                    .foregroundStyle(BCColors.textPrimary)
-                            }.tint(BCColors.primary)
-                            Divider()
-                            Toggle(isOn: $notifyOnSOS) {
-                                Label("Melding bij SOS-alarm", systemImage: "exclamationmark.triangle.fill")
-                                    .font(BCTypography.body)
-                                    .foregroundStyle(BCColors.textPrimary)
-                            }.tint(BCColors.primary)
-                            Divider()
-                            Toggle(isOn: $notifyOnReview) {
-                                Label("Maandelijkse rapportage per e-mail", systemImage: "envelope.fill")
-                                    .font(BCTypography.body)
-                                    .foregroundStyle(BCColors.textPrimary)
-                            }.tint(BCColors.primary)
-                        }
+                    BCDisclosureSection(title: "Meldingen", icon: "bell.fill") {
+                        BCToggleRow(title: "Meldingen toestaan", icon: "bell.fill",
+                                    isOn: appState.notificationBinding(\.pushEnabled))
+                        Divider().padding(.leading, BCSpacing.lg)
+                        BCToggleRow(title: "Melding bij elk bezoek", icon: "figure.walk",
+                                    isOn: appState.notificationBinding(\.visitUpdates))
+                        Divider().padding(.leading, BCSpacing.lg)
+                        BCToggleRow(title: "Melding bij SOS-alarm", icon: "exclamationmark.triangle.fill",
+                                    isOn: appState.notificationBinding(\.sosAlerts))
+                        Divider().padding(.leading, BCSpacing.lg)
+                        BCToggleRow(title: "Maandrapport per e-mail", icon: "envelope.fill",
+                                    isOn: appState.notificationBinding(\.monthlyReport))
                     }
                     .padding(.horizontal, BCSpacing.lg)
+
+                    BCPrivacySection(consent: appState.analyticsConsentBinding)
+                        .padding(.horizontal, BCSpacing.lg)
 
                     Button {
                         appState.resetToRoleSelection()

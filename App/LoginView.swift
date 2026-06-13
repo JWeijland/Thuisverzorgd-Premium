@@ -16,6 +16,7 @@ struct LoginView: View {
     @State private var registerPassword = ""
 
     @State private var errorMessage: String? = nil
+    @State private var infoMessage: String? = nil
     @State private var isLoading = false
 
     enum AuthMode: String, CaseIterable {
@@ -40,7 +41,7 @@ struct LoginView: View {
                     .padding(.horizontal, BCSpacing.lg)
                     .padding(.top, BCSpacing.lg)
                     .padding(.bottom, BCSpacing.md)
-                    .onChange(of: mode) { _, _ in errorMessage = nil }
+                    .onChange(of: mode) { _, _ in errorMessage = nil; infoMessage = nil }
 
                     if mode == .login {
                         loginSection
@@ -49,6 +50,24 @@ struct LoginView: View {
                     }
 
                     demoShortcut
+
+                    if let info = infoMessage {
+                        HStack(spacing: BCSpacing.sm) {
+                            Image(systemName: "checkmark.circle.fill")
+                            Text(info)
+                        }
+                        .font(BCTypography.subheadline)
+                        .foregroundStyle(BCColors.primary)
+                        .multilineTextAlignment(.leading)
+                        .padding(BCSpacing.md)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(
+                            RoundedRectangle(cornerRadius: BCRadius.md, style: .continuous)
+                                .fill(BCColors.primary.opacity(0.08))
+                        )
+                        .padding(.horizontal, BCSpacing.lg)
+                        .padding(.bottom, BCSpacing.lg)
+                    }
 
                     if let error = errorMessage {
                         HStack(spacing: BCSpacing.sm) {
@@ -138,6 +157,17 @@ struct LoginView: View {
             .buttonStyle(.plain)
             .disabled(isLoading || loginEmail.isEmpty || loginPassword.isEmpty)
             .opacity(loginEmail.isEmpty || loginPassword.isEmpty ? 0.5 : 1)
+
+            Button {
+                Task { await performReset() }
+            } label: {
+                Text("Wachtwoord vergeten?")
+                    .font(BCTypography.captionEmphasized)
+                    .foregroundStyle(BCColors.primary)
+            }
+            .buttonStyle(.plain)
+            .disabled(isLoading || loginEmail.isEmpty)
+            .opacity(loginEmail.isEmpty ? 0.5 : 1)
         }
         .padding(.horizontal, BCSpacing.lg)
         .padding(.bottom, BCSpacing.xl)
@@ -310,9 +340,24 @@ struct LoginView: View {
 
     // MARK: - Actions
 
+    private func performReset() async {
+        guard !loginEmail.isEmpty else { return }
+        isLoading = true
+        errorMessage = nil
+        infoMessage = nil
+        do {
+            try await appState.authService.resetPassword(email: loginEmail)
+            infoMessage = "We hebben een herstel-link gestuurd naar \(loginEmail). Controleer je inbox."
+        } catch {
+            errorMessage = friendlyError(error)
+        }
+        isLoading = false
+    }
+
     private func performLogin() async {
         isLoading = true
         errorMessage = nil
+        infoMessage = nil
         do {
             try await appState.authService.signIn(email: loginEmail, password: loginPassword)
             if let userId = appState.authService.currentUserId {

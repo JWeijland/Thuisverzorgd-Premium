@@ -35,7 +35,9 @@ final class TaskService {
         timingType: String,
         scheduledAt: Date? = nil,
         note: String,
-        priceCents: Int
+        priceCents: Int,
+        latitude: Double? = nil,
+        longitude: Double? = nil
     ) async throws -> DBTask {
         struct Insert: Encodable {
             let elderlyId: UUID
@@ -44,6 +46,8 @@ final class TaskService {
             let scheduledAt: Date?
             let note: String
             let priceCents: Int
+            let latitude: Double?
+            let longitude: Double?
             enum CodingKeys: String, CodingKey {
                 case elderlyId = "elderly_id"
                 case category
@@ -51,6 +55,8 @@ final class TaskService {
                 case scheduledAt   = "scheduled_at"
                 case note
                 case priceCents    = "price_cents"
+                case latitude
+                case longitude
             }
         }
 
@@ -62,7 +68,9 @@ final class TaskService {
                 timingType: timingType,
                 scheduledAt: scheduledAt,
                 note: note,
-                priceCents: priceCents
+                priceCents: priceCents,
+                latitude: latitude,
+                longitude: longitude
             ))
             .select()
             .single()
@@ -280,5 +288,71 @@ final class TaskService {
                 }
             }
         }
+    }
+}
+
+// ============================================================
+// AdminService — beheeracties via SECURITY DEFINER-RPC's (Fase C)
+// Alle schrijfacties controleren server-side op is_admin().
+// ============================================================
+
+final class AdminService {
+
+    func createTaskOnBehalf(
+        elderlyId: UUID, category: TaskCategory, timing: TaskTiming,
+        note: String, priceCents: Int, latitude: Double?, longitude: Double?
+    ) async throws {
+        let timingDB = timing.dbValues
+        struct Params: Encodable {
+            let p_elderly_id: UUID
+            let p_category: String
+            let p_timing_type: String
+            let p_scheduled_at: Date?
+            let p_note: String
+            let p_price_cents: Int
+            let p_latitude: Double?
+            let p_longitude: Double?
+        }
+        try await supabase.rpc("create_task_on_behalf", params: Params(
+            p_elderly_id: elderlyId,
+            p_category: category.dbValue,
+            p_timing_type: timingDB.type,
+            p_scheduled_at: timingDB.scheduledAt,
+            p_note: note,
+            p_price_cents: priceCents,
+            p_latitude: latitude,
+            p_longitude: longitude
+        )).execute()
+    }
+
+    func setVOG(buddyId: UUID, valid: Bool) async throws {
+        struct P: Encodable { let p_buddy_id: UUID; let p_valid: Bool }
+        try await supabase.rpc("admin_set_vog", params: P(p_buddy_id: buddyId, p_valid: valid)).execute()
+    }
+
+    func setIntake(buddyId: UUID, done: Bool) async throws {
+        struct P: Encodable { let p_buddy_id: UUID; let p_done: Bool }
+        try await supabase.rpc("admin_set_intake", params: P(p_buddy_id: buddyId, p_done: done)).execute()
+    }
+
+    func setRole(userId: UUID, role: String) async throws {
+        struct P: Encodable { let p_user_id: UUID; let p_role: String }
+        try await supabase.rpc("admin_set_role", params: P(p_user_id: userId, p_role: role)).execute()
+    }
+
+    func createLinkingCode(elderlyId: UUID, code: String) async throws {
+        struct P: Encodable { let p_elderly_id: UUID; let p_code: String }
+        try await supabase.rpc("admin_create_linking_code", params: P(p_elderly_id: elderlyId, p_code: code)).execute()
+    }
+
+    func fetchDashboardStats() async throws -> DBDashboardStats? {
+        let rows: [DBDashboardStats] = try await supabase
+            .from("admin_dashboard_stats").select().limit(1).execute().value
+        return rows.first
+    }
+
+    func fetchBilling() async throws -> [DBBillingRow] {
+        try await supabase
+            .from("admin_billing").select().order("created_at", ascending: false).execute().value
     }
 }

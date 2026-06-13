@@ -155,3 +155,75 @@ struct DBLinkingCode: Codable {
         case usedAt    = "used_at"
     }
 }
+
+struct DBNotificationPreferences: Codable {
+    let userId: UUID
+    var pushEnabled: Bool
+    var visitUpdates: Bool
+    var newTasksNearby: Bool
+    var sosAlerts: Bool
+    var monthlyReport: Bool
+
+    enum CodingKeys: String, CodingKey {
+        case userId         = "user_id"
+        case pushEnabled    = "push_enabled"
+        case visitUpdates   = "visit_updates"
+        case newTasksNearby = "new_tasks_nearby"
+        case sosAlerts      = "sos_alerts"
+        case monthlyReport  = "monthly_report"
+    }
+}
+
+struct DBAnalyticsConsent: Codable {
+    let userId: UUID
+    var consented: Bool
+
+    enum CodingKeys: String, CodingKey {
+        case userId    = "user_id"
+        case consented
+    }
+}
+
+struct DBBillingRow: Codable, Identifiable {
+    let id: UUID
+    let createdAt: String
+    let month: String
+    let elderlyName: String
+    let category: String
+    let buddyFirstName: String
+    let buddyLastName: String
+    let clientAmountCents: Int
+    let buddyAmountCents: Int
+    let platformFeeCents: Int
+
+    enum CodingKeys: String, CodingKey {
+        case id, month, category
+        case createdAt         = "created_at"
+        case elderlyName       = "elderly_name"
+        case buddyFirstName    = "buddy_first_name"
+        case buddyLastName     = "buddy_last_name"
+        case clientAmountCents = "client_amount_cents"
+        case buddyAmountCents  = "buddy_amount_cents"
+        case platformFeeCents  = "platform_fee_cents"
+    }
+}
+
+struct DBDashboardStats: Codable {
+    let buddies: Int
+    let elderly: Int
+    let families: Int
+    let openTasks: Int
+    let activeTasks: Int
+    let completedTasks: Int
+    let pendingIntakes: Int
+    let pendingVog: Int
+
+    enum CodingKeys: String, CodingKey {
+        case buddies, elderly, families
+        case openTasks       = "open_tasks"
+        case activeTasks     = "active_tasks"
+        case completedTasks  = "completed_tasks"
+        case pendingIntakes  = "pending_intakes"
+        case pendingVog      = "pending_vog"
+    }
+}

@@ -92,7 +92,7 @@ struct BuddyMapView: View {
 
     private var availabilityPill: some View {
         Button {
-            appState.isAvailableNow.toggle()
+            appState.setBuddyAvailable(!appState.isAvailableNow)
         } label: {
             HStack(spacing: 6) {
                 Circle()
@@ -132,7 +132,7 @@ struct BuddyMapView: View {
             }
             Spacer()
             Button("Aanzetten") {
-                appState.isAvailableNow = true
+                appState.setBuddyAvailable(true)
             }
             .font(BCTypography.captionEmphasized)
             .padding(.horizontal, BCSpacing.md)

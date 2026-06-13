@@ -1,5 +1,6 @@
 import SwiftUI
 import Observation
+import CoreLocation
 
 struct ToastMessage: Equatable {
     let text: String
@@ -20,6 +21,9 @@ final class AppState {
     var isDemoMode: Bool = false
     var realUserId: UUID? = nil
     private let profileService = ProfileService()
+    private let preferencesService = PreferencesService()
+    private let adminService = AdminService()
+    private let geocoder = GeocodingService()
 
     // User data (used by both demo and real mode)
     var elderlyUser: ElderlyUser = MockData.omaRiet
@@ -90,6 +94,12 @@ final class AppState {
     // Elderly preferences (not on ElderlyUser struct to avoid breaking init)
     var largeTextEnabled: Bool = false
     var prefersFormal: Bool = true
+
+    // Voorkeuren — meldingen + privacy/consent (Fase B).
+    // In demo-modus blijven deze puur lokaal; in live-modus laden/opslaan ze
+    // via PreferencesService (notification_preferences / analytics_consent).
+    var notificationPrefs = NotificationPreferences()
+    var analyticsConsentGiven: Bool = false
 
     // Buddy availability
     var isAvailableNow: Bool = true
@@ -176,6 +186,84 @@ final class AppState {
         // hasSeenSplash niet hier zetten — de SplashView beheert die vlag,
         // anders verdwijnt de openingsanimatie meteen bij sessieherstel.
         isOnboardingComplete = true
+        await loadPreferences()
+    }
+
+    // MARK: - Voorkeuren (meldingen + privacy/consent)
+
+    /// Laadt opgeslagen voorkeuren uit Supabase (alleen in live-modus).
+    func loadPreferences() async {
+        guard let uid = realUserId, !isDemoMode else { return }
+        if let prefs = (try? await preferencesService.fetchNotificationPrefs(userId: uid)) ?? nil {
+            notificationPrefs = NotificationPreferences(
+                pushEnabled: prefs.pushEnabled,
+                visitUpdates: prefs.visitUpdates,
+                newTasksNearby: prefs.newTasksNearby,
+                sosAlerts: prefs.sosAlerts,
+                monthlyReport: prefs.monthlyReport
+            )
+        }
+        if let consent = (try? await preferencesService.fetchConsent(userId: uid)) ?? nil {
+            analyticsConsentGiven = consent
+        }
+    }
+
+    /// Muteert de meldingsvoorkeuren en bewaart ze direct.
+    func updateNotificationPrefs(_ mutate: (inout NotificationPreferences) -> Void) {
+        mutate(&notificationPrefs)
+        persistPreferences()
+    }
+
+    func setAnalyticsConsent(_ value: Bool) {
+        analyticsConsentGiven = value
+        persistPreferences()
+    }
+
+    /// Binding-fabriek zodat profielpagina's een toggle rechtstreeks kunnen
+    /// koppelen; elke wijziging persisteert automatisch.
+    func notificationBinding(_ keyPath: WritableKeyPath<NotificationPreferences, Bool>) -> Binding<Bool> {
+        Binding(
+            get: { self.notificationPrefs[keyPath: keyPath] },
+            set: { newValue in self.updateNotificationPrefs { $0[keyPath: keyPath] = newValue } }
+        )
+    }
+
+    var analyticsConsentBinding: Binding<Bool> {
+        Binding(get: { self.analyticsConsentGiven }, set: { self.setAnalyticsConsent($0) })
+    }
+
+    private func persistPreferences() {
+        guard let uid = realUserId, !isDemoMode else { return }
+        let prefs = notificationPrefs
+        let consent = analyticsConsentGiven
+        Task {
+            try? await preferencesService.upsertNotificationPrefs(
+                DBNotificationPreferences(
+                    userId: uid,
+                    pushEnabled: prefs.pushEnabled,
+                    visitUpdates: prefs.visitUpdates,
+                    newTasksNearby: prefs.newTasksNearby,
+                    sosAlerts: prefs.sosAlerts,
+                    monthlyReport: prefs.monthlyReport
+                )
+            )
+            try? await preferencesService.upsertConsent(userId: uid, consented: consent)
+        }
+    }
+
+    /// Stuurt een (mock-)push uitsluitend als de gebruikersvoorkeur dit toestaat.
+    /// De Config-feature-flag voor echte pushes blijft de hoofd-schakelaar.
+    /// SOS gaat altijd door (veiligheid).
+    func deliverPush(_ notification: BuddieNotification) {
+        guard notificationPrefs.pushEnabled else { return }
+        let allowed: Bool
+        switch notification {
+        case .newTaskInArea: allowed = notificationPrefs.newTasksNearby
+        case .sosTriggered:  allowed = true
+        default:             allowed = notificationPrefs.visitUpdates
+        }
+        guard allowed else { return }
+        MockPushService().send(notification: notification)
     }
 
     // MARK: - Sign out
@@ -226,6 +314,7 @@ final class AppState {
         if let purchase { purchases.insert(purchase, at: 0) }
         openTasks.insert(task, at: 0)
         activeTaskForElderly = task
+        persistNewTaskIfLive(task)
 
         // Matching: vind buddies en stuur hen een notificatie
         let matches = matchingService.rankBuddies(for: task, from: allBuddies)
@@ -290,7 +379,7 @@ final class AppState {
             || task.elderlyName == elderlyUser.fullName {
             activeTaskForElderly = task
         }
-        MockPushService().send(notification: .taskAccepted(
+        deliverPush(.taskAccepted(
             buddyName: chosenBuddy.firstName,
             etaMinutes: task.assignedBuddyEtaMinutes ?? 12
         ))
@@ -342,7 +431,7 @@ final class AppState {
         matchingService.notifyMatchedBuddies(matches: matches, task: task)
 
         // Oudere informeren
-        MockPushService().send(notification: .taskReassigned(elderlyName: task.elderlyName))
+        deliverPush(.taskReassigned(elderlyName: task.elderlyName))
         MockSMSService().sendSMS(
             to: elderlyUser.phoneNumber ?? "",
             message: BuddieNotification.taskReassigned(elderlyName: task.elderlyName).title
@@ -367,7 +456,7 @@ final class AppState {
         if activeTaskForElderly?.id == task.id {
             activeTaskForElderly = task
         }
-        MockPushService().send(notification: .buddyArrived(buddyName: buddyUser.firstName))
+        deliverPush(.buddyArrived(buddyName: buddyUser.firstName))
         MockSMSService().sendSMS(
             to: elderlyUser.phoneNumber ?? "",
             message: BuddieNotification.buddyArrived(buddyName: buddyUser.firstName).title
@@ -395,11 +484,11 @@ final class AppState {
         if activeTaskForElderly?.id == task.id {
             activeTaskForElderly = task
         }
-        MockPushService().send(notification: .taskCompleted)
+        deliverPush(.taskCompleted)
         // Simulate: after 24h without elderly review, remind family
         DispatchQueue.main.asyncAfter(deadline: .now() + 4) { [weak self] in
             guard let self, self.taskRatings[task.id] == nil else { return }
-            MockPushService().send(notification: .familyReviewReminder(elderlyName: self.elderlyUser.firstName))
+            self.deliverPush(.familyReviewReminder(elderlyName: self.elderlyUser.firstName))
         }
     }
 
@@ -431,6 +520,137 @@ final class AppState {
     }
 
 
+    // MARK: - Live persistentie (Fase F)
+    // Flows blijven lokaal werken (demo + directe UI); in live-modus schrijven
+    // ze daarnaast naar Supabase. Mock-data blijft zichtbaar (§1.3).
+
+    /// Buddy-beschikbaarheid — lokaal + (live) naar buddy_profiles.
+    func setBuddyAvailable(_ value: Bool) {
+        isAvailableNow = value
+        buddyUser.isAvailableNow = value
+        if let idx = allBuddies.firstIndex(where: { $0.id == buddyUser.id }) {
+            allBuddies[idx].isAvailableNow = value
+        }
+        guard let uid = realUserId, !isDemoMode else { return }
+        Task { try? await profileService.updateBuddyAvailability(buddyId: uid, isAvailable: value) }
+    }
+
+    /// Telefoonnummer op het eigen profiel — (live) naar profiles.
+    func persistElderlyContactIfLive(phone: String?) {
+        guard let uid = realUserId, !isDemoMode else { return }
+        Task { try? await profileService.updateProfilePhone(userId: uid, phone: phone) }
+    }
+
+    /// Schrijft een zojuist lokaal aangemaakte aanvraag echt naar Supabase
+    /// (alleen als de ingelogde oudere het zelf is) en koppelt de DB-id terug.
+    private func persistNewTaskIfLive(_ task: ServiceTask) {
+        guard let uid = realUserId, !isDemoMode, currentRole == .elderly else { return }
+        let timing = task.timing.dbValues
+        let coord = task.coordinate
+        let localId = task.id
+        Task {
+            guard let db = try? await taskService.createTask(
+                elderlyId: uid,
+                category: task.category.dbValue,
+                timingType: timing.type,
+                scheduledAt: timing.scheduledAt,
+                note: task.note,
+                priceCents: task.priceCents,
+                latitude: coord.latitude,
+                longitude: coord.longitude
+            ) else { return }
+            await MainActor.run {
+                if let idx = openTasks.firstIndex(where: { $0.id == localId }) { openTasks[idx].dbId = db.id }
+                if activeTaskForElderly?.id == localId { activeTaskForElderly?.dbId = db.id }
+            }
+        }
+    }
+
+    // MARK: - Locatie (Fase D)
+
+    /// Geocodeert het adres en werkt de coördinaat van de juiste oudere bij,
+    /// zodat aanvragen op het echte adres op de buddy-kaart komen (en niet op
+    /// één gedeeld default-punt stapelen). Persisteert in live-modus voor het
+    /// eigen elderly-profiel (familie-namens kan dit niet schrijven onder RLS).
+    func updateCoordinateFromAddress(_ address: String, forFamilyElderly: Bool) {
+        Task {
+            guard let coord = await geocoder.coordinate(for: address) else { return }
+            await MainActor.run {
+                if forFamilyElderly {
+                    var updated = activeFamilyElderly
+                    updated.coordinate = coord
+                    activeFamilyElderly = updated
+                } else {
+                    elderlyUser.coordinate = coord
+                }
+            }
+            if !forFamilyElderly, let uid = realUserId, !isDemoMode {
+                try? await profileService.updateElderlyAddress(
+                    userId: uid, address: address,
+                    latitude: coord.latitude, longitude: coord.longitude
+                )
+            }
+        }
+    }
+
+    // MARK: - Admin-beheeracties (Fase C)
+    // Werken lokaal (zodat de demo direct reageert) en persisteren in
+    // live-modus via SECURITY DEFINER-RPC's.
+
+    private var isLiveAdmin: Bool { !isDemoMode && realUserId != nil }
+
+    func adminSetVOG(buddyId: UUID, valid: Bool) {
+        if let idx = allBuddies.firstIndex(where: { $0.id == buddyId }) { allBuddies[idx].vogValid = valid }
+        if buddyUser.id == buddyId { buddyUser.vogValid = valid }
+        showToast(text: valid ? "VOG goedgekeurd" : "VOG afgewezen",
+                  icon: valid ? "checkmark.shield.fill" : "xmark.shield.fill")
+        guard isLiveAdmin else { return }
+        Task { try? await adminService.setVOG(buddyId: buddyId, valid: valid) }
+    }
+
+    func adminSetIntake(buddyId: UUID, done: Bool) {
+        if let idx = allBuddies.firstIndex(where: { $0.id == buddyId }) { allBuddies[idx].intakeDone = done }
+        if buddyUser.id == buddyId { buddyUser.intakeDone = done }
+        showToast(text: done ? "Intake goedgekeurd" : "Intake heropend",
+                  icon: "person.fill.checkmark")
+        guard isLiveAdmin else { return }
+        Task { try? await adminService.setIntake(buddyId: buddyId, done: done) }
+    }
+
+    func adminSetRole(userId: UUID, role: UserRole) {
+        guard isLiveAdmin else {
+            showToast(text: "Rolbeheer werkt in live-modus", icon: "info.circle.fill")
+            return
+        }
+        showToast(text: "Rol bijgewerkt", icon: "person.2.badge.gearshape")
+        Task { try? await adminService.setRole(userId: userId, role: role.rawValue) }
+    }
+
+    /// Maakt een 6-cijferige koppelcode aan voor een oudere en geeft die terug.
+    @discardableResult
+    func adminCreateLinkingCode(for elderly: ElderlyUser) -> String {
+        let code = String(format: "%06d", Int.random(in: 0...999_999))
+        if isLiveAdmin {
+            Task { try? await adminService.createLinkingCode(elderlyId: elderly.id, code: code) }
+        }
+        showToast(text: "Koppelcode \(code) voor \(elderly.firstName)", icon: "key.fill")
+        return code
+    }
+
+    /// Persisteert een telefonische aanvraag in live-modus (lokale weergave
+    /// loopt al via requestHelpOnBehalf).
+    func persistTaskOnBehalf(for elderly: ElderlyUser, category: TaskCategory,
+                             timing: TaskTiming, note: String) {
+        guard isLiveAdmin else { return }
+        Task {
+            try? await adminService.createTaskOnBehalf(
+                elderlyId: elderly.id, category: category, timing: timing,
+                note: note, priceCents: category.suggestedPriceCents,
+                latitude: elderly.coordinate.latitude, longitude: elderly.coordinate.longitude
+            )
+        }
+    }
+
     // MARK: - SOS
 
     func triggerSOS() {
@@ -439,7 +659,7 @@ final class AppState {
             to: "06-00000000",
             message: BuddieNotification.sosTriggered(elderlyName: elderlyUser.firstName).title
         )
-        MockPushService().send(notification: .sosTriggered(elderlyName: elderlyUser.firstName))
+        deliverPush(.sosTriggered(elderlyName: elderlyUser.firstName))
     }
 
     // MARK: - Toast

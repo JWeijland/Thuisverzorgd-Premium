@@ -3,7 +3,6 @@ import SwiftUI
 struct ElderlyProfileView: View {
     @Environment(AppState.self) private var appState
     @Environment(\.largeTextEnabled) private var largeText
-    @State private var notificationsEnabled = true
     @State private var showEditSheet = false
     private var et: BCElderlyType { BCElderlyType(large: largeText) }
 
@@ -139,15 +138,6 @@ struct ElderlyProfileView: View {
                         .tint(BCColors.primary)
                         .padding(.horizontal, BCSpacing.lg)
                         .padding(.vertical, BCSpacing.md)
-                        Divider()
-                        Toggle(isOn: $notificationsEnabled) {
-                            Label("Meldingen", systemImage: "bell.fill")
-                                .font(et.body)
-                                .foregroundStyle(BCColors.textPrimary)
-                        }
-                        .tint(BCColors.primary)
-                        .padding(.horizontal, BCSpacing.lg)
-                        .padding(.vertical, BCSpacing.md)
                     }
                     .background(
                         RoundedRectangle(cornerRadius: BCRadius.lg, style: .continuous)
@@ -155,6 +145,23 @@ struct ElderlyProfileView: View {
                     )
                     .bcSoftShadow(.card)
                     .padding(.horizontal, BCSpacing.lg)
+
+                    // Meldingen + Privacy — rustig ingeklapt
+                    BCDisclosureSection(title: "Meldingen", icon: "bell.fill") {
+                        BCToggleRow(title: "Meldingen toestaan",
+                                    subtitle: "Berichten over uw bezoek en buddy",
+                                    icon: "bell.fill",
+                                    isOn: appState.notificationBinding(\.pushEnabled))
+                        Divider().padding(.leading, BCSpacing.lg)
+                        BCToggleRow(title: "Bezoek-updates",
+                                    subtitle: "Buddy geaccepteerd, onderweg en afgerond",
+                                    icon: "figure.walk",
+                                    isOn: appState.notificationBinding(\.visitUpdates))
+                    }
+                    .padding(.horizontal, BCSpacing.lg)
+
+                    BCPrivacySection(consent: appState.analyticsConsentBinding)
+                        .padding(.horizontal, BCSpacing.lg)
 
                     // Trust row
                     HStack(spacing: BCSpacing.md) {
@@ -317,6 +324,13 @@ struct EditProfileSheet: View {
             appState.elderlyUser.address = address
             appState.elderlyUser.allergies = allergies
             appState.elderlyUser.medicationNotes = medication
+        }
+        // Geocodeer het (mogelijk gewijzigde) adres en werk de coördinaat bij.
+        appState.updateCoordinateFromAddress(address, forFamilyElderly: editingFamilyElderly)
+        // Telefoonnummer persisteren (alleen voor de oudere zelf; familie-namens
+        // mag dit profiel niet schrijven onder RLS).
+        if !editingFamilyElderly {
+            appState.persistElderlyContactIfLive(phone: phone.isEmpty ? nil : phone)
         }
         dismiss()
     }
